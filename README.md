@@ -41,7 +41,7 @@ or with default value
 ```java
 T result = Hawk.get("key", T);
 ```
-##### More samples for save and get
+##### More samples for save
 
 ```java
 Hawk.put("key", "something"); // Save string
@@ -52,7 +52,7 @@ Hawk.put("key", List<Foo>); // save list of any class
 Hawk.put("key", 1234); // save numbers
 ```
 
-#### GET
+##### More samples for get
 
 ```java
 String value = Hawk.get(key);
@@ -62,7 +62,7 @@ boolean value = Hawk.get(key);
 List<String> value = Hawk.get(key);
 List<Foo> value = Hawk.get(key);
 ```
-or with the default
+or with the defaults
 ```java
 String value = Hawk.get(key, "");
 int value = Hawk.get(key, 0);
