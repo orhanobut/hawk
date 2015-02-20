@@ -73,16 +73,6 @@ List<Foo> value = Hawk.get(key, new ArrayList<Foo>);
 ```
 
 
-####ProGuard
-
-If you are using ProGuard you should add the following options to your configuration file:
-
-```
-#Gson
--keep class com.google.gson.** { *; }
--keepattributes Signature
-```
-
 ###License
 <pre>
 Copyright 2015 Orhan Obut
