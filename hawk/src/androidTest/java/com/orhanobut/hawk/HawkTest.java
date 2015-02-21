@@ -32,9 +32,8 @@ public class HawkTest extends InstrumentationTestCase {
     }
 
     public void testBoolean() {
-        boolean value = true;
-        Hawk.put("tag", value);
-        assertEquals(value, Hawk.get("tag"));
+        Hawk.put("tag", true);
+        assertEquals(true, Hawk.get("tag"));
     }
 
     public void testChar() {
@@ -157,6 +156,33 @@ public class HawkTest extends InstrumentationTestCase {
         int expected = 0;
 
         assertEquals(expected, Hawk.count());
+    }
+
+    public void testRemove() {
+        String value = "test";
+        Hawk.put("tag", value);
+        Hawk.put("tag1", value);
+        Hawk.put("tag2", value);
+
+        Hawk.remove("tag");
+
+        String result = Hawk.get("tag");
+
+        assertNull(result);
+        assertEquals(2, Hawk.count());
+    }
+
+    public void testContains() {
+        String value = "test";
+        String key = "tag";
+        Hawk.put(key, value);
+
+        assertTrue(Hawk.contains(key));
+
+        Hawk.remove(key);
+
+        assertFalse(Hawk.contains(key));
+
     }
 
 }

@@ -73,13 +73,10 @@ final class HawkEncoder implements Encoder {
         if (value == null) {
             return null;
         }
-
         DataInfo info = DataUtil.getDataInfo(value);
+        boolean isList = info.isList();
 
         byte[] bytes = encryption.decrypt(info.getCipherText());
-
-        Class<?> type = info.getClazz();
-        boolean isList = info.isList();
 
         // if the value is not list and serializable, then use the normal deserialize
         if (!isList && info.isSerializable()) {
@@ -89,6 +86,7 @@ final class HawkEncoder implements Encoder {
         // convert to the string json
         String json = new String(bytes);
 
+        Class<?> type = info.getClazz();
         if (!isList) {
             return parser.fromJson(json, type);
         }

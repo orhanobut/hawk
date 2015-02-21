@@ -9,7 +9,12 @@ interface Storage {
 
     <T> T get(String key);
 
+    void remove(String key);
+
     void clear();
 
     int count();
+
+    boolean contains(String key);
+
 }

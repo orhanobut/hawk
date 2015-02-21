@@ -17,7 +17,7 @@ final class DataUtil {
      * Saved data contains more info than cipher text, this method will unmarshall these data
      *
      * @param storedText is the saved data
-     * @return the datainfo object which contains all necessary information
+     * @return the DataInfo object which contains all necessary information
      */
     static DataInfo getDataInfo(String storedText) {
         if (storedText == null) {
@@ -33,11 +33,14 @@ final class DataUtil {
         String className = text.substring(0, text.length() - 2);
         String cipherText = storedText.substring(index);
 
+        // if it is not list and serializable, no need to create the class object
         Class<?> clazz = null;
-        try {
-            clazz = Class.forName(className);
-        } catch (ClassNotFoundException e) {
-            e.printStackTrace();
+        if (isList || !isSerializable) {
+            try {
+                clazz = Class.forName(className);
+            } catch (ClassNotFoundException e) {
+                Logger.d(e.getMessage());
+            }
         }
 
         return new DataInfo(isSerializable, isList, cipherText, clazz);
