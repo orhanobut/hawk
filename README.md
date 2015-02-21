@@ -44,9 +44,9 @@ or with default value
 T result = Hawk.get(key, T);
 ```
 
-#### Delete
+#### Remove
 ```java
-Hawk.delete(key);
+Hawk.remove(key);
 ```
 
 #### Contains
