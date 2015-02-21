@@ -118,6 +118,23 @@ public final class Hawk {
     }
 
     /**
+     * Removes the given key/value from the storage
+     */
+    public static void remove(String key) {
+        storage.remove(key);
+    }
+
+    /**
+     * Checks the given key whether the contains or not
+     *
+     * @param key is the key to check
+     * @return true if it exists in the storage
+     */
+    public static boolean contains(String key) {
+        return storage.contains(key);
+    }
+
+    /**
      * Clears all saved data that is used for the crypto
      */
     public static void resetCrypto() {
