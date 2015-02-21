@@ -49,9 +49,14 @@ T result = Hawk.get(key, T);
 Hawk.delete(key);
 ```
 
-#### Check to if the key exists
+#### Contains
 ```java
-Hawk.contains(key);
+boolean contains = Hawk.contains(key); 
+```
+
+#### Set the log output (optional)
+```java
+Hawk.init(context, LogLevel.FULL); // as default it is NONE
 ```
 
 ##### More samples for save

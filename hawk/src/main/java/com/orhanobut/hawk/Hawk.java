@@ -24,7 +24,7 @@ public final class Hawk {
     }
 
     public static void init(Context context) {
-        init(context, LogLevel.FULL);
+        init(context, LogLevel.NONE);
     }
 
     /**
