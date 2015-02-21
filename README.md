@@ -31,18 +31,29 @@ Hawk.init(context);
 
 #### Save
 ```java
-Hawk.put("key", ANYTHING);
+Hawk.put(key, ANYTHING);
 ```
 
 #### Get
 ```java
-T result = Hawk.get("key");
+T result = Hawk.get(key);
 ```
 or with default value
 
 ```java
-T result = Hawk.get("key", T);
+T result = Hawk.get(key, T);
 ```
+
+#### Delete
+```java
+Hawk.delete(key);
+```
+
+#### Check to if the key exists
+```java
+Hawk.contains(key);
+```
+
 ##### More samples for save
 
 ```java
