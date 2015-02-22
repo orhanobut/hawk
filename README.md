@@ -66,7 +66,7 @@ Hawk.put("key", "something"); // Save string
 Hawk.put("key", true); // save boolean
 Hawk.put("key", new Foo()); // save an object
 Hawk.put("key", List<String>); // save list
-Hawk.put("key", List<Foo>); // save list of any class
+Hawk.put("key", List<Foo>); // save list of any type
 Hawk.put("key", 1234); // save numbers
 ```
 
