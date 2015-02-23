@@ -47,6 +47,12 @@ public final class Hawk {
      * @param value is the data that is gonna be saved. Value can be object, list type, primitives
      */
     public static <T> void put(String key, T value) {
+        if (key == null) {
+            throw new NullPointerException("Key cannot be null");
+        }
+        if (value == null) {
+            throw new NullPointerException("Value cannot be null");
+        }
         String cipherText = encoder.encode(value);
         String fullText = DataUtil.addType(cipherText, value.getClass(), false);
         storage.put(key, fullText);
@@ -57,6 +63,9 @@ public final class Hawk {
      * @return the saved object
      */
     public static <T> T get(String key) {
+        if (key == null) {
+            throw new NullPointerException("key cannot be null");
+        }
         String fullText = storage.get(key);
         try {
             return encoder.decode(fullText);
@@ -88,6 +97,12 @@ public final class Hawk {
      * @param list is the data that will be saved
      */
     public static <T> void put(String key, List<T> list) {
+        if (list == null) {
+            throw new NullPointerException("List<T> may not be null");
+        }
+        if (list.size() == 0) {
+            throw new NullPointerException("List<T> cannot be empty");
+        }
         String cipherText = encoder.encode(list);
         Class clazz = list.get(0).getClass();
         String fullText = DataUtil.addType(cipherText, clazz, true);
@@ -119,7 +134,7 @@ public final class Hawk {
     }
 
     /**
-     * Checks the given key whether the contains or not
+     * Checks the given key whether it exists or not
      *
      * @param key is the key to check
      * @return true if it exists in the storage

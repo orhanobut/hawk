@@ -37,8 +37,9 @@ public class HawkTest extends InstrumentationTestCase {
     }
 
     public void testBooleanDefault() {
-        assertEquals(Boolean.FALSE, Hawk.get("tag", false)) ;
+        assertEquals(Boolean.FALSE, Hawk.get("tag", false));
     }
+
     public void testBooleanNotDefault() {
         Hawk.put("tag", true);
         assertNotSame(true, Hawk.get("tag", false));
@@ -274,6 +275,52 @@ public class HawkTest extends InstrumentationTestCase {
         assertNotNull(list1);
     }
 
+    public void testEmptyList() {
+        try {
+            List<FooParcelable> list = new ArrayList<>();
+            Hawk.put("tag", list);
+            assertTrue(false);
+        } catch (Exception e) {
+            assertTrue(true);
+        }
+    }
+
+    public void testNullKeyPut() {
+        try {
+            Hawk.put(null, "test");
+            assertTrue(false);
+        } catch (Exception e) {
+            assertTrue(true);
+        }
+    }
+
+    public void testNullKeyGet() {
+        try {
+            Hawk.get(null);
+            assertTrue(false);
+        } catch (Exception e) {
+            assertTrue(true);
+        }
+    }
+
+    public void testNullKeyPutList() {
+        try {
+            Hawk.put(null, new ArrayList<String>());
+            assertTrue(false);
+        } catch (Exception e) {
+            assertTrue(true);
+        }
+    }
+
+    public void testNullValuePut() {
+        try {
+            Hawk.put("tag", null);
+            assertTrue(false);
+        } catch (Exception e) {
+            assertTrue(true);
+        }
+    }
+
     public void testCount() {
         String value = "test";
         Hawk.put("tag", value);
@@ -322,7 +369,6 @@ public class HawkTest extends InstrumentationTestCase {
         Hawk.remove(key);
 
         assertFalse(Hawk.contains(key));
-
     }
 
 }
