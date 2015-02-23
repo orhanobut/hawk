@@ -19,7 +19,7 @@ repositories {
     maven { url "https://oss.sonatype.org/content/repositories/snapshots/"}
 }
 dependencies {
-    compile 'com.orhanobut:hawk:1.1-SNAPSHOT'
+    compile 'com.orhanobut:hawk:1.2-SNAPSHOT'
 }
 ```
 
