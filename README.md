@@ -3,6 +3,8 @@
 #Hawk
 Secure, simple key-value storage for android
 
+<img src='https://github.com/orhanobut/hawk/blob/master/images/hawk-logo.png' width='128' height='128'/>
+
 Hawk uses:
 - AES for the crypto
 - SharedPreferences for the storage
@@ -19,7 +21,7 @@ repositories {
     maven { url "https://oss.sonatype.org/content/repositories/snapshots/"}
 }
 dependencies {
-    compile 'com.orhanobut:hawk:1.2-SNAPSHOT'
+    compile 'com.orhanobut:hawk:1.3-SNAPSHOT'
 }
 ```
 
