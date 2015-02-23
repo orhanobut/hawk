@@ -74,17 +74,11 @@ public final class Hawk {
      * @return the saved object
      */
     public static <T> T get(String key, T defaultValue) {
-        String fullText = storage.get(key);
-        T t;
-        try {
-            t = encoder.decode(fullText);
-        } catch (Exception e) {
-            return null;
-        }
+        T t = get(key);
         if (t == null) {
             return defaultValue;
         }
-        return null;
+        return t;
     }
 
     /**
