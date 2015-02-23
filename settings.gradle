@@ -1,1 +1,1 @@
-include ':app', ':hawk'
+include ':library', ':sample'
