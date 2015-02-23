@@ -1,4 +1,4 @@
-package com.orhanobut.hawksample;
+package com.orhanobut.hawk.sample;
 
 import android.app.Activity;
 import android.os.Bundle;
@@ -7,7 +7,6 @@ import android.util.Log;
 import com.orhanobut.hawk.Hawk;
 
 import java.io.Serializable;
-
 
 public class MainActivity extends Activity {
 
@@ -21,7 +20,7 @@ public class MainActivity extends Activity {
         Hawk.init(this);
         Hawk.clear();
 
-       // test();
+        test();
         test2();
     }
 
@@ -32,14 +31,14 @@ public class MainActivity extends Activity {
         int b = Hawk.get(TAG);
         Log.d(TAG, String.valueOf(b));
     }
-    
-    void test2(){
+
+    void test2() {
         Foo foo = new Foo();
         Hawk.put("test2", foo);
         Foo foo1 = Hawk.get("test2");
     }
 
-    static class Foo implements Serializable{
+    static class Foo implements Serializable {
         String a = "foo";
     }
 

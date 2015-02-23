@@ -1,4 +1,4 @@
-package com.orhanobut.hawksample;
+package com.orhanobut.hawk;
 
 import android.app.Application;
 import android.test.ApplicationTestCase;

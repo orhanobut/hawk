@@ -17,6 +17,7 @@ def PASSWORD = "";
 afterEvaluate { project ->
     uploadArchives {
         def Properties versionProps = new Properties()
+        // TODO : changed credential.properties to local.properties (need confirm)
         versionProps.load(new FileInputStream('local.properties'))
         USERNAME = versionProps['USERNAME'];
         PASSWORD = versionProps['PASSWORD'];
