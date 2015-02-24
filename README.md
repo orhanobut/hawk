@@ -38,12 +38,12 @@ Hawk.put(key, ANYTHING);
 
 #### Get
 ```java
-ANYTYPE result = Hawk.get(key);
+T result = Hawk.get(key);
 ```
 or with default value
 
 ```java
-ANYTYPE result = Hawk.get(key, T);
+T result = Hawk.get(key, T);
 ```
 
 #### Remove
