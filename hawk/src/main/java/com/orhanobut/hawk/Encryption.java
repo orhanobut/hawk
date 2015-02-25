@@ -24,6 +24,6 @@ interface Encryption {
     /**
      * Clear everything from the storage
      */
-    void reset();
+    boolean reset();
 
 }

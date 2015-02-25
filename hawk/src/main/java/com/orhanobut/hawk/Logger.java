@@ -10,7 +10,7 @@ final class Logger {
 
     private static final int CHUNK_SIZE = 4000;
 
-    private static final String TAG = "Wasp";
+    private static final String TAG = "Hawk";
 
     static void d(String message) {
         log(Log.DEBUG, message);

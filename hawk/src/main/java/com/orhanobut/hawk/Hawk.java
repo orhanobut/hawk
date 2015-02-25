@@ -23,20 +23,28 @@ public final class Hawk {
         // no instance
     }
 
-    public static void init(Context context) {
-        init(context, LogLevel.NONE);
+    /**
+     * This method must be called in order to initiate the hawk
+     *
+     * @param context  is used to instantiate context based objects. ApplicationContext will be used
+     * @param password is used for key generation
+     */
+    public static void init(Context context, String password) {
+        init(context, password, LogLevel.NONE);
     }
 
     /**
      * This method must be called in order to initiate the hawk
      *
-     * @param context is used to instantiate context based objects. ApplicationContext will be used
+     * @param context  is used to instantiate context based objects. ApplicationContext will be used
+     * @param password is used for key generation
+     * @param logLevel is used for logging
      */
-    public static void init(Context context, LogLevel logLevel) {
+    public static void init(Context context, String password, LogLevel logLevel) {
         Context appContext = context.getApplicationContext();
         Hawk.logLevel = logLevel;
         Hawk.storage = new SharedPreferencesStorage(appContext, TAG);
-        Hawk.encryption = new AesEncryption(new SharedPreferencesStorage(appContext, TAG_CRYPTO));
+        Hawk.encryption = new AesEncryption(new SharedPreferencesStorage(appContext, TAG_CRYPTO), password);
         Hawk.encoder = new HawkEncoder(encryption, new GsonParser(new Gson()));
     }
 
@@ -45,8 +53,9 @@ public final class Hawk {
      *
      * @param key   is used to save the data
      * @param value is the data that is gonna be saved. Value can be object, list type, primitives
+     * @return true if put is successful
      */
-    public static <T> void put(String key, T value) {
+    public static <T> boolean put(String key, T value) {
         if (key == null) {
             throw new NullPointerException("Key cannot be null");
         }
@@ -54,8 +63,12 @@ public final class Hawk {
             throw new NullPointerException("Value cannot be null");
         }
         String cipherText = encoder.encode(value);
+        //if any exception occurs during encoding, cipherText will be null and thus operation is unsuccessful
+        if (cipherText == null) {
+            return false;
+        }
         String fullText = DataUtil.addType(cipherText, value.getClass(), false);
-        storage.put(key, fullText);
+        return storage.put(key, fullText);
     }
 
     /**
@@ -64,13 +77,13 @@ public final class Hawk {
      */
     public static <T> T get(String key) {
         if (key == null) {
-            throw new NullPointerException("key cannot be null");
+            throw new NullPointerException("Key cannot be null");
         }
         String fullText = storage.get(key);
         try {
             return encoder.decode(fullText);
         } catch (Exception e) {
-            e.printStackTrace();
+            Logger.d(e.getMessage());
         }
         return null;
     }
@@ -95,8 +108,9 @@ public final class Hawk {
      *
      * @param key  is used to save the data
      * @param list is the data that will be saved
+     * @return true if put is successful
      */
-    public static <T> void put(String key, List<T> list) {
+    public static <T> boolean put(String key, List<T> list) {
         if (list == null) {
             throw new NullPointerException("List<T> may not be null");
         }
@@ -104,9 +118,13 @@ public final class Hawk {
             throw new NullPointerException("List<T> cannot be empty");
         }
         String cipherText = encoder.encode(list);
+        //if any exception occurs during encoding, cipherText will be null and thus operation is unsuccessful
+        if (cipherText == null) {
+            return false;
+        }
         Class clazz = list.get(0).getClass();
         String fullText = DataUtil.addType(cipherText, clazz, true);
-        storage.put(key, fullText);
+        return storage.put(key, fullText);
     }
 
     /**
@@ -121,16 +139,21 @@ public final class Hawk {
     /**
      * Clears the storage, note that crypto data won't be deleted such as salt key etc.
      * Use resetCrypto in order to clear crypto information
+     *
+     * @return true if clear is successful
      */
-    public static void clear() {
-        storage.clear();
+    public static boolean clear() {
+        return storage.clear();
     }
 
     /**
      * Removes the given key/value from the storage
+     *
+     * @param key is used for removing related data from storage
+     * @return true if remove is successful
      */
-    public static void remove(String key) {
-        storage.remove(key);
+    public static boolean remove(String key) {
+        return storage.remove(key);
     }
 
     /**
@@ -145,9 +168,11 @@ public final class Hawk {
 
     /**
      * Clears all saved data that is used for the crypto
+     *
+     * @return true if reset is successful
      */
-    public static void resetCrypto() {
-        encryption.reset();
+    public static boolean resetCrypto() {
+        return encryption.reset();
     }
 
     public static LogLevel getLogLevel() {
