@@ -506,9 +506,12 @@ final class AesCbcWithIntegrity {
          * @param h The mac
          */
         public CipherTextIvMac(byte[] c, byte[] i, byte[] h) {
-            cipherText = Arrays.copyOf(c, c.length);
-            iv = Arrays.copyOf(i, i.length);
-            mac = Arrays.copyOf(h, h.length);
+            cipherText = new byte[c.length];
+            System.arraycopy(c, 0, cipherText, 0, c.length);
+            iv = new byte[i.length];
+            System.arraycopy(i, 0, iv, 0, i.length);
+            mac = new byte[h.length];
+            System.arraycopy(h, 0, mac, 0, h.length);
         }
 
         /**
