@@ -8,12 +8,10 @@ import android.content.SharedPreferences;
  */
 final class SharedPreferencesStorage implements Storage {
 
-    private final Context context;
-    private final String tag;
+    private final SharedPreferences preferences;
 
     SharedPreferencesStorage(Context context, String tag) {
-        this.context = context;
-        this.tag = tag;
+        preferences = context.getSharedPreferences(tag, Context.MODE_PRIVATE);
     }
 
     @Override
@@ -24,7 +22,7 @@ final class SharedPreferencesStorage implements Storage {
     @SuppressWarnings("unchecked")
     @Override
     public <T> T get(String key) {
-        return (T) getSharedPreferences().getString(key, null);
+        return (T) preferences.getString(key, null);
     }
 
     @Override
@@ -34,7 +32,7 @@ final class SharedPreferencesStorage implements Storage {
 
     @Override
     public boolean contains(String key) {
-        return getSharedPreferences().contains(key);
+        return preferences.contains(key);
     }
 
     @Override
@@ -44,15 +42,11 @@ final class SharedPreferencesStorage implements Storage {
 
     @Override
     public int count() {
-        return getSharedPreferences().getAll().size();
+        return preferences.getAll().size();
     }
 
     private SharedPreferences.Editor getEditor() {
-        SharedPreferences preferences = context.getSharedPreferences(tag, Context.MODE_PRIVATE);
         return preferences.edit();
     }
 
-    private SharedPreferences getSharedPreferences() {
-        return context.getSharedPreferences(tag, Context.MODE_PRIVATE);
-    }
 }
