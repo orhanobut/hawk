@@ -17,8 +17,8 @@ final class SharedPreferencesStorage implements Storage {
     }
 
     @Override
-    public <T> void put(String key, T value) {
-        getEditor().putString(key, String.valueOf(value)).commit();
+    public <T> boolean put(String key, T value) {
+        return getEditor().putString(key, String.valueOf(value)).commit();
     }
 
     @SuppressWarnings("unchecked")
@@ -28,8 +28,8 @@ final class SharedPreferencesStorage implements Storage {
     }
 
     @Override
-    public void remove(String key) {
-        getEditor().remove(key).commit();
+    public boolean remove(String key) {
+        return getEditor().remove(key).commit();
     }
 
     @Override
@@ -38,8 +38,8 @@ final class SharedPreferencesStorage implements Storage {
     }
 
     @Override
-    public void clear() {
-        getEditor().clear().commit();
+    public boolean clear() {
+        return getEditor().clear().commit();
     }
 
     @Override

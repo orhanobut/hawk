@@ -77,6 +77,10 @@ final class HawkEncoder implements Encoder {
         boolean isList = info.isList();
 
         byte[] bytes = encryption.decrypt(info.getCipherText());
+        //if any exception occurs during decrypt, bytes will be null
+        if (bytes == null) {
+            return null;
+        }
 
         // if the value is not list and serializable, then use the normal deserialize
         if (!isList && info.isSerializable()) {
