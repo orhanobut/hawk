@@ -50,22 +50,22 @@ public class DataUtilTest extends InstrumentationTestCase {
 
     public void testGetDataInfoShouldBeSerializable() {
         DataInfo info = DataUtil.getDataInfo("String11@asdfjasdf");
-        assertTrue(info.isSerializable());
+        assertTrue(info.isSerializable);
     }
 
     public void testGetDataInfoShouldNotBeSerializable() {
         DataInfo info = DataUtil.getDataInfo("String10@asdfjasdf");
-        assertFalse(info.isSerializable());
+        assertFalse(info.isSerializable);
     }
 
     public void testGetDataInfoShouldBeList() {
         DataInfo info = DataUtil.getDataInfo("String11@asdfjasdf");
-        assertTrue(info.isSerializable());
+        assertTrue(info.isSerializable);
     }
 
     public void testGetDataInfoShouldNotBeList() {
         DataInfo info = DataUtil.getDataInfo("String00@asdfjasdf");
-        assertFalse(info.isSerializable());
+        assertFalse(info.isSerializable);
     }
 
 

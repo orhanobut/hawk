@@ -5,10 +5,10 @@ package com.orhanobut.hawk;
  */
 final class DataInfo {
 
-    private final boolean isSerializable;
-    private final boolean isList;
-    private final String cipherText;
-    private final Class clazz;
+    public final boolean isSerializable;
+    public final boolean isList;
+    public final String cipherText;
+    public final Class clazz;
 
     DataInfo(boolean isSerializable, boolean isList, String cipherText, Class clazz) {
         this.isSerializable = isSerializable;
@@ -17,19 +17,4 @@ final class DataInfo {
         this.clazz = clazz;
     }
 
-    boolean isSerializable() {
-        return isSerializable;
-    }
-
-    boolean isList() {
-        return isList;
-    }
-
-    String getCipherText() {
-        return cipherText;
-    }
-
-    Class getClazz() {
-        return clazz;
-    }
 }
