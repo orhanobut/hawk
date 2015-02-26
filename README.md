@@ -95,7 +95,7 @@ List<String> value = Hawk.get(key, Collections.emptyList());
 List<Foo> value = Hawk.get(key, new ArrayList<Foo>);
 ```
 
-##### Benchmark result
+##### Benchmark result (ms)
 Done with Nexus 4, Android L. Note that this is not certain values, I just made a few runs and show it to give you an idea.
 
 <img src='https://github.com/orhanobut/hawk/blob/master/images/benchmark.png'/>
@@ -107,6 +107,9 @@ Done with Nexus 4, Android L. Note that this is not certain values, I just made 
 ##### Notes
 - Password should be provided by the user, we try to find better solution for this.
 - Hawk.init() takes around 200-500ms depends on the phone.
+
+##### Credits
+I use the following implementation for the crypto and I believe it should get more attention. Thanks for this great hard work. https://github.com/tozny/java-aes-crypto and a great article about it : http://tozny.com/blog/encrypting-strings-in-android-lets-make-better-mistakes/
 
 ###License
 <pre>
