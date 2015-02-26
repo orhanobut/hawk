@@ -100,6 +100,10 @@ Done with Nexus 4, Android L. Note that this is not certain values, I just made 
 
 <img src='https://github.com/orhanobut/hawk/blob/master/images/benchmark.png'/>
 
+##### How Hawk works
+
+<img src='https://github.com/orhanobut/hawk/blob/master/images/benchmark.png'/>
+
 ##### Notes
 - Password should be provided by the user, we try to find better solution for this.
 - Hawk.init() takes around 200-500ms depends on the phone.
