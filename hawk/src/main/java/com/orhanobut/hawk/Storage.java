@@ -1,11 +1,17 @@
 package com.orhanobut.hawk;
 
+import android.util.Pair;
+
+import java.util.List;
+
 /**
  * @author Orhan Obut
  */
 interface Storage {
 
     <T> void put(String key, T value);
+
+    void put(List<Pair<String, ?>> items);
 
     <T> T get(String key);
 

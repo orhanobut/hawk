@@ -1,9 +1,11 @@
 package com.orhanobut.hawk;
 
 import android.content.Context;
+import android.util.Pair;
 
 import com.google.gson.Gson;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -47,14 +49,10 @@ public final class Hawk {
      * @param value is the data that is gonna be saved. Value can be object, list type, primitives
      */
     public static <T> void put(String key, T value) {
-        if (key == null) {
-            throw new NullPointerException("Key cannot be null");
-        }
-        if (value == null) {
-            throw new NullPointerException("Value cannot be null");
-        }
-        String cipherText = encoder.encode(value);
-        String fullText = DataUtil.addType(cipherText, value.getClass(), false);
+        throwExceptionIf(key == null, "Key cannot be null");
+        throwExceptionIf(value == null, "Value cannot be null");
+
+        String fullText = getMarshalledValue(value, null);
         storage.put(key, fullText);
     }
 
@@ -63,9 +61,8 @@ public final class Hawk {
      * @return the saved object
      */
     public static <T> T get(String key) {
-        if (key == null) {
-            throw new NullPointerException("key cannot be null");
-        }
+        throwExceptionIf(key == null, "key cannot be null");
+
         String fullText = storage.get(key);
         try {
             return encoder.decode(fullText);
@@ -97,16 +94,50 @@ public final class Hawk {
      * @param list is the data that will be saved
      */
     public static <T> void put(String key, List<T> list) {
-        if (list == null) {
-            throw new NullPointerException("List<T> may not be null");
-        }
-        if (list.size() == 0) {
-            throw new NullPointerException("List<T> cannot be empty");
-        }
-        String cipherText = encoder.encode(list);
-        Class clazz = list.get(0).getClass();
-        String fullText = DataUtil.addType(cipherText, clazz, true);
+        throwExceptionIf(key == null, "Key cannot be null");
+        throwExceptionIf(list == null, "List<T> may not be null");
+        throwExceptionIf(list.size() == 0, "List<T> may not be null");
+
+        String fullText = getMarshalledValue(list.get(0), list);
         storage.put(key, fullText);
+    }
+
+    /**
+     * Enables chaining of multiple put invocations.
+     *
+     * @return a simple chaining object
+     */
+    public static HawkChain chain() {
+        return new HawkChain();
+    }
+
+    /**
+     * Enables chaining of multiple put invocations.
+     *
+     * @param capacity the amount of put invocations you're about to do
+     * @return a simple chaining object
+     */
+    public static HawkChain chain(int capacity) {
+        return new HawkChain(capacity);
+    }
+
+    private static <T> String getMarshalledValue(T value, List<T> list) {
+        String cipherText;
+
+        boolean isList = (null != list);
+        if (isList) {
+            cipherText = encoder.encode(list);
+        } else {
+            cipherText = encoder.encode(value);
+        }
+
+        return DataUtil.addType(cipherText, value.getClass(), isList);
+    }
+
+    private static void throwExceptionIf(boolean failure, String description) {
+        if (failure) {
+            throw new NullPointerException(description);
+        }
     }
 
     /**
@@ -153,4 +184,63 @@ public final class Hawk {
     public static LogLevel getLogLevel() {
         return logLevel;
     }
+
+    /**
+     * Provides the ability to chain put invocations, for example
+     * <code>Hawk.chain().put("foo", 0).put("bar", 1).done()</code>
+     */
+    public static final class HawkChain {
+
+        private final List<Pair<String, ?>> items;
+
+        public HawkChain() {
+            this(4);
+        }
+
+        public HawkChain(int capacity) {
+            items = new ArrayList<>(capacity);
+        }
+
+        /**
+         * Saves every type of Objects. List, List<T>, primitives
+         *
+         * @param key   is used to save the data
+         * @param value is the data that is gonna be saved. Value can be object, list type, primitives
+         */
+        public <T> HawkChain put(String key, T value) {
+            throwExceptionIf(key == null, "Key cannot be null");
+            throwExceptionIf(value == null, "Value cannot be null");
+
+            String fullText = getMarshalledValue(value, null);
+            items.add(new Pair<String, Object>(key, fullText));
+
+            return this;
+        }
+
+        /**
+         * Saves the list of objects to the storage
+         *
+         * @param key  is used to save the data
+         * @param list is the data that will be saved
+         */
+        public <T> HawkChain put(String key, List<T> list) {
+            throwExceptionIf(key == null, "Key cannot be null");
+            throwExceptionIf(list == null, "List<T> may not be null");
+            throwExceptionIf(list.size() == 0, "List<T> may not be null");
+
+            String fullText = getMarshalledValue(list.get(0), list);
+            items.add(new Pair<String, Object>(key, fullText));
+
+            return this;
+        }
+
+        /**
+         * Saves the chained values.
+         */
+        public void done() {
+            storage.put(items);
+        }
+
+    }
+
 }
