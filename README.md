@@ -96,7 +96,7 @@ List<Foo> value = Hawk.get(key, new ArrayList<Foo>);
 ```
 
 ##### Benchmark result
-Done with Nexus 4, Android L
+Done with Nexus 4, Android L. Note that this is not certain values, I just made a few runs and show it to give you an idea.
 
 <img src='https://github.com/orhanobut/hawk/blob/master/images/benchmark.png'/>
 
