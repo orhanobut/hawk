@@ -95,7 +95,7 @@ List<String> value = Hawk.get(key, Collections.emptyList());
 List<Foo> value = Hawk.get(key, new ArrayList<Foo>);
 ```
 
-##### Benchmark result
+##### Benchmark result (ms)
 Done with Nexus 4, Android L. Note that this is not certain values, I just made a few runs and show it to give you an idea.
 
 <img src='https://github.com/orhanobut/hawk/blob/master/images/benchmark.png'/>
