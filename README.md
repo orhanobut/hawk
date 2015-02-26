@@ -8,7 +8,7 @@ Secure, simple key-value storage for android
 Hawk uses:
 - AES for the crypto
 - SharedPreferences for the storage
-- Gson
+- Gson for parsing
 
 Hawk provides:
 - Secure data persistence
@@ -21,29 +21,32 @@ repositories {
     maven { url "https://oss.sonatype.org/content/repositories/snapshots/"}
 }
 dependencies {
-    compile 'com.orhanobut:hawk:1.3-SNAPSHOT'
+    compile 'com.orhanobut:hawk:1.4-SNAPSHOT'
 }
 ```
 
 #### Initialize the hawk
-
 ```java
-Hawk.init(context);
+Hawk.init(context, PASSWORD);
 ```
 
 #### Save
 ```java
-Hawk.put(key, ANYTHING);
+Hawk.put(key, T);
+```
+or
+```java
+Hawk.put(key, List<T>);
 ```
 
 #### Get
 ```java
-ANYTYPE result = Hawk.get(key);
+T result = Hawk.get(key);
 ```
 or with default value
 
 ```java
-ANYTYPE result = Hawk.get(key, T);
+T result = Hawk.get(key, T);
 ```
 
 #### Remove
@@ -53,12 +56,12 @@ Hawk.remove(key);
 
 #### Contains
 ```java
-boolean contains = Hawk.contains(key); 
+boolean contains = Hawk.contains(key);
 ```
 
 #### Set the log output (optional)
 ```java
-Hawk.init(context, LogLevel.FULL); // as default it is NONE
+Hawk.init(context,PASSWORD, LogLevel.FULL); // as default it is NONE
 ```
 
 ##### More samples for save
@@ -92,6 +95,14 @@ List<String> value = Hawk.get(key, Collections.emptyList());
 List<Foo> value = Hawk.get(key, new ArrayList<Foo>);
 ```
 
+##### Benchmark result
+Done with Nexus 4, Android L
+
+<img src='https://github.com/orhanobut/hawk/blob/master/images/benchmark.png' height='128'/>
+
+##### Notes
+- Password should be provided by the user, we try to find better solution for this.
+- Hawk.init() takes around 200-500ms depends on the phone.
 
 ###License
 <pre>

@@ -27,7 +27,7 @@ public class MainActivity extends Activity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        Hawk.init(this, LogLevel.FULL);
+        Hawk.init(this, "asdfasdfds", LogLevel.FULL);
 
         prefs = getSharedPreferences("BENCHARMK", MODE_PRIVATE);
         editor = prefs.edit();
@@ -175,7 +175,7 @@ public class MainActivity extends Activity {
         end = System.nanoTime();
         double resultHawk = getTime(start, end);
 
-        log("Primitive get : Pref : " + resultPref + "  -- Hawk : " + resultHawk);
+        log("int get : Pref : " + resultPref + "  -- Hawk : " + resultHawk);
 
     }
 
