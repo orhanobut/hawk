@@ -98,7 +98,7 @@ List<Foo> value = Hawk.get(key, new ArrayList<Foo>);
 ##### Benchmark result
 Done with Nexus 4, Android L
 
-<img src='https://github.com/orhanobut/hawk/blob/master/images/benchmark.png' height='128'/>
+<img src='https://github.com/orhanobut/hawk/blob/master/images/benchmark.png'/>
 
 ##### Notes
 - Password should be provided by the user, we try to find better solution for this.
