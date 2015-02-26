@@ -102,7 +102,7 @@ Done with Nexus 4, Android L. Note that this is not certain values, I just made 
 
 ##### How Hawk works
 
-<img src='https://github.com/orhanobut/hawk/blob/master/images/benchmark.png'/>
+<img src='https://github.com/orhanobut/hawk/blob/master/images/flow-chart.png'/>
 
 ##### Notes
 - Password should be provided by the user, we try to find better solution for this.
