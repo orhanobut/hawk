@@ -107,6 +107,7 @@ Done with Nexus 4, Android L. Note that this is not certain values, I just made 
 ##### Notes
 - Password should be provided by the user, we try to find better solution for this.
 - Hawk.init() takes around 200-500ms depends on the phone.
+- Salt key is stored plain text in the storage currently. We are checking to find a better solution for this. Any contribution about this will be great help as well.
 
 ##### Credits
 I use the following implementation for the crypto and I believe it should get more attention. Thanks for this great hard work. https://github.com/tozny/java-aes-crypto and a great article about it : http://tozny.com/blog/encrypting-strings-in-android-lets-make-better-mistakes/
