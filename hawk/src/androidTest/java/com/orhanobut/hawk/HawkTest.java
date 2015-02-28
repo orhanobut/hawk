@@ -5,7 +5,6 @@ import android.test.InstrumentationTestCase;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Set;
 
 /**
  * @author Orhan Obut
