@@ -25,7 +25,7 @@ public class HawkEncoderTest extends InstrumentationTestCase {
         context = getInstrumentation().getContext();
 
         encoder = new HawkEncoder(
-                new AesEncryption(new SharedPreferencesStorage(context, "test")),
+                new AesEncryption(new SharedPreferencesStorage(context, "test"), "password"),
                 new GsonParser(new Gson())
         );
     }

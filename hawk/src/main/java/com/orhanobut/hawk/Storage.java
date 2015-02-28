@@ -9,15 +9,15 @@ import java.util.List;
  */
 interface Storage {
 
-    <T> void put(String key, T value);
+    <T> boolean put(String key, T value);
 
     void put(List<Pair<String, ?>> items);
 
     <T> T get(String key);
 
-    void remove(String key);
+    boolean remove(String key);
 
-    void clear();
+    boolean clear();
 
     int count();
 

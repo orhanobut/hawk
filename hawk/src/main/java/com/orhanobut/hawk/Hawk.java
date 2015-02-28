@@ -25,20 +25,28 @@ public final class Hawk {
         // no instance
     }
 
-    public static void init(Context context) {
-        init(context, LogLevel.NONE);
+    /**
+     * This method must be called in order to initiate the hawk
+     *
+     * @param context  is used to instantiate context based objects. ApplicationContext will be used
+     * @param password is used for key generation
+     */
+    public static void init(Context context, String password) {
+        init(context, password, LogLevel.NONE);
     }
 
     /**
      * This method must be called in order to initiate the hawk
      *
-     * @param context is used to instantiate context based objects. ApplicationContext will be used
+     * @param context  is used to instantiate context based objects. ApplicationContext will be used
+     * @param password is used for key generation
+     * @param logLevel is used for logging
      */
-    public static void init(Context context, LogLevel logLevel) {
+    public static void init(Context context, String password, LogLevel logLevel) {
         Context appContext = context.getApplicationContext();
         Hawk.logLevel = logLevel;
         Hawk.storage = new SharedPreferencesStorage(appContext, TAG);
-        Hawk.encryption = new AesEncryption(new SharedPreferencesStorage(appContext, TAG_CRYPTO));
+        Hawk.encryption = new AesEncryption(new SharedPreferencesStorage(appContext, TAG_CRYPTO), password);
         Hawk.encoder = new HawkEncoder(encryption, new GsonParser(new Gson()));
     }
 
@@ -47,13 +55,10 @@ public final class Hawk {
      *
      * @param key   is used to save the data
      * @param value is the data that is gonna be saved. Value can be object, list type, primitives
+     * @return true if put is successful
      */
-    public static <T> void put(String key, T value) {
-        throwExceptionIf(key == null, "Key cannot be null");
-        throwExceptionIf(value == null, "Value cannot be null");
-
-        String fullText = getMarshalledValue(value, null);
-        storage.put(key, fullText);
+    public static <T> boolean put(String key, T value) {
+        return put(key, value, null, false, true) != null;
     }
 
     /**
@@ -61,13 +66,14 @@ public final class Hawk {
      * @return the saved object
      */
     public static <T> T get(String key) {
-        throwExceptionIf(key == null, "key cannot be null");
-
+        if (key == null) {
+            throw new NullPointerException("Key cannot be null");
+        }
         String fullText = storage.get(key);
         try {
             return encoder.decode(fullText);
         } catch (Exception e) {
-            e.printStackTrace();
+            Logger.d(e.getMessage());
         }
         return null;
     }
@@ -92,14 +98,54 @@ public final class Hawk {
      *
      * @param key  is used to save the data
      * @param list is the data that will be saved
+     * @return true if put is successful
      */
-    public static <T> void put(String key, List<T> list) {
-        throwExceptionIf(key == null, "Key cannot be null");
-        throwExceptionIf(list == null, "List<T> may not be null");
-        throwExceptionIf(list.size() == 0, "List<T> may not be null");
+    public static <T> boolean put(String key, List<T> list) {
+        return put(key, null, list, true, true) != null;
+    }
 
-        String fullText = getMarshalledValue(list.get(0), list);
-        storage.put(key, fullText);
+    private static <T> String put(String key, T value, List<T> list, boolean mustHaveList,
+                                  boolean addToStorage) {
+        if (key == null) {
+            throw new NullPointerException("Key cannot be null");
+        }
+
+        if (mustHaveList) {
+            if (list == null) {
+                throw new NullPointerException("List<T> may not be null");
+            } else if (list.isEmpty()) {
+                throw new IllegalArgumentException("List<T> may not be empty");
+            }
+        } else {
+            if (value == null) {
+                throw new NullPointerException("Value cannot be null");
+            }
+        }
+
+        String cipherText;
+        if (mustHaveList) {
+            cipherText = encoder.encode(list);
+        } else {
+            cipherText = encoder.encode(value);
+        }
+
+        if (cipherText == null) {
+            return null;
+        }
+
+        String fullText;
+        if (mustHaveList) {
+            fullText = DataUtil.addType(cipherText, list.get(0).getClass(), true);
+        } else {
+            fullText = DataUtil.addType(cipherText, value.getClass(), false);
+        }
+
+        boolean successful = true;
+        if (addToStorage) {
+            successful = storage.put(key, fullText);
+        }
+
+        return successful ? fullText : null;
     }
 
     /**
@@ -121,25 +167,6 @@ public final class Hawk {
         return new HawkChain(capacity);
     }
 
-    private static <T> String getMarshalledValue(T value, List<T> list) {
-        String cipherText;
-
-        boolean isList = (null != list);
-        if (isList) {
-            cipherText = encoder.encode(list);
-        } else {
-            cipherText = encoder.encode(value);
-        }
-
-        return DataUtil.addType(cipherText, value.getClass(), isList);
-    }
-
-    private static void throwExceptionIf(boolean failure, String description) {
-        if (failure) {
-            throw new NullPointerException(description);
-        }
-    }
-
     /**
      * Size of the saved data. Each key will be counted as 1
      *
@@ -152,16 +179,21 @@ public final class Hawk {
     /**
      * Clears the storage, note that crypto data won't be deleted such as salt key etc.
      * Use resetCrypto in order to clear crypto information
+     *
+     * @return true if clear is successful
      */
-    public static void clear() {
-        storage.clear();
+    public static boolean clear() {
+        return storage.clear();
     }
 
     /**
      * Removes the given key/value from the storage
+     *
+     * @param key is used for removing related data from storage
+     * @return true if remove is successful
      */
-    public static void remove(String key) {
-        storage.remove(key);
+    public static boolean remove(String key) {
+        return storage.remove(key);
     }
 
     /**
@@ -176,9 +208,11 @@ public final class Hawk {
 
     /**
      * Clears all saved data that is used for the crypto
+     *
+     * @return true if reset is successful
      */
-    public static void resetCrypto() {
-        encryption.reset();
+    public static boolean resetCrypto() {
+        return encryption.reset();
     }
 
     public static LogLevel getLogLevel() {
@@ -208,12 +242,8 @@ public final class Hawk {
          * @param value is the data that is gonna be saved. Value can be object, list type, primitives
          */
         public <T> HawkChain put(String key, T value) {
-            throwExceptionIf(key == null, "Key cannot be null");
-            throwExceptionIf(value == null, "Value cannot be null");
-
-            String fullText = getMarshalledValue(value, null);
+            String fullText = Hawk.put(key, value, null, false, false);
             items.add(new Pair<String, Object>(key, fullText));
-
             return this;
         }
 
@@ -224,21 +254,16 @@ public final class Hawk {
          * @param list is the data that will be saved
          */
         public <T> HawkChain put(String key, List<T> list) {
-            throwExceptionIf(key == null, "Key cannot be null");
-            throwExceptionIf(list == null, "List<T> may not be null");
-            throwExceptionIf(list.size() == 0, "List<T> may not be null");
-
-            String fullText = getMarshalledValue(list.get(0), list);
+            String fullText = Hawk.put(key, null, list, true, false);
             items.add(new Pair<String, Object>(key, fullText));
-
             return this;
         }
 
         /**
          * Saves the chained values.
          */
-        public void done() {
-            storage.put(items);
+        public boolean done() {
+            return storage.put(items);
         }
 
     }

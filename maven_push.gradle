@@ -17,10 +17,14 @@ def PASSWORD = "";
 afterEvaluate { project ->
     uploadArchives {
         def Properties versionProps = new Properties()
-        versionProps.load(new FileInputStream('credential.properties'))
-        USERNAME = versionProps['USERNAME'];
-        PASSWORD = versionProps['PASSWORD'];
-        
+        try {
+            versionProps.load(new FileInputStream('credential.properties'))
+            USERNAME = versionProps['USERNAME'];
+            PASSWORD = versionProps['PASSWORD'];
+        } catch(FileNotFoundException e) {
+            println 'Failed to find file credential.properties. Maven deploy disabled'
+        }
+
         repositories {
             mavenDeployer {
                 beforeDeployment { MavenDeployment deployment -> signing.signPom(deployment) }

@@ -11,17 +11,15 @@ import java.util.List;
  */
 final class SharedPreferencesStorage implements Storage {
 
-    private final Context context;
-    private final String tag;
+    private final SharedPreferences preferences;
 
     SharedPreferencesStorage(Context context, String tag) {
-        this.context = context;
-        this.tag = tag;
+        preferences = context.getSharedPreferences(tag, Context.MODE_PRIVATE);
     }
 
     @Override
-    public <T> void put(String key, T value) {
-        getEditor().putString(key, String.valueOf(value)).commit();
+    public <T> boolean put(String key, T value) {
+        return getEditor().putString(key, String.valueOf(value)).commit();
     }
 
     @Override
@@ -36,36 +34,31 @@ final class SharedPreferencesStorage implements Storage {
     @SuppressWarnings("unchecked")
     @Override
     public <T> T get(String key) {
-        return (T) getSharedPreferences().getString(key, null);
+        return (T) preferences.getString(key, null);
     }
 
     @Override
-    public void remove(String key) {
-        getEditor().remove(key).commit();
+    public boolean remove(String key) {
+        return getEditor().remove(key).commit();
     }
 
     @Override
     public boolean contains(String key) {
-        return getSharedPreferences().contains(key);
+        return preferences.contains(key);
     }
 
     @Override
-    public void clear() {
-        getEditor().clear().commit();
+    public boolean clear() {
+        return getEditor().clear().commit();
     }
 
     @Override
     public int count() {
-        return getSharedPreferences().getAll().size();
+        return preferences.getAll().size();
     }
 
     private SharedPreferences.Editor getEditor() {
-        SharedPreferences preferences = context.getSharedPreferences(tag, Context.MODE_PRIVATE);
         return preferences.edit();
-    }
-
-    private SharedPreferences getSharedPreferences() {
-        return context.getSharedPreferences(tag, Context.MODE_PRIVATE);
     }
 
 }
