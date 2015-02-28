@@ -11,7 +11,7 @@ interface Storage {
 
     <T> boolean put(String key, T value);
 
-    void put(List<Pair<String, ?>> items);
+    boolean put(List<Pair<String, ?>> items);
 
     <T> T get(String key);
 

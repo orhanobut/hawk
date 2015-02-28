@@ -23,12 +23,12 @@ final class SharedPreferencesStorage implements Storage {
     }
 
     @Override
-    public void put(List<Pair<String, ?>> items) {
+    public boolean put(List<Pair<String, ?>> items) {
         SharedPreferences.Editor editor = getEditor();
         for (Pair<String, ?> item : items) {
             editor.putString(item.first, String.valueOf(item.second));
         }
-        editor.commit();
+        return editor.commit();
     }
 
     @SuppressWarnings("unchecked")

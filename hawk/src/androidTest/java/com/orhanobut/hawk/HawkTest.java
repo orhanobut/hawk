@@ -5,6 +5,7 @@ import android.test.InstrumentationTestCase;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 
 /**
  * @author Orhan Obut
@@ -400,9 +401,24 @@ public class HawkTest extends InstrumentationTestCase {
         assertEquals(false, Hawk.get("tag2"));
 
         List<String> stored = Hawk.get("lst");
+        assertNotNull(stored);
+        assertFalse(stored.isEmpty());
+
         for (int i = 0, s = stored.size(); i < s; i++) {
             assertEquals(items.get(i), stored.get(i));
         }
+    }
+
+    public void testAtomicChainWithKeys() {
+        Set<String> keys = Hawk.chain()
+                .put("foo", 1)
+                .put("bar", Boolean.FALSE)
+                .doneWithKeys();
+
+        assertEquals(2, keys.size());
+        assertTrue(keys.contains("foo"));
+        assertTrue(keys.contains("bar"));
+        assertFalse(keys.contains("whoops"));
     }
 
 }

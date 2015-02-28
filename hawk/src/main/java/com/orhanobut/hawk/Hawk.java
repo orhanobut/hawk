@@ -6,7 +6,10 @@ import android.util.Pair;
 import com.google.gson.Gson;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 /**
  * @author Orhan Obut
@@ -66,9 +69,7 @@ public final class Hawk {
      * @return the saved object
      */
     public static <T> T get(String key) {
-        if (key == null) {
-            throw new NullPointerException("Key cannot be null");
-        }
+        ensureKeyIsValid(key);
         String fullText = storage.get(key);
         try {
             return encoder.decode(fullText);
@@ -104,26 +105,26 @@ public final class Hawk {
         return put(key, null, list, true, true) != null;
     }
 
-    private static <T> String put(String key, T value, List<T> list, boolean mustHaveList,
+    /*
+     * A helper put method.
+     *
+     * @param key          the key
+     * @param value        the value if isList is false, otherwise null
+     * @param list         the list, if isList is true, otherwise null
+     * @param isList       determines if a list instance should be present
+     * @param addToStorage determines if the keyval should be immediately added to storage
+     */
+    private static <T> String put(String key, T value, List<T> list, boolean isList,
                                   boolean addToStorage) {
-        if (key == null) {
-            throw new NullPointerException("Key cannot be null");
-        }
-
-        if (mustHaveList) {
-            if (list == null) {
-                throw new NullPointerException("List<T> may not be null");
-            } else if (list.isEmpty()) {
-                throw new IllegalArgumentException("List<T> may not be empty");
-            }
+        ensureKeyIsValid(key);
+        if (isList) {
+            ensureListIsValid(list);
         } else {
-            if (value == null) {
-                throw new NullPointerException("Value cannot be null");
-            }
+            ensureValueIsValid(value);
         }
 
         String cipherText;
-        if (mustHaveList) {
+        if (isList) {
             cipherText = encoder.encode(list);
         } else {
             cipherText = encoder.encode(value);
@@ -134,7 +135,7 @@ public final class Hawk {
         }
 
         String fullText;
-        if (mustHaveList) {
+        if (isList) {
             fullText = DataUtil.addType(cipherText, list.get(0).getClass(), true);
         } else {
             fullText = DataUtil.addType(cipherText, value.getClass(), false);
@@ -146,6 +147,26 @@ public final class Hawk {
         }
 
         return successful ? fullText : null;
+    }
+
+    private static <T> void ensureListIsValid(List<T> list) {
+        if (list == null) {
+            throw new NullPointerException("List<T> may not be null");
+        } else if (list.isEmpty()) {
+            throw new IllegalArgumentException("List<T> may not be empty");
+        }
+    }
+
+    private static <T> void ensureValueIsValid(T value) {
+        if (value == null) {
+            throw new NullPointerException("Value cannot be null");
+        }
+    }
+
+    private static void ensureKeyIsValid(String key) {
+        if (key == null) {
+            throw new NullPointerException("Key cannot be null");
+        }
     }
 
     /**
@@ -226,6 +247,7 @@ public final class Hawk {
     public static final class HawkChain {
 
         private final List<Pair<String, ?>> items;
+        private boolean atomic;
 
         public HawkChain() {
             this(4);
@@ -243,7 +265,7 @@ public final class Hawk {
          */
         public <T> HawkChain put(String key, T value) {
             String fullText = Hawk.put(key, value, null, false, false);
-            items.add(new Pair<String, Object>(key, fullText));
+            addItem(key, fullText);
             return this;
         }
 
@@ -255,7 +277,18 @@ public final class Hawk {
          */
         public <T> HawkChain put(String key, List<T> list) {
             String fullText = Hawk.put(key, null, list, true, false);
-            items.add(new Pair<String, Object>(key, fullText));
+            addItem(key, fullText);
+            return this;
+        }
+
+        /**
+         * If true, Hawk throws an exception if any of the chained invocations fails.
+         * Disabled by default.
+         *
+         * @param atomic true to throw an exception, false otherwise.
+         */
+        public HawkChain atomic(boolean atomic) {
+            this.atomic = atomic;
             return this;
         }
 
@@ -264,6 +297,37 @@ public final class Hawk {
          */
         public boolean done() {
             return storage.put(items);
+        }
+
+        /**
+         * Saves the chained values and returns the saved keys.
+         *
+         * @return the set of saved keys.
+         */
+        public Set<String> doneWithKeys() {
+            boolean done = storage.put(items);
+
+            Set<String> keys;
+            if (done) {
+                keys = new HashSet<>(items.size());
+                for (Pair<String, ?> p : items) {
+                    keys.add(p.first);
+                }
+            } else {
+                keys = Collections.emptySet();
+            }
+
+            return keys;
+        }
+
+        private void addItem(String key, String data) {
+            if (data == null) {
+                if (atomic) {
+                    throw new IllegalStateException("chain failed for key: " + key);
+                }
+            } else {
+                items.add(new Pair<>(key, data));
+            }
         }
 
     }
