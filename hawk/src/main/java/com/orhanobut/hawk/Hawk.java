@@ -6,10 +6,7 @@ import android.util.Pair;
 import com.google.gson.Gson;
 
 import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 
 /**
  * @author Orhan Obut
@@ -61,7 +58,19 @@ public final class Hawk {
      * @return true if put is successful
      */
     public static <T> boolean put(String key, T value) {
-        return put(key, value, null, false, true) != null;
+        if (key == null) {
+            throw new NullPointerException("Key cannot be null");
+        }
+        if (value == null) {
+            throw new NullPointerException("Value cannot be null");
+        }
+        String cipherText = encoder.encode(value);
+        //if any exception occurs during encoding, cipherText will be null and thus operation is unsuccessful
+        if (cipherText == null) {
+            return false;
+        }
+        String fullText = DataUtil.addType(cipherText, value.getClass(), false);
+        return storage.put(key, fullText);
     }
 
     /**
@@ -69,7 +78,9 @@ public final class Hawk {
      * @return the saved object
      */
     public static <T> T get(String key) {
-        ensureKeyIsValid(key);
+        if (key == null) {
+            throw new NullPointerException("Key cannot be null");
+        }
         String fullText = storage.get(key);
         try {
             return encoder.decode(fullText);
@@ -102,71 +113,20 @@ public final class Hawk {
      * @return true if put is successful
      */
     public static <T> boolean put(String key, List<T> list) {
-        return put(key, null, list, true, true) != null;
-    }
-
-    /*
-     * A helper put method.
-     *
-     * @param key          the key
-     * @param value        the value if isList is false, otherwise null
-     * @param list         the list, if isList is true, otherwise null
-     * @param isList       determines if a list instance should be present
-     * @param addToStorage determines if the keyval should be immediately added to storage
-     */
-    private static <T> String put(String key, T value, List<T> list, boolean isList,
-                                  boolean addToStorage) {
-        ensureKeyIsValid(key);
-        if (isList) {
-            ensureListIsValid(list);
-        } else {
-            ensureValueIsValid(value);
-        }
-
-        String cipherText;
-        if (isList) {
-            cipherText = encoder.encode(list);
-        } else {
-            cipherText = encoder.encode(value);
-        }
-
-        if (cipherText == null) {
-            return null;
-        }
-
-        String fullText;
-        if (isList) {
-            fullText = DataUtil.addType(cipherText, list.get(0).getClass(), true);
-        } else {
-            fullText = DataUtil.addType(cipherText, value.getClass(), false);
-        }
-
-        boolean successful = true;
-        if (addToStorage) {
-            successful = storage.put(key, fullText);
-        }
-
-        return successful ? fullText : null;
-    }
-
-    private static <T> void ensureListIsValid(List<T> list) {
         if (list == null) {
             throw new NullPointerException("List<T> may not be null");
-        } else if (list.isEmpty()) {
-            throw new IllegalArgumentException("List<T> may not be empty");
         }
-    }
-
-    private static <T> void ensureValueIsValid(T value) {
-        if (value == null) {
-            throw new NullPointerException("Value cannot be null");
+        if (list.size() == 0) {
+            throw new NullPointerException("List<T> cannot be empty");
         }
-    }
-
-    private static void ensureKeyIsValid(String key) {
-        if (key == null) {
-            throw new NullPointerException("Key cannot be null");
+        String cipherText = encoder.encode(list);
+        //if any exception occurs during encoding, cipherText will be null and thus operation is unsuccessful
+        if (cipherText == null) {
+            return false;
         }
+        Class clazz = list.get(0).getClass();
+        String fullText = DataUtil.addType(cipherText, clazz, true);
+        return storage.put(key, fullText);
     }
 
     /**
@@ -174,8 +134,8 @@ public final class Hawk {
      *
      * @return a simple chaining object
      */
-    public static HawkChain chain() {
-        return new HawkChain();
+    public static Chain chain() {
+        return new Chain();
     }
 
     /**
@@ -184,8 +144,8 @@ public final class Hawk {
      * @param capacity the amount of put invocations you're about to do
      * @return a simple chaining object
      */
-    public static HawkChain chain(int capacity) {
-        return new HawkChain(capacity);
+    public static Chain chain(int capacity) {
+        return new Chain(capacity);
     }
 
     /**
@@ -244,16 +204,15 @@ public final class Hawk {
      * Provides the ability to chain put invocations, for example
      * <code>Hawk.chain().put("foo", 0).put("bar", 1).done()</code>
      */
-    public static final class HawkChain {
+    public static final class Chain {
 
         private final List<Pair<String, ?>> items;
-        private boolean atomic;
 
-        public HawkChain() {
-            this(4);
+        public Chain() {
+            this(10);
         }
 
-        public HawkChain(int capacity) {
+        public Chain(int capacity) {
             items = new ArrayList<>(capacity);
         }
 
@@ -263,9 +222,20 @@ public final class Hawk {
          * @param key   is used to save the data
          * @param value is the data that is gonna be saved. Value can be object, list type, primitives
          */
-        public <T> HawkChain put(String key, T value) {
-            String fullText = Hawk.put(key, value, null, false, false);
-            addItem(key, fullText);
+        public <T> Chain put(String key, T value) {
+            if (key == null) {
+                throw new NullPointerException("Key cannot be null");
+            }
+            if (value == null) {
+                throw new NullPointerException("Value cannot be null");
+            }
+            String cipherText = encoder.encode(value);
+            //if any exception occurs during encoding, cipherText will be null and thus operation is unsuccessful
+            if (cipherText == null) {
+                throw new IllegalStateException("chain failed for key: " + key);
+            }
+            String fullText = DataUtil.addType(cipherText, value.getClass(), false);
+            items.add(new Pair<>(key, fullText));
             return this;
         }
 
@@ -275,59 +245,29 @@ public final class Hawk {
          * @param key  is used to save the data
          * @param list is the data that will be saved
          */
-        public <T> HawkChain put(String key, List<T> list) {
-            String fullText = Hawk.put(key, null, list, true, false);
-            addItem(key, fullText);
+        public <T> Chain put(String key, List<T> list) {
+            if (list == null) {
+                throw new NullPointerException("List<T> may not be null");
+            }
+            if (list.size() == 0) {
+                throw new NullPointerException("List<T> cannot be empty");
+            }
+            String cipherText = encoder.encode(list);
+            //if any exception occurs during encoding, cipherText will be null and thus operation is unsuccessful
+            if (cipherText == null) {
+                throw new IllegalStateException("chain failed for key: " + key);
+            }
+            Class clazz = list.get(0).getClass();
+            String fullText = DataUtil.addType(cipherText, clazz, true);
+            items.add(new Pair<>(key, fullText));
             return this;
         }
 
         /**
-         * If true, Hawk throws an exception if any of the chained invocations fails.
-         * Disabled by default.
-         *
-         * @param atomic true to throw an exception, false otherwise.
+         * Commits the chained values to storage.
          */
-        public HawkChain atomic(boolean atomic) {
-            this.atomic = atomic;
-            return this;
-        }
-
-        /**
-         * Saves the chained values.
-         */
-        public boolean done() {
+        public boolean commit() {
             return storage.put(items);
-        }
-
-        /**
-         * Saves the chained values and returns the saved keys.
-         *
-         * @return the set of saved keys.
-         */
-        public Set<String> doneWithKeys() {
-            boolean done = storage.put(items);
-
-            Set<String> keys;
-            if (done) {
-                keys = new HashSet<>(items.size());
-                for (Pair<String, ?> p : items) {
-                    keys.add(p.first);
-                }
-            } else {
-                keys = Collections.emptySet();
-            }
-
-            return keys;
-        }
-
-        private void addItem(String key, String data) {
-            if (data == null) {
-                if (atomic) {
-                    throw new IllegalStateException("chain failed for key: " + key);
-                }
-            } else {
-                items.add(new Pair<>(key, data));
-            }
         }
 
     }

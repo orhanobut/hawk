@@ -377,7 +377,7 @@ public class HawkTest extends InstrumentationTestCase {
                 .put("tag", 1)
                 .put("tag1", "yes")
                 .put("tag2", Boolean.FALSE)
-                .done();
+                .commit();
 
         assertEquals(1, Hawk.get("tag"));
         assertEquals("yes", Hawk.get("tag1"));
@@ -390,11 +390,12 @@ public class HawkTest extends InstrumentationTestCase {
         items.add("snd");
         items.add("trd");
 
-        Hawk.chain().put("tag", 1)
+        Hawk.chain()
+                .put("tag", 1)
                 .put("tag1", "yes")
                 .put("tag2", Boolean.FALSE)
                 .put("lst", items)
-                .done();
+                .commit();
 
         assertEquals(1, Hawk.get("tag"));
         assertEquals("yes", Hawk.get("tag1"));
@@ -407,18 +408,6 @@ public class HawkTest extends InstrumentationTestCase {
         for (int i = 0, s = stored.size(); i < s; i++) {
             assertEquals(items.get(i), stored.get(i));
         }
-    }
-
-    public void testAtomicChainWithKeys() {
-        Set<String> keys = Hawk.chain()
-                .put("foo", 1)
-                .put("bar", Boolean.FALSE)
-                .doneWithKeys();
-
-        assertEquals(2, keys.size());
-        assertTrue(keys.contains("foo"));
-        assertTrue(keys.contains("bar"));
-        assertFalse(keys.contains("whoops"));
     }
 
 }
