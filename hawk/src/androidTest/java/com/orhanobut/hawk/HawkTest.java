@@ -371,4 +371,42 @@ public class HawkTest extends InstrumentationTestCase {
         assertFalse(Hawk.contains(key));
     }
 
+    public void testChain() {
+        Hawk.chain()
+                .put("tag", 1)
+                .put("tag1", "yes")
+                .put("tag2", Boolean.FALSE)
+                .commit();
+
+        assertEquals(1, Hawk.get("tag"));
+        assertEquals("yes", Hawk.get("tag1"));
+        assertEquals(false, Hawk.get("tag2"));
+    }
+
+    public void testChainWithLists() {
+        List<String> items = new ArrayList<>();
+        items.add("fst");
+        items.add("snd");
+        items.add("trd");
+
+        Hawk.chain()
+                .put("tag", 1)
+                .put("tag1", "yes")
+                .put("tag2", Boolean.FALSE)
+                .put("lst", items)
+                .commit();
+
+        assertEquals(1, Hawk.get("tag"));
+        assertEquals("yes", Hawk.get("tag1"));
+        assertEquals(false, Hawk.get("tag2"));
+
+        List<String> stored = Hawk.get("lst");
+        assertNotNull(stored);
+        assertFalse(stored.isEmpty());
+
+        for (int i = 0, s = stored.size(); i < s; i++) {
+            assertEquals(items.get(i), stored.get(i));
+        }
+    }
+
 }

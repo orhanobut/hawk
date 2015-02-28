@@ -1,9 +1,11 @@
 package com.orhanobut.hawk;
 
 import android.content.Context;
+import android.util.Pair;
 
 import com.google.gson.Gson;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -128,6 +130,25 @@ public final class Hawk {
     }
 
     /**
+     * Enables chaining of multiple put invocations.
+     *
+     * @return a simple chaining object
+     */
+    public static Chain chain() {
+        return new Chain();
+    }
+
+    /**
+     * Enables chaining of multiple put invocations.
+     *
+     * @param capacity the amount of put invocations you're about to do
+     * @return a simple chaining object
+     */
+    public static Chain chain(int capacity) {
+        return new Chain(capacity);
+    }
+
+    /**
      * Size of the saved data. Each key will be counted as 1
      *
      * @return the size
@@ -178,4 +199,77 @@ public final class Hawk {
     public static LogLevel getLogLevel() {
         return logLevel;
     }
+
+    /**
+     * Provides the ability to chain put invocations, for example
+     * <code>Hawk.chain().put("foo", 0).put("bar", 1).done()</code>
+     */
+    public static final class Chain {
+
+        private final List<Pair<String, ?>> items;
+
+        public Chain() {
+            this(10);
+        }
+
+        public Chain(int capacity) {
+            items = new ArrayList<>(capacity);
+        }
+
+        /**
+         * Saves every type of Objects. List, List<T>, primitives
+         *
+         * @param key   is used to save the data
+         * @param value is the data that is gonna be saved. Value can be object, list type, primitives
+         */
+        public <T> Chain put(String key, T value) {
+            if (key == null) {
+                throw new NullPointerException("Key cannot be null");
+            }
+            if (value == null) {
+                throw new NullPointerException("Value cannot be null");
+            }
+            String cipherText = encoder.encode(value);
+            //if any exception occurs during encoding, cipherText will be null and thus operation is unsuccessful
+            if (cipherText == null) {
+                throw new IllegalStateException("chain failed for key: " + key);
+            }
+            String fullText = DataUtil.addType(cipherText, value.getClass(), false);
+            items.add(new Pair<>(key, fullText));
+            return this;
+        }
+
+        /**
+         * Saves the list of objects to the storage
+         *
+         * @param key  is used to save the data
+         * @param list is the data that will be saved
+         */
+        public <T> Chain put(String key, List<T> list) {
+            if (list == null) {
+                throw new NullPointerException("List<T> may not be null");
+            }
+            if (list.size() == 0) {
+                throw new NullPointerException("List<T> cannot be empty");
+            }
+            String cipherText = encoder.encode(list);
+            //if any exception occurs during encoding, cipherText will be null and thus operation is unsuccessful
+            if (cipherText == null) {
+                throw new IllegalStateException("chain failed for key: " + key);
+            }
+            Class clazz = list.get(0).getClass();
+            String fullText = DataUtil.addType(cipherText, clazz, true);
+            items.add(new Pair<>(key, fullText));
+            return this;
+        }
+
+        /**
+         * Commits the chained values to storage.
+         */
+        public boolean commit() {
+            return storage.put(items);
+        }
+
+    }
+
 }

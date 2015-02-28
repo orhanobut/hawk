@@ -2,6 +2,9 @@ package com.orhanobut.hawk;
 
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.util.Pair;
+
+import java.util.List;
 
 /**
  * @author Orhan Obut
@@ -17,6 +20,15 @@ final class SharedPreferencesStorage implements Storage {
     @Override
     public <T> boolean put(String key, T value) {
         return getEditor().putString(key, String.valueOf(value)).commit();
+    }
+
+    @Override
+    public boolean put(List<Pair<String, ?>> items) {
+        SharedPreferences.Editor editor = getEditor();
+        for (Pair<String, ?> item : items) {
+            editor.putString(item.first, String.valueOf(item.second));
+        }
+        return editor.commit();
     }
 
     @SuppressWarnings("unchecked")
