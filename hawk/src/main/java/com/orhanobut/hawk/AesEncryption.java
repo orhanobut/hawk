@@ -12,7 +12,8 @@ import java.security.GeneralSecurityException;
  */
 final class AesEncryption implements Encryption {
 
-    private static final String KEY_SALT = "asdf3242klj";
+    //never ever change this value since it will break backward compatibility in terms of keeping previous data
+    private static final String KEY_STORAGE_SALT = "asdf3242klj";
 
     private AesCbcWithIntegrity.SecretKeys key;
     private String saltKey;
@@ -20,7 +21,7 @@ final class AesEncryption implements Encryption {
 
     AesEncryption(Storage storage, String password) {
         this.storage = storage;
-        this.saltKey = storage.get(KEY_SALT);
+        this.saltKey = storage.get(KEY_STORAGE_SALT);
         generateSecretKey(password);
     }
 
@@ -75,7 +76,7 @@ final class AesEncryption implements Encryption {
         try {
             if (TextUtils.isEmpty(saltKey)) {
                 saltKey = AesCbcWithIntegrity.saltString(AesCbcWithIntegrity.generateSalt());
-                storage.put(KEY_SALT, saltKey);
+                storage.put(KEY_STORAGE_SALT, saltKey);
             }
 
             key = AesCbcWithIntegrity.generateKeyFromPassword(password, saltKey);

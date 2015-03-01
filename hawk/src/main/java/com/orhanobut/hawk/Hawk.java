@@ -14,7 +14,9 @@ import java.util.List;
  */
 public final class Hawk {
 
+    //never ever change this value since it will break backward compatibility in terms of keeping previous data
     private static final String TAG = "HAWK";
+    //never ever change this value since it will break backward compatibility in terms of keeping previous data
     private static final String TAG_CRYPTO = "324909sdfsd98098";
 
     private static Encoder encoder;
@@ -64,6 +66,7 @@ public final class Hawk {
         }
 
         String encodedText = encode(value);
+        //if any exception occurs during encoding, encodedText will be null and thus operation is unsuccessful
         if (encodedText == null) {
             return false;
         }
@@ -83,6 +86,7 @@ public final class Hawk {
         }
 
         String encodedText = encode(list);
+        //if any exception occurs during encoding, encodedText will be null and thus operation is unsuccessful
         if (encodedText == null) {
             return false;
         }
@@ -100,7 +104,6 @@ public final class Hawk {
             throw new NullPointerException("Value cannot be null");
         }
         String cipherText = encoder.encode(value);
-        //if any exception occurs during encoding, cipherText will be null and thus operation is unsuccessful
         if (cipherText == null) {
             return null;
         }
@@ -121,7 +124,6 @@ public final class Hawk {
             throw new IllegalStateException("List<T> cannot be empty");
         }
         String cipherText = encoder.encode(list);
-        //if any exception occurs during encoding, cipherText will be null and thus operation is unsuccessful
         if (cipherText == null) {
             return null;
         }
@@ -207,6 +209,16 @@ public final class Hawk {
      */
     public static boolean remove(String key) {
         return storage.remove(key);
+    }
+
+    /**
+     * Removes values associated with the given keys from the storage
+     *
+     * @param keys are used for removing related data from storage
+     * @return true if all removals are successful
+     */
+    public static boolean remove(String... keys) {
+        return storage.remove(keys);
     }
 
     /**

@@ -43,6 +43,15 @@ final class SharedPreferencesStorage implements Storage {
     }
 
     @Override
+    public boolean remove(String... keys) {
+        SharedPreferences.Editor editor = getEditor();
+        for (String key : keys) {
+            editor.remove(key);
+        }
+        return editor.commit();
+    }
+
+    @Override
     public boolean contains(String key) {
         return preferences.contains(key);
     }
