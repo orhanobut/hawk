@@ -1,6 +1,7 @@
 package com.orhanobut.hawk;
 
 import android.content.Context;
+import android.util.Log;
 import android.util.Pair;
 
 import com.google.gson.Gson;
@@ -61,16 +62,60 @@ public final class Hawk {
         if (key == null) {
             throw new NullPointerException("Key cannot be null");
         }
+
+        String encodedText = encode(value);
+        if (encodedText == null) {
+            return false;
+        }
+        return storage.put(key, encodedText);
+    }
+
+    /**
+     * Saves the list of objects to the storage
+     *
+     * @param key  is used to save the data
+     * @param list is the data that will be saved
+     * @return true if put is successful
+     */
+    public static <T> boolean put(String key, List<T> list) {
+        if (key == null) {
+            throw new NullPointerException("Key cannot be null");
+        }
+
+        String encodedText = encode(list);
+        if (encodedText == null) {
+            return false;
+        }
+        return storage.put(key, encodedText);
+    }
+
+
+    private static <T> String encode(T value) {
         if (value == null) {
             throw new NullPointerException("Value cannot be null");
         }
         String cipherText = encoder.encode(value);
         //if any exception occurs during encoding, cipherText will be null and thus operation is unsuccessful
         if (cipherText == null) {
-            return false;
+            return null;
         }
-        String fullText = DataUtil.addType(cipherText, value.getClass(), false);
-        return storage.put(key, fullText);
+        return DataUtil.addType(cipherText, value.getClass(), false);
+    }
+
+    private static <T> String encode(List<T> list) {
+        if (list == null) {
+            throw new NullPointerException("List<T> cannot be null");
+        }
+        if (list.size() == 0) {
+            throw new IllegalStateException("List<T> cannot be empty");
+        }
+        String cipherText = encoder.encode(list);
+        //if any exception occurs during encoding, cipherText will be null and thus operation is unsuccessful
+        if (cipherText == null) {
+            return null;
+        }
+        Class clazz = list.get(0).getClass();
+        return DataUtil.addType(cipherText, clazz, true);
     }
 
     /**
@@ -103,30 +148,6 @@ public final class Hawk {
             return defaultValue;
         }
         return t;
-    }
-
-    /**
-     * Saves the list of objects to the storage
-     *
-     * @param key  is used to save the data
-     * @param list is the data that will be saved
-     * @return true if put is successful
-     */
-    public static <T> boolean put(String key, List<T> list) {
-        if (list == null) {
-            throw new NullPointerException("List<T> may not be null");
-        }
-        if (list.size() == 0) {
-            throw new NullPointerException("List<T> cannot be empty");
-        }
-        String cipherText = encoder.encode(list);
-        //if any exception occurs during encoding, cipherText will be null and thus operation is unsuccessful
-        if (cipherText == null) {
-            return false;
-        }
-        Class clazz = list.get(0).getClass();
-        String fullText = DataUtil.addType(cipherText, clazz, true);
-        return storage.put(key, fullText);
     }
 
     /**
@@ -226,16 +247,12 @@ public final class Hawk {
             if (key == null) {
                 throw new NullPointerException("Key cannot be null");
             }
-            if (value == null) {
-                throw new NullPointerException("Value cannot be null");
+            String encodedText = encode(value);
+            if (encodedText == null) {
+                Log.d("Hawk", "Key : " + key + " is not added, encryption failed");
+                return this;
             }
-            String cipherText = encoder.encode(value);
-            //if any exception occurs during encoding, cipherText will be null and thus operation is unsuccessful
-            if (cipherText == null) {
-                throw new IllegalStateException("chain failed for key: " + key);
-            }
-            String fullText = DataUtil.addType(cipherText, value.getClass(), false);
-            items.add(new Pair<>(key, fullText));
+            items.add(new Pair<>(key, encodedText));
             return this;
         }
 
@@ -246,20 +263,15 @@ public final class Hawk {
          * @param list is the data that will be saved
          */
         public <T> Chain put(String key, List<T> list) {
-            if (list == null) {
-                throw new NullPointerException("List<T> may not be null");
+            if (key == null) {
+                throw new NullPointerException("Key cannot be null");
             }
-            if (list.size() == 0) {
-                throw new NullPointerException("List<T> cannot be empty");
+            String encodedText = encode(list);
+            if (encodedText == null) {
+                Log.d("Hawk", "Key : " + key + " is not added, encryption failed");
+                return this;
             }
-            String cipherText = encoder.encode(list);
-            //if any exception occurs during encoding, cipherText will be null and thus operation is unsuccessful
-            if (cipherText == null) {
-                throw new IllegalStateException("chain failed for key: " + key);
-            }
-            Class clazz = list.get(0).getClass();
-            String fullText = DataUtil.addType(cipherText, clazz, true);
-            items.add(new Pair<>(key, fullText));
+            items.add(new Pair<>(key, encodedText));
             return this;
         }
 
