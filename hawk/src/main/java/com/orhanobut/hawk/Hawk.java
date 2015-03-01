@@ -89,7 +89,12 @@ public final class Hawk {
         return storage.put(key, encodedText);
     }
 
-
+    /**
+     * Encodes the given value as full text (cipher + data info)
+     *
+     * @param value is the given value to encode
+     * @return full text as string
+     */
     private static <T> String encode(T value) {
         if (value == null) {
             throw new NullPointerException("Value cannot be null");
@@ -99,9 +104,15 @@ public final class Hawk {
         if (cipherText == null) {
             return null;
         }
-        return DataUtil.addType(cipherText, value.getClass(), false);
+        return DataUtil.addTypeAsObject(cipherText, value.getClass());
     }
 
+    /**
+     * Encodes the given list as full text (cipher + data info)
+     *
+     * @param list is the given list to encode
+     * @return full text as string
+     */
     private static <T> String encode(List<T> list) {
         if (list == null) {
             throw new NullPointerException("List<T> cannot be null");
@@ -115,7 +126,7 @@ public final class Hawk {
             return null;
         }
         Class clazz = list.get(0).getClass();
-        return DataUtil.addType(cipherText, clazz, true);
+        return DataUtil.addTypeAsList(cipherText, clazz);
     }
 
     /**
@@ -252,7 +263,7 @@ public final class Hawk {
             }
             String encodedText = encode(value);
             if (encodedText == null) {
-                Log.d("Hawk", "Key : " + key + " is not added, encryption failed");
+                Log.d(TAG, "Key : " + key + " is not added, encryption failed");
                 return this;
             }
             items.add(new Pair<>(key, encodedText));
@@ -271,7 +282,7 @@ public final class Hawk {
             }
             String encodedText = encode(list);
             if (encodedText == null) {
-                Log.d("Hawk", "Key : " + key + " is not added, encryption failed");
+                Log.d(TAG, "Key : " + key + " is not added, encryption failed");
                 return this;
             }
             items.add(new Pair<>(key, encodedText));
