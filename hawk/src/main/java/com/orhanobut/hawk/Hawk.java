@@ -201,8 +201,11 @@ public final class Hawk {
     }
 
     /**
-     * Provides the ability to chain put invocations, for example
-     * <code>Hawk.chain().put("foo", 0).put("bar", 1).done()</code>
+     * Provides the ability to chain put invocations:
+     * <code>Hawk.chain().put("foo", 0).put("bar", false).commit()</code>
+     * <p/>
+     * <code>commit()</code> writes the chain values to persistent storage. Omitting it will
+     * result in all chained data being lost.
      */
     public static final class Chain {
 
@@ -265,6 +268,8 @@ public final class Hawk {
 
         /**
          * Commits the chained values to storage.
+         *
+         * @return true if successfully saved, false otherwise.
          */
         public boolean commit() {
             return storage.put(items);
