@@ -359,6 +359,19 @@ public class HawkTest extends InstrumentationTestCase {
         assertEquals(2, Hawk.count());
     }
 
+    public void testBulkRemoval() {
+        Hawk.put("tag", "test");
+        Hawk.put("tag1", 1);
+        Hawk.put("tag2", Boolean.FALSE);
+
+        Hawk.remove("tag", "tag1");
+
+        String result = Hawk.get("tag");
+
+        assertNull(result);
+        assertEquals(1, Hawk.count());
+    }
+
     public void testContains() {
         String value = "test";
         String key = "tag";
