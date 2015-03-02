@@ -40,9 +40,40 @@ public class HawkTest extends InstrumentationTestCase {
         assertEquals(Boolean.FALSE, Hawk.get("tag", false));
     }
 
+    public void testBooleanDefaultCallback() {
+        Hawk.get("tag", false, new Hawk.Callback<Boolean>() {
+
+            @Override
+            public void onSuccess(Boolean value) {
+                assertEquals(Boolean.FALSE, value);
+            }
+
+            @Override
+            public void onFail(Exception e) {
+                fail("Could not get default value correctly");
+            }
+        });
+    }
+
     public void testBooleanNotDefault() {
         Hawk.put("tag", true);
-        assertNotSame(true, Hawk.get("tag", false));
+        assertFalse(Hawk.get("tag", false).equals(false));
+    }
+
+    public void testBooleanNotDefaultCallback() {
+        Hawk.put("tag", true);
+        Hawk.get("tag", false, new Hawk.Callback<Boolean>() {
+
+            @Override
+            public void onSuccess(Boolean value) {
+                assertTrue(value.equals(Boolean.TRUE));
+            }
+
+            @Override
+            public void onFail(Exception e) {
+                fail("Could not get default value correctly");
+            }
+        });
     }
 
     public void testChar() {
@@ -51,9 +82,42 @@ public class HawkTest extends InstrumentationTestCase {
         assertEquals(expected, Hawk.get("tag"));
     }
 
+    public void testCharCallback() {
+        final char expected = 'a';
+        Hawk.put("tag", expected);
+        Hawk.get("tag", new Hawk.Callback<Character>() {
+
+            @Override
+            public void onSuccess(Character value) {
+                assertEquals(Character.valueOf(expected), value);
+            }
+
+            @Override
+            public void onFail(Exception e) {
+                fail("Could not get correctly");
+            }
+        });
+    }
+
     public void testCharDefault() {
         char expected = 'a';
         assertEquals(Character.valueOf(expected), Hawk.get("tag", expected));
+    }
+
+    public void testCharDefaultCallback() {
+        final char expected = 'a';
+        Hawk.get("tag", expected, new Hawk.Callback<Character>() {
+
+            @Override
+            public void onSuccess(Character value) {
+                assertEquals(Character.valueOf(expected), value);
+            }
+
+            @Override
+            public void onFail(Exception e) {
+                fail("Could not get value correctly");
+            }
+        });
     }
 
     public void testCharNotDefault() {
@@ -62,10 +126,43 @@ public class HawkTest extends InstrumentationTestCase {
         assertNotSame(expected, Hawk.get("tag", 'b'));
     }
 
+    public void testCharNotDefaultCallback() {
+        final char expected = 'a';
+        Hawk.put("tag", expected);
+        Hawk.get("tag", 'b', new Hawk.Callback<Character>() {
+
+            @Override
+            public void onSuccess(Character value) {
+                assertFalse(Character.valueOf(expected).equals(Character.valueOf('b')));
+            }
+
+            @Override
+            public void onFail(Exception e) {
+                fail("Could not get value correctly");
+            }
+        });
+    }
+
     public void testByte() {
         byte expected = 0;
         Hawk.put("tag", expected);
         assertEquals(expected, Hawk.get("tag"));
+    }
+
+    public void testByteCallback() {
+        final byte expected = 0;
+        Hawk.put("tag", expected);
+        Hawk.get("tag", new Hawk.Callback<Byte>() {
+            @Override
+            public void onSuccess(Byte o) {
+                assertEquals(Byte.valueOf(expected), o);
+            }
+
+            @Override
+            public void onFail(Exception e) {
+                fail("Could not get value correctly");
+            }
+        });
     }
 
     public void testByteDefault() {
@@ -73,10 +170,43 @@ public class HawkTest extends InstrumentationTestCase {
         assertEquals(Byte.valueOf(expected), Hawk.get("tag", expected));
     }
 
+    public void testByteDefaultCallback() {
+        final byte expected = 0;
+        Hawk.get("tag", expected, new Hawk.Callback<Byte>() {
+            @Override
+            public void onSuccess(Byte value) {
+                assertEquals(Byte.valueOf(expected), value);
+            }
+
+            @Override
+            public void onFail(Exception e) {
+                fail("Could not get value correctly");
+            }
+        });
+    }
+
     public void testByteNotDefault() {
         byte expected = 0;
+        byte defaultValue = 1;
         Hawk.put("tag", expected);
-        assertNotSame(expected, Hawk.get("tag", 1));
+        assertEquals(Byte.valueOf(expected), Hawk.get("tag", defaultValue));
+    }
+
+    public void testByteNotDefaultCallback() {
+        final byte expected = 0;
+        final byte defaultValue = 1;
+        Hawk.put("tag", expected);
+        Hawk.get("tag", defaultValue, new Hawk.Callback<Byte>() {
+            @Override
+            public void onSuccess(Byte value) {
+                assertEquals(Byte.valueOf(expected), value);
+            }
+
+            @Override
+            public void onFail(Exception e) {
+                fail("Could not get value correctly");
+            }
+        });
     }
 
     public void testShort() {
@@ -85,15 +215,64 @@ public class HawkTest extends InstrumentationTestCase {
         assertEquals(expected, Hawk.get("tag"));
     }
 
+    public void testShortCallback() {
+        final short expected = 0;
+        Hawk.put("tag", expected);
+        Hawk.get("tag", new Hawk.Callback<Short>() {
+            @Override
+            public void onSuccess(Short value) {
+                assertEquals(Short.valueOf(expected), value);
+            }
+
+            @Override
+            public void onFail(Exception e) {
+                fail("Could not get value correctly");
+            }
+        });
+    }
+
     public void testShortDefault() {
         short expected = 0;
         assertEquals(Short.valueOf(expected), Hawk.get("tag", expected));
     }
 
+    public void testShortDefaultCallback() {
+        final short expected = 0;
+        Hawk.get("tag", expected, new Hawk.Callback<Short>() {
+            @Override
+            public void onSuccess(Short value) {
+                assertEquals(Short.valueOf(expected), value);
+            }
+
+            @Override
+            public void onFail(Exception e) {
+                fail("Could not get value correctly");
+            }
+        });
+    }
+
     public void testShortNotDefault() {
         short expected = 0;
+        short defaultValue = 1;
         Hawk.put("tag", expected);
-        assertNotSame(expected, Hawk.get("tag", 1));
+        assertFalse(Hawk.get("tag", defaultValue).equals(defaultValue));
+    }
+
+    public void testShortNotDefaultCallback() {
+        final short expected = 0;
+        final short defaultValue = 1;
+        Hawk.put("tag", expected);
+        Hawk.get("tag", defaultValue, new Hawk.Callback<Short>() {
+            @Override
+            public void onSuccess(Short value) {
+                assertFalse(Short.valueOf(defaultValue).equals(value));
+            }
+
+            @Override
+            public void onFail(Exception e) {
+                fail("Could not get value correctly");
+            }
+        });
     }
 
     public void testInt() {
@@ -102,15 +281,64 @@ public class HawkTest extends InstrumentationTestCase {
         assertEquals(expected, Hawk.get("tag"));
     }
 
+    public void testIntCallback() {
+        final int expected = 0;
+        Hawk.put("tag", expected);
+        Hawk.get("tag", new Hawk.Callback<Integer>() {
+            @Override
+            public void onSuccess(Integer value) {
+                assertEquals(Integer.valueOf(expected), value);
+            }
+
+            @Override
+            public void onFail(Exception e) {
+                fail("Could not get value correctly");
+            }
+        });
+    }
+
     public void testIntDefault() {
         int expected = 0;
         assertEquals(Integer.valueOf(expected), Hawk.get("tag", expected));
     }
 
+    public void testIntDefaultCallback() {
+        final int expected = 0;
+        Hawk.get("tag", expected, new Hawk.Callback<Integer>() {
+            @Override
+            public void onSuccess(Integer value) {
+                assertEquals(Integer.valueOf(expected), value);
+            }
+
+            @Override
+            public void onFail(Exception e) {
+                fail("Could not get value correctly");
+            }
+        });
+    }
+
     public void testIntNotDefault() {
         int expected = 0;
+        int defaultValue = 1;
         Hawk.put("tag", expected);
-        assertNotSame(expected, Hawk.get("tag", 1));
+        assertFalse(Integer.valueOf(defaultValue).equals(Hawk.get("tag", defaultValue)));
+    }
+
+    public void testIntNotDefaultCallback() {
+        final int expected = 0;
+        final int defaultValue = 1;
+        Hawk.put("tag", expected);
+        Hawk.get("tag", defaultValue, new Hawk.Callback<Integer>() {
+            @Override
+            public void onSuccess(Integer value) {
+                assertFalse(Integer.valueOf(defaultValue).equals(value));
+            }
+
+            @Override
+            public void onFail(Exception e) {
+                fail("Could not get value correctly");
+            }
+        });
     }
 
     public void testLong() {
@@ -119,15 +347,64 @@ public class HawkTest extends InstrumentationTestCase {
         assertEquals(expected, Hawk.get("tag"));
     }
 
+    public void testLongCallback() {
+        final long expected = 100L;
+        Hawk.put("tag", expected);
+        Hawk.get("tag", new Hawk.Callback<Long>() {
+            @Override
+            public void onSuccess(Long value) {
+                assertEquals(Long.valueOf(expected), value);
+            }
+
+            @Override
+            public void onFail(Exception e) {
+                fail("Could not get value correctly");
+            }
+        });
+    }
+
     public void testLongDefault() {
         long expected = 100L;
         assertEquals(Long.valueOf(expected), Hawk.get("tag", expected));
     }
 
+    public void testLongDefaultCallback() {
+        final long expected = 100L;
+        Hawk.get("tag", expected, new Hawk.Callback<Long>() {
+            @Override
+            public void onSuccess(Long value) {
+                assertEquals(Long.valueOf(expected), value);
+            }
+
+            @Override
+            public void onFail(Exception e) {
+                fail("Could not get value correctly");
+            }
+        });
+    }
+
     public void testLongNotDefault() {
         long expected = 100L;
+        long defaultValue = 99L;
         Hawk.put("tag", expected);
-        assertNotSame(expected, Hawk.get("tag", 99L));
+        assertFalse(Long.valueOf(defaultValue).equals(Hawk.get("tag", defaultValue)));
+    }
+
+    public void testLongNotDefaultCallback() {
+        long expected = 100L;
+        final long defaultValue = 99L;
+        Hawk.put("tag", expected);
+        Hawk.get("tag", defaultValue, new Hawk.Callback<Long>() {
+            @Override
+            public void onSuccess(Long value) {
+                assertFalse(value.equals(defaultValue));
+            }
+
+            @Override
+            public void onFail(Exception e) {
+                fail("Could not get value correctly");
+            }
+        });
     }
 
     public void testFloat() {
@@ -136,15 +413,64 @@ public class HawkTest extends InstrumentationTestCase {
         assertEquals(expected, Hawk.get("tag"));
     }
 
+    public void testFloatCallback() {
+        final float expected = 0.1f;
+        Hawk.put("tag", expected);
+        Hawk.get("tag", new Hawk.Callback<Float>() {
+            @Override
+            public void onSuccess(Float value) {
+                assertEquals(expected, value);
+            }
+
+            @Override
+            public void onFail(Exception e) {
+                fail("Could not get value correctly");
+            }
+        });
+    }
+
     public void testFloatDefault() {
         float expected = 0.1f;
         assertEquals(expected, Hawk.get("tag", expected));
     }
 
+    public void testFloatDefaultCallback() {
+        final float expected = 0.1f;
+        Hawk.get("tag", expected, new Hawk.Callback<Float>() {
+            @Override
+            public void onSuccess(Float value) {
+                assertEquals(expected, value);
+            }
+
+            @Override
+            public void onFail(Exception e) {
+                fail("Could not get value correctly");
+            }
+        });
+    }
+
     public void testFloatNotDefault() {
         float expected = 0.1f;
+        final float defaultValue = 0.9f;
         Hawk.put("tag", expected);
-        assertNotSame(expected, Hawk.get("tag", 0.9f));
+        assertFalse(Hawk.get("tag", defaultValue).equals(Float.valueOf(defaultValue)));
+    }
+
+    public void testFloatNotDefaultCallback() {
+        float expected = 0.1f;
+        final float defaultValue = 0.9f;
+        Hawk.put("tag", expected);
+        Hawk.get("tag", defaultValue, new Hawk.Callback<Float>() {
+            @Override
+            public void onSuccess(Float value) {
+                assertFalse(value.equals(Float.valueOf(defaultValue)));
+            }
+
+            @Override
+            public void onFail(Exception e) {
+                fail("Could not get value correctly");
+            }
+        });
     }
 
     public void testDouble() {
@@ -153,15 +479,64 @@ public class HawkTest extends InstrumentationTestCase {
         assertEquals(expected, Hawk.get("tag"));
     }
 
+    public void testDoubleCallback() {
+        final double expected = 11;
+        Hawk.put("tag", expected);
+        Hawk.get("tag", new Hawk.Callback<Double>() {
+            @Override
+            public void onSuccess(Double value) {
+                assertEquals(value, expected);
+            }
+
+            @Override
+            public void onFail(Exception e) {
+                fail("Could not get value correctly");
+            }
+        });
+    }
+
     public void testDoubleDefault() {
         double expected = 11;
         assertEquals(expected, Hawk.get("tag", expected));
     }
 
+    public void testDoubleDefaultCallback() {
+        final double expected = 11;
+        Hawk.get("tag", expected, new Hawk.Callback<Double>() {
+            @Override
+            public void onSuccess(Double value) {
+                assertEquals(value, expected);
+            }
+
+            @Override
+            public void onFail(Exception e) {
+                fail("Could not get value correctly");
+            }
+        });
+    }
+
     public void testDoubleNotDefault() {
         double expected = 11;
+        double defaultValue = 99;
         Hawk.put("tag", expected);
-        assertNotSame(expected, Hawk.get("tag", 99));
+        assertFalse(Hawk.get("tag", defaultValue).equals(defaultValue));
+    }
+
+    public void testDoubleNotDefaultCallback() {
+        double expected = 11;
+        final double defaultValue = 99;
+        Hawk.put("tag", expected);
+        Hawk.get("tag", defaultValue, new Hawk.Callback<Double>() {
+            @Override
+            public void onSuccess(Double value) {
+                assertFalse(value.equals(defaultValue));
+            }
+
+            @Override
+            public void onFail(Exception e) {
+                fail("Could not get value correctly");
+            }
+        });
     }
 
     public void testString() {
@@ -170,15 +545,64 @@ public class HawkTest extends InstrumentationTestCase {
         assertEquals(expected, Hawk.get("tag"));
     }
 
+    public void testStringCallback() {
+        final String expected = "test";
+        Hawk.put("tag", expected);
+        Hawk.get("tag", new Hawk.Callback<String>() {
+            @Override
+            public void onSuccess(String value) {
+                assertEquals(value, expected);
+            }
+
+            @Override
+            public void onFail(Exception e) {
+                fail("Could not get value correctly");
+            }
+        });
+    }
+
     public void testStringDefault() {
         String expected = "test";
         assertEquals(expected, Hawk.get("tag", expected));
     }
 
+    public void testStringDefaultCallback() {
+        final String expected = "test";
+        Hawk.get("tag", expected, new Hawk.Callback<String>() {
+            @Override
+            public void onSuccess(String value) {
+                assertEquals(value, expected);
+            }
+
+            @Override
+            public void onFail(Exception e) {
+                fail("Could not get value correctly");
+            }
+        });
+    }
+
     public void testStringNotDefault() {
         String expected = "test";
+        String defaultValue = "default";
         Hawk.put("tag", expected);
-        assertNotSame(expected, Hawk.get("tag", "default"));
+        assertNotSame(defaultValue, Hawk.get("tag", "default"));
+    }
+
+    public void testStringNotDefaultCallback() {
+        String expected = "test";
+        final String defaultValue = "default";
+        Hawk.put("tag", expected);
+        Hawk.get("tag", defaultValue, new Hawk.Callback<String>() {
+            @Override
+            public void onSuccess(String value) {
+                assertNotSame(value, defaultValue);
+            }
+
+            @Override
+            public void onFail(Exception e) {
+                fail("Could not get value correctly");
+            }
+        });
     }
 
     public void testSerializableObject() {
@@ -190,12 +614,45 @@ public class HawkTest extends InstrumentationTestCase {
         assertNotNull(foo1);
     }
 
+    public void testSerializableObjectCallback() {
+        FooSerializable foo = new FooSerializable();
+
+        Hawk.put("tag", foo);
+        Hawk.get("tag", new Hawk.Callback<FooSerializable>() {
+            @Override
+            public void onSuccess(FooSerializable value) {
+                assertNotNull(value);
+            }
+
+            @Override
+            public void onFail(Exception e) {
+                fail("Could not get value correctly");
+            }
+        });
+    }
+
     public void testSerializableObjectDefault() {
         FooSerializable foo = new FooSerializable();
 
         FooSerializable foo1 = Hawk.get("tag", foo);
 
         assertNotNull(foo1);
+    }
+
+    public void testSerializableObjectDefaultCallback() {
+        FooSerializable foo = new FooSerializable();
+
+        Hawk.get("tag", foo, new Hawk.Callback<FooSerializable>() {
+            @Override
+            public void onSuccess(FooSerializable value) {
+                assertNotNull(value);
+            }
+
+            @Override
+            public void onFail(Exception e) {
+                fail("Could not get value correctly");
+            }
+        });
     }
 
     public void testNotSerializableObject() {
@@ -207,12 +664,45 @@ public class HawkTest extends InstrumentationTestCase {
         assertNotNull(foo1);
     }
 
+    public void testNotSerializableObjectCallback() {
+        FooNotSerializable foo = new FooNotSerializable();
+
+        Hawk.put("tag", foo);
+        Hawk.get("tag", new Hawk.Callback<FooNotSerializable>() {
+            @Override
+            public void onSuccess(FooNotSerializable value) {
+                assertNotNull(value);
+            }
+
+            @Override
+            public void onFail(Exception e) {
+                fail("Could not get value correctly");
+            }
+        });
+    }
+
     public void testNotSerializableObjectDefault() {
         FooNotSerializable foo = new FooNotSerializable();
 
         FooNotSerializable foo1 = Hawk.get("tag", foo);
 
         assertNotNull(foo1);
+    }
+
+    public void testNotSerializableObjectDefaultCallback() {
+        FooNotSerializable foo = new FooNotSerializable();
+
+        Hawk.get("tag", foo, new Hawk.Callback<FooNotSerializable>() {
+            @Override
+            public void onSuccess(FooNotSerializable value) {
+                assertNotNull(value);
+            }
+
+            @Override
+            public void onFail(Exception e) {
+                fail("Could not get value correctly");
+            }
+        });
     }
 
     public void testParcelableObject() {
@@ -223,12 +713,44 @@ public class HawkTest extends InstrumentationTestCase {
         assertNotNull(fooParcelable);
     }
 
+    public void testParcelableObjectCallback() {
+        FooParcelable foo = new FooParcelable();
+        Hawk.put("tag", foo);
+        Hawk.get("tag", new Hawk.Callback<FooParcelable>() {
+            @Override
+            public void onSuccess(FooParcelable fooParcelable) {
+                assertNotNull(fooParcelable);
+            }
+
+            @Override
+            public void onFail(Exception e) {
+                fail("Could not get value correctly");
+            }
+        });
+    }
+
     public void testParcelableObjectDefault() {
         FooParcelable foo = new FooParcelable();
 
         FooParcelable fooParcelable = Hawk.get("tag", foo);
 
         assertNotNull(fooParcelable);
+    }
+
+    public void testParcelableObjectDefaultCallback() {
+        FooParcelable foo = new FooParcelable();
+
+        Hawk.get("tag", foo, new Hawk.Callback<FooParcelable>() {
+            @Override
+            public void onSuccess(FooParcelable value) {
+                assertNotNull(value);
+            }
+
+            @Override
+            public void onFail(Exception e) {
+                fail("Could not get value correctly");
+            }
+        });
     }
 
     public void testListSerializable() {
@@ -243,6 +765,26 @@ public class HawkTest extends InstrumentationTestCase {
         assertNotNull(list1);
     }
 
+    public void testListSerializableCallback() {
+        List<String> list = new ArrayList<>();
+        list.add("foo");
+        list.add("foo");
+
+        Hawk.put("tag", list);
+
+        Hawk.get("tag", new Hawk.Callback<List<String>>() {
+            @Override
+            public void onSuccess(List<String> value) {
+                assertNotNull(value);
+            }
+
+            @Override
+            public void onFail(Exception e) {
+                fail("Could not get value correctly");
+            }
+        });
+    }
+
     public void testListSerializableDefault() {
         List<String> list = new ArrayList<>();
         list.add("foo");
@@ -251,6 +793,24 @@ public class HawkTest extends InstrumentationTestCase {
         List<String> list1 = Hawk.get("tag", list);
 
         assertNotNull(list1);
+    }
+
+    public void testListSerializableDefaultCallback() {
+        List<String> list = new ArrayList<>();
+        list.add("foo");
+        list.add("foo");
+
+        Hawk.get("tag", list, new Hawk.Callback<List<String>>() {
+            @Override
+            public void onSuccess(List<String> value) {
+                assertNotNull(value);
+            }
+
+            @Override
+            public void onFail(Exception e) {
+                fail("Could not get value correctly");
+            }
+        });
     }
 
     public void testListParcelable() {
@@ -265,6 +825,26 @@ public class HawkTest extends InstrumentationTestCase {
         assertNotNull(list1);
     }
 
+    public void testListParcelableCallback() {
+        List<FooParcelable> list = new ArrayList<>();
+        list.add(new FooParcelable());
+        list.add(new FooParcelable());
+
+        Hawk.put("tag", list);
+
+        Hawk.get("tag", new Hawk.Callback<List<FooParcelable>>() {
+            @Override
+            public void onSuccess(List<FooParcelable> value) {
+                assertNotNull(value);
+            }
+
+            @Override
+            public void onFail(Exception e) {
+                fail("Could not get value correctly");
+            }
+        });
+    }
+
     public void testListParcelableDefault() {
         List<FooParcelable> list = new ArrayList<>();
         list.add(new FooParcelable());
@@ -273,6 +853,24 @@ public class HawkTest extends InstrumentationTestCase {
         List<FooParcelable> list1 = Hawk.get("tag", list);
 
         assertNotNull(list1);
+    }
+
+    public void testListParcelableDefaultCallback() {
+        List<FooParcelable> list = new ArrayList<>();
+        list.add(new FooParcelable());
+        list.add(new FooParcelable());
+
+        Hawk.get("tag", list, new Hawk.Callback<List<FooParcelable>>() {
+            @Override
+            public void onSuccess(List<FooParcelable> value) {
+                assertNotNull(value);
+            }
+
+            @Override
+            public void onFail(Exception e) {
+                fail("Could not get value correctly");
+            }
+        });
     }
 
     public void testEmptyList() {
@@ -301,6 +899,20 @@ public class HawkTest extends InstrumentationTestCase {
         } catch (Exception e) {
             assertTrue(true);
         }
+    }
+
+    public void testNullKeyGetCallback() {
+        Hawk.get(null, new Hawk.Callback() {
+            @Override
+            public void onSuccess(Object o) {
+                assertTrue(false);
+            }
+
+            @Override
+            public void onFail(Exception e) {
+                assertTrue(true);
+            }
+        });
     }
 
     public void testNullKeyPutList() {

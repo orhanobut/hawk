@@ -149,6 +149,30 @@ public final class Hawk {
     }
 
     /**
+     * @param key is used to get the saved data
+     * @param callback callback's onSuccess or onFail methods will be executed when action is completed
+     */
+    public static <T> void get(final String key, final Callback<T> callback) {
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                if (key == null) {
+                    callback.onFail(new NullPointerException("Key cannot be null"));
+                    return;
+                }
+                String fullText = storage.get(key);
+                try {
+                    T t = encoder.decode(fullText);
+                    callback.onSuccess(t);
+                } catch (Exception e) {
+                    Logger.e("Error while decoding value : ", e);
+                    callback.onFail(e);
+                }
+            }
+        }).start();
+    }
+
+    /**
      * Gets the saved data, if it is null, default value will be returned
      *
      * @param key          is used to get the saved data
@@ -161,6 +185,33 @@ public final class Hawk {
             return defaultValue;
         }
         return t;
+    }
+
+    /**
+     * Gets the saved data, if it is null, default value will be returned
+     *
+     * @param key          is used to get the saved data
+     * @param defaultValue will be sent to onSuccess if the response is null
+     * @param callback callback's onSuccess or onFail methods will be executed when action is completed
+     */
+    public static <T> void get(final String key, final T defaultValue, final Callback<T> callback) {
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                String fullText = storage.get(key);
+                try {
+                    T t = encoder.decode(fullText);
+                    if(t == null) {
+                        callback.onSuccess(defaultValue);
+                    } else {
+                        callback.onSuccess(t);
+                    }
+                } catch (Exception e) {
+                    Logger.e("Error while decoding value : ", e);
+                    callback.onFail(e);
+                }
+            }
+        }).start();
     }
 
     /**
@@ -310,6 +361,19 @@ public final class Hawk {
             return storage.put(items);
         }
 
+    }
+
+    /**
+     * Callback interface to make actions on another place and execute code
+     * based on a result of action
+     * onSuccess function will be called when action is successful
+     * onFail function will be called when action fails due to a reason
+     * @param <T>
+     *
+     */
+    public static interface Callback<T> {
+        public void onSuccess(T t);
+        public void onFail(Exception e);
     }
 
 }
