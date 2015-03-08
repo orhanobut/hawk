@@ -13,50 +13,54 @@ final class Logger {
     private static final String TAG = "Hawk";
 
     static void d(String message) {
-        log(Log.DEBUG, message);
+        log(Log.DEBUG, message, null);
     }
 
     static void e(String message) {
-        log(Log.ERROR, message);
+        log(Log.ERROR, message, null);
+    }
+
+    static void e(String message, Throwable th) {
+        log(Log.ERROR, message, th);
     }
 
     static void w(String message) {
-        log(Log.WARN, message);
+        log(Log.WARN, message, null);
     }
 
     static void i(String message) {
-        log(Log.INFO, message);
+        log(Log.INFO, message, null);
     }
 
     static void v(String message) {
-        log(Log.VERBOSE, message);
+        log(Log.VERBOSE, message, null);
     }
 
     static void wtf(String message) {
-        log(Log.ASSERT, message);
+        log(Log.ASSERT, message, null);
     }
 
-    private static void log(int logType, String message) {
+    private static void log(int logType, String message, Throwable th) {
         LogLevel logLevel = Hawk.getLogLevel();
         if (logLevel == LogLevel.NONE) {
             return;
         }
         int length = message.length();
         if (length <= CHUNK_SIZE) {
-            logChunk(logType, message);
+            logChunk(logType, message, th);
             return;
         }
 
         for (int i = 0; i < length; i += CHUNK_SIZE) {
             int end = Math.min(length, i + CHUNK_SIZE);
-            logChunk(logType, message.substring(i, end));
+            logChunk(logType, message.substring(i, end), th);
         }
     }
 
-    private static void logChunk(int logType, String chunk) {
+    private static void logChunk(int logType, String chunk, Throwable th) {
         switch (logType) {
             case Log.ERROR:
-                Log.e(TAG, chunk);
+                Log.e(TAG, chunk, th);
                 break;
             case Log.INFO:
                 Log.i(TAG, chunk);

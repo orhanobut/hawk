@@ -49,6 +49,38 @@ or with default value
 T result = Hawk.get(key, T);
 ```
 
+#### Get with callback
+To get values in another thread, you can use callback interface with get method
+```java
+T result = Hawk.get(key, new Hawk.Callback<T>() {
+
+            @Override
+            public void onSuccess(T value) {
+            //get value here if successful
+            }
+
+            @Override
+            public void onFail(Exception e) {
+            //if fails, this code will be executed
+            }
+        });
+```
+or with default value
+
+```java
+Hawk.get(key, T, new Hawk.Callback<T>() {
+
+        @Override
+        public void onSuccess(String value) {
+        //get value here if successful or will return default value if no value found
+        }
+
+        @Override
+        public void onFail(Exception e) {
+        //if fails, this code will be executed
+        }
+    });
+```
 #### Remove
 ```java
 Hawk.remove(key);
