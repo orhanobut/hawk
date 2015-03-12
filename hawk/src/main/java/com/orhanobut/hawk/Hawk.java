@@ -8,6 +8,8 @@ import com.google.gson.Gson;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 /**
  * @author Orhan Obut
@@ -23,9 +25,23 @@ public final class Hawk {
     private static Storage storage;
     private static Encryption encryption;
     private static LogLevel logLevel;
+    private static ExecutorService executorService;
 
     private Hawk() {
         // no instance
+    }
+
+    /**
+     * This method must be called in order to initiate the hawk, all put and get methods should be called after
+     * callback methods executed
+     *
+     * @param context  is used to instantiate context based objects. ApplicationContext will be used
+     * @param password is used for key generation
+     * @param callback is used for executing the function in another thread and execute either onSuccess or onFail
+     *                 methods
+     */
+    public static void init(Context context, String password, Callback callback) {
+        init(context, password, LogLevel.NONE, callback);
     }
 
     /**
@@ -51,6 +67,40 @@ public final class Hawk {
         Hawk.storage = new SharedPreferencesStorage(appContext, TAG);
         Hawk.encryption = new AesEncryption(new SharedPreferencesStorage(appContext, TAG_CRYPTO), password);
         Hawk.encoder = new HawkEncoder(encryption, new GsonParser(new Gson()));
+    }
+
+    /**
+     * This method must be called in order to initiate the hawk, all put and get methods should be called after
+     * callback methods executed
+     *
+     * @param context  is used to instantiate context based objects. ApplicationContext will be used
+     * @param password is used for key generation
+     * @param logLevel is used for logging
+     * @param callback is used for executing the function in another thread and execute either onSuccess or onFail
+     *                 methods
+     */
+    public static void init(final Context context, final String password, final LogLevel logLevel,
+                            final Callback callback) {
+        Hawk.executorService = Executors.newSingleThreadExecutor();
+        Runnable runnable = new Runnable() {
+            @Override
+            public void run() {
+                try {
+                    Context appContext = context.getApplicationContext();
+                    Hawk.logLevel = logLevel;
+                    Hawk.storage = new SharedPreferencesStorage(appContext, TAG);
+                    Hawk.encryption = new AesEncryption(new SharedPreferencesStorage(appContext, TAG_CRYPTO), password);
+                    Hawk.encoder = new HawkEncoder(encryption, new GsonParser(new Gson()));
+                    callback.onSuccess();
+                } catch (Exception e) {
+                    Logger.e("Exception occurred while initialization : ", e);
+                    callback.onFail(e);
+                }
+
+            }
+        };
+        executorService.execute(runnable);
+        executorService.shutdown();
     }
 
     /**
@@ -310,6 +360,17 @@ public final class Hawk {
             return storage.put(items);
         }
 
+    }
+
+    /**
+     * Callback interface to make actions on another place and execute code
+     * based on a result of action
+     * onSuccess function will be called when action is successful
+     * onFail function will be called when action fails due to a reason
+     */
+    public static interface Callback {
+        public void onSuccess();
+        public void onFail(Exception e);
     }
 
 }

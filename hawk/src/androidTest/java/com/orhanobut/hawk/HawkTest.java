@@ -21,14 +21,14 @@ public class HawkTest extends InstrumentationTestCase {
                 getInstrumentation().getTargetContext().getCacheDir().getPath());
         context = getInstrumentation().getContext();
         Hawk.init(context, "testPassword");
-        Hawk.clear();
-        Hawk.resetCrypto();
     }
 
     @Override
     protected void tearDown() throws Exception {
         super.tearDown();
         context = null;
+        Hawk.clear();
+        Hawk.resetCrypto();
     }
 
     public void testBoolean() {

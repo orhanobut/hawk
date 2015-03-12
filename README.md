@@ -29,7 +29,24 @@ dependencies {
 ```java
 Hawk.init(context, PASSWORD);
 ```
+init function takes time to generate keys, so it is a good idea not to execute it in main thread, there is another
+method which executes init in another thread and gets result on callback methods. But be careful to wait callback
+functions, otherwise your application can crash!
+```java
+Hawk.init(context, PASSWORD, new Hawk.Callback() {
+        @Override
+        public void onSuccess() {
+            Hawk.put("key", "value");
+            assertEquals("value", Hawk.get("key"));
+        }
 
+        @Override
+        public void onFail(Exception e) {
+            fail("Init with callback failed");
+        }
+    }
+);
+```
 #### Save
 ```java
 Hawk.put(key, T);
