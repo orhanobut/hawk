@@ -1,4 +1,4 @@
-[![Android Arsenal](https://img.shields.io/badge/Android%20Arsenal-Hawk-brightgreen.svg?style=flat)](https://android-arsenal.com/details/1/1568)      [![API](https://img.shields.io/badge/API-8%2B-brightgreen.svg?style=flat)](https://android-arsenal.com/api?level=8)   [![Join the chat at https://gitter.im/orhanobut/hawk](https://badges.gitter.im/Join%20Chat.svg)](https://gitter.im/orhanobut/hawk?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)  [![](https://img.shields.io/badge/AndroidWeekly-%23141-blue.svg)](http://androidweekly.net/issues/issue-141) 
+[![Android Arsenal](https://img.shields.io/badge/Android%20Arsenal-Hawk-brightgreen.svg?style=flat)](https://android-arsenal.com/details/1/1568)      [![API](https://img.shields.io/badge/API-8%2B-brightgreen.svg?style=flat)](https://android-arsenal.com/api?level=8)   [![Join the chat at https://gitter.im/orhanobut/hawk](https://badges.gitter.im/Join%20Chat.svg)](https://gitter.im/orhanobut/hawk?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)  [![](https://img.shields.io/badge/AndroidWeekly-%23141-blue.svg)](http://androidweekly.net/issues/issue-141)
 
 #Hawk
 Secure, simple key-value storage for android
@@ -21,7 +21,7 @@ repositories {
     maven { url "https://oss.sonatype.org/content/repositories/snapshots/"}
 }
 dependencies {
-    compile 'com.orhanobut:hawk:1.4-SNAPSHOT'
+    compile 'com.orhanobut:hawk:1.5-SNAPSHOT'
 }
 ```
 
@@ -29,31 +29,34 @@ dependencies {
 ```java
 Hawk.init(context, PASSWORD);
 ```
-init function takes time to generate keys, so it is a good idea not to execute it in main thread, there is another
-method which executes init in another thread and gets result on callback methods. But be careful to wait callback
-functions, otherwise your application can crash!
+init takes 200-400ms depends on the device. You may want to use async solution in order to avoid this. Add a callback to init and it will work asynchronous.
 ```java
 Hawk.init(context, PASSWORD, new Hawk.Callback() {
         @Override
         public void onSuccess() {
-            Hawk.put("key", "value");
-            assertEquals("value", Hawk.get("key"));
         }
 
         @Override
         public void onFail(Exception e) {
-            fail("Init with callback failed");
         }
     }
 );
 ```
 #### Save
 ```java
-Hawk.put(key, T);
+Hawk.put(key, T); // Returns the result as boolean
 ```
 or
 ```java
-Hawk.put(key, List<T>);
+Hawk.put(key, List<T>); // Returns the result as boolean
+```
+You can also store multiple items at once by using chain feature. Remember to use commit() at the end. Either all of them will be saved or none.
+```java
+// Returns the result as boolean
+Hawk.chain()
+     .put(KEY_LIST, List<T>)
+     .put(KEY_ANOTHER,"test")
+     .commit();
 ```
 
 #### Get
@@ -68,9 +71,12 @@ T result = Hawk.get(key, T);
 
 #### Remove
 ```java
-Hawk.remove(key);
+Hawk.remove(key); // Returns the result as boolean
 ```
-
+or you can remove multiple items at once
+```java
+Hawk.remove(KEY_LIST, KEY_NAME); // Returns the result as boolean
+```
 #### Contains
 ```java
 boolean contains = Hawk.contains(key);
