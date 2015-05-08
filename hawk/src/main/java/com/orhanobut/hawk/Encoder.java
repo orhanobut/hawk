@@ -8,28 +8,37 @@ import java.util.List;
 interface Encoder {
 
     /**
-     * Encodes the value and encrypts it
+     * Encodes the value
      *
      * @param value will be encoded
      * @return the encoded string
      */
-    <T> String encode(T value);
+    <T> byte[] encode(T value);
 
     /**
-     * Encodes the list value and encrypts it
+     * Encodes the list value
      *
      * @param value will be encoded
      * @return the encoded string
      */
-    <T> String encode(List<T> value);
+    <T> byte[] encode(List<T> value);
 
     /**
-     * Decodes and decrypts the cipher text
+     * Decodes
      *
      * @param value is the encoded data
      * @return the plain value
      * @throws Exception
      */
-    <T> T decode(String value) throws Exception;
+    <T> T decode(byte[] value, DataInfo dataInfo) throws Exception;
+
+    /**
+     * Decodes the text
+     *
+     * @param value is the encoded data
+     * @return the plain value
+     * @throws Exception
+     */
+    <T> T decodeSerializable(String value) throws Exception;
 
 }

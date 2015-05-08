@@ -77,6 +77,9 @@ final class AesCbcWithIntegrity {
     private static final String HMAC_ALGORITHM = "HmacSHA256";
     private static final int HMAC_KEY_LENGTH_BITS = 256;
 
+    private static String PBE = PBE_ALGORITHM;
+    private static String HMAC = HMAC_ALGORITHM;
+
     /**
      * Converts the given AES/HMAC keys into a base64 encoded string suitable for
      * storage. Sister function of keys.
@@ -113,7 +116,8 @@ final class AesCbcWithIntegrity {
 
             return new SecretKeys(
                     new SecretKeySpec(confidentialityKey, 0, confidentialityKey.length, CIPHER),
-                    new SecretKeySpec(integrityKey, HMAC_ALGORITHM));
+                    new SecretKeySpec(integrityKey, HMAC)
+            );
         }
     }
 
@@ -136,7 +140,7 @@ final class AesCbcWithIntegrity {
 
         //Now make the HMAC key
         byte[] integrityKeyBytes = randomBytes(HMAC_KEY_LENGTH_BITS / 8);//to get bytes
-        SecretKey integrityKey = new SecretKeySpec(integrityKeyBytes, HMAC_ALGORITHM);
+        SecretKey integrityKey = new SecretKeySpec(integrityKeyBytes, HMAC);
 
         return new SecretKeys(confidentialityKey, integrityKey);
     }
@@ -156,8 +160,7 @@ final class AesCbcWithIntegrity {
         //Get enough random bytes for both the AES key and the HMAC key:
         KeySpec keySpec = new PBEKeySpec(password.toCharArray(), salt,
                 PBE_ITERATION_COUNT, AES_KEY_LENGTH_BITS + HMAC_KEY_LENGTH_BITS);
-        SecretKeyFactory keyFactory = SecretKeyFactory
-                .getInstance(PBE_ALGORITHM);
+        SecretKeyFactory keyFactory = SecretKeyFactory.getInstance(PBE);
         byte[] keyBytes = keyFactory.generateSecret(keySpec).getEncoded();
 
         // Split the random bytes into two parts:
@@ -168,7 +171,7 @@ final class AesCbcWithIntegrity {
         SecretKey confidentialityKey = new SecretKeySpec(confidentialityKeyBytes, CIPHER);
 
         //Generate the HMAC key
-        SecretKey integrityKey = new SecretKeySpec(integrityKeyBytes, HMAC_ALGORITHM);
+        SecretKey integrityKey = new SecretKeySpec(integrityKeyBytes, HMAC);
 
         return new SecretKeys(confidentialityKey, integrityKey);
     }
@@ -393,7 +396,7 @@ final class AesCbcWithIntegrity {
      */
     public static byte[] generateMac(byte[] byteCipherText, SecretKey integrityKey) throws NoSuchAlgorithmException, InvalidKeyException {
         //Now compute the mac for later integrity checking
-        Mac sha256_HMAC = Mac.getInstance(HMAC_ALGORITHM);
+        Mac sha256_HMAC = Mac.getInstance(HMAC);
         sha256_HMAC.init(integrityKey);
         return sha256_HMAC.doFinal(byteCipherText);
     }

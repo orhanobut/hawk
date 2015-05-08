@@ -25,7 +25,6 @@ public class HawkEncoderTest extends InstrumentationTestCase {
         context = getInstrumentation().getContext();
 
         encoder = new HawkEncoder(
-                new AesEncryption(new SharedPreferencesStorage(context, "test"), "password"),
                 new GsonParser(new Gson())
         );
     }
@@ -44,7 +43,7 @@ public class HawkEncoderTest extends InstrumentationTestCase {
     public void testDecodeShouldReturnNull() {
         Object result;
         try {
-            result = encoder.decode(null);
+            result = encoder.decode(null, null);
         } catch (Exception e) {
             result = null;
         }
@@ -54,7 +53,7 @@ public class HawkEncoderTest extends InstrumentationTestCase {
 
     public void testConstructorShouldThrowNPE() {
         try {
-            new HawkEncoder(null, null);
+            new HawkEncoder(null);
             assertTrue(false);
         } catch (Exception e) {
             assertTrue(true);
@@ -62,7 +61,7 @@ public class HawkEncoderTest extends InstrumentationTestCase {
     }
 
     public void testEncodeShouldNotReturnNull_string() {
-        String result = encoder.encode("asdf");
+        byte[] result = encoder.encode("asdf");
         assertNotNull(result);
     }
 
