@@ -14,7 +14,6 @@ final class AesEncryption implements Encryption {
 
     //never ever change this value since it will break backward compatibility in terms of keeping previous data
     private static final String KEY_STORAGE_SALT = "asdf3242klj";
-    private static final String KEY_BACKUP = "asdf32asdfads23423442klj";
     private static final String KEY_GENERATED_KEY = "adsfjlkj234234dasfgenasdfas";
 
     private final Storage storage;
@@ -85,7 +84,7 @@ final class AesEncryption implements Encryption {
      * supported, it will fall generate the key without password and store it.
      */
     private void generateSecretKey(String password) throws GeneralSecurityException {
-        if (storage.contains(KEY_BACKUP)) {
+        if (storage.contains(KEY_GENERATED_KEY)) {
             key = generateSecretKeyBackup();
             return;
         }
