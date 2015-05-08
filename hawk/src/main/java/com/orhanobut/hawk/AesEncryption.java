@@ -14,7 +14,7 @@ final class AesEncryption implements Encryption {
 
     //never ever change this value since it will break backward compatibility in terms of keeping previous data
     private static final String KEY_STORAGE_SALT = "asdf3242klj";
-    private static final String KEY_GENERATED_KEY = "adsfjlkj234234dasfgenasdfas";
+    private static final String KEY_GENERATED_SECRET_KEYS = "adsfjlkj234234dasfgenasdfas";
 
     private final Storage storage;
     private final Encoder encoder;
@@ -84,7 +84,7 @@ final class AesEncryption implements Encryption {
      * supported, it will fall generate the key without password and store it.
      */
     private void generateSecretKey(String password) throws GeneralSecurityException {
-        if (storage.contains(KEY_GENERATED_KEY)) {
+        if (storage.contains(KEY_GENERATED_SECRET_KEYS)) {
             key = generateSecretKeyBackup();
             return;
         }
@@ -93,15 +93,14 @@ final class AesEncryption implements Encryption {
 
     private AesCbcWithIntegrity.SecretKeys generateSecretKeyBackup() {
         try {
-            String keys = null;
             AesCbcWithIntegrity.SecretKeys key = null;
-            if (storage.contains(KEY_GENERATED_KEY)) {
-                keys = storage.get(KEY_GENERATED_KEY);
+            String keys = storage.get(KEY_GENERATED_SECRET_KEYS);
+            if (keys != null) {
                 key = encoder.decodeSerializable(keys);
             }
-            if (keys == null) {
+            if (key == null) {
                 key = AesCbcWithIntegrity.generateKey();
-                storage.put(KEY_GENERATED_KEY, encoder.encode(key));
+                storage.put(KEY_GENERATED_SECRET_KEYS, encoder.encode(key));
             }
             return key;
         } catch (GeneralSecurityException e) {
