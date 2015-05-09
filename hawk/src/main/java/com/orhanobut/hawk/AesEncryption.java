@@ -89,9 +89,9 @@ final class AesEncryption implements Encryption {
             Logger.w("key is generated without password");
             return;
         }
-        try {
-            key = generateSecretKeyFromPassword(password);
-        } catch (Exception e) {
+
+        key = generateSecretKeyFromPassword(password);
+        if (key == null) {
             key = AesCbcWithIntegrity.generateKey();
             storage.put(KEY_GENERATED_SECRET_KEYS, encoder.encode(key));
         }
