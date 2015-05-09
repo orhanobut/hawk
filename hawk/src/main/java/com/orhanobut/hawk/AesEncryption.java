@@ -84,11 +84,13 @@ final class AesEncryption implements Encryption {
      * supported, it will fall generate the key without password and store it.
      */
     private void generateSecretKey(String password) throws GeneralSecurityException {
-        if (storage.contains(KEY_GENERATED_SECRET_KEYS)) {
+        if (password == null || storage.contains(KEY_GENERATED_SECRET_KEYS)) {
             key = generateSecretKeyBackup();
+            Logger.w("key is generated without password");
             return;
         }
         key = generateSecretKeyFromPassword(password);
+        Logger.w("key is generated from password");
     }
 
     private AesCbcWithIntegrity.SecretKeys generateSecretKeyBackup() {
@@ -104,8 +106,10 @@ final class AesEncryption implements Encryption {
             }
             return key;
         } catch (GeneralSecurityException e) {
+            Logger.e(e.getMessage());
             return null;
         } catch (Exception e) {
+            Logger.e(e.getMessage());
             return null;
         }
     }
@@ -118,6 +122,7 @@ final class AesEncryption implements Encryption {
             }
             return AesCbcWithIntegrity.generateKeyFromPassword(password, saltKey);
         } catch (GeneralSecurityException e) {
+            Logger.e(e.getMessage());
             return null;
         }
     }

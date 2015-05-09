@@ -32,6 +32,15 @@ public final class Hawk {
     }
 
     /**
+     * This will init the hawk without password protection.
+     *
+     * @param context is used to instantiate context based objects. ApplicationContext will be used
+     */
+    public static void init(Context context) {
+        init(context, null, LogLevel.NONE);
+    }
+
+    /**
      * This method must be called in order to initiate the hawk, all put and get methods should be called after
      * callback methods executed
      *
