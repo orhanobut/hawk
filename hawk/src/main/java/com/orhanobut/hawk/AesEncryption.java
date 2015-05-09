@@ -85,15 +85,20 @@ final class AesEncryption implements Encryption {
      */
     private void generateSecretKey(String password) throws GeneralSecurityException {
         if (password == null || storage.contains(KEY_GENERATED_SECRET_KEYS)) {
-            key = generateSecretKeyBackup();
+            key = getSecretKeysBackup();
             Logger.w("key is generated without password");
             return;
         }
-        key = generateSecretKeyFromPassword(password);
+        try {
+            key = generateSecretKeyFromPassword(password);
+        } catch (Exception e) {
+            key = AesCbcWithIntegrity.generateKey();
+            storage.put(KEY_GENERATED_SECRET_KEYS, encoder.encode(key));
+        }
         Logger.w("key is generated from password");
     }
 
-    private AesCbcWithIntegrity.SecretKeys generateSecretKeyBackup() {
+    private AesCbcWithIntegrity.SecretKeys getSecretKeysBackup() {
         try {
             AesCbcWithIntegrity.SecretKeys key = null;
             String keys = storage.get(KEY_GENERATED_SECRET_KEYS);
