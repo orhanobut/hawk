@@ -314,10 +314,13 @@ public class HawkTest extends InstrumentationTestCase {
 
     public void testNullValuePut() {
         try {
-            Hawk.put("tag", null);
-            assertTrue(false);
+            Hawk.put("tag", "something");
+            assertNotNull(Hawk.get("tag"));
+
+            assertTrue(Hawk.put("tag", null));
+            assertNull(Hawk.get("tag"));
         } catch (Exception e) {
-            assertTrue(true);
+            assertTrue(false);
         }
     }
 
