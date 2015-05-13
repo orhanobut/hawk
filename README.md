@@ -17,13 +17,19 @@ Hawk provides:
 
 ###Add dependency
 ```groovy
-compile 'com.orhanobut:hawk:1.6'
+compile 'com.orhanobut:hawk:1.7'
 ```
 
 #### Initialize the hawk
 ```java
 Hawk.init(context, PASSWORD);
 ```
+if you don't put any password, it will use another approach, it is faster but less secure.
+
+```java
+Hawk.init(context);
+```
+
 init takes 200-400ms depends on the device. You may want to use async solution in order to avoid this. Add a callback to init and it will work asynchronous.
 ```java
 Hawk.init(context, PASSWORD, new Hawk.Callback() {
@@ -37,6 +43,7 @@ Hawk.init(context, PASSWORD, new Hawk.Callback() {
     }
 );
 ```
+
 #### Save
 ```java
 Hawk.put(key, T); // Returns the result as boolean
