@@ -317,7 +317,7 @@ public class HawkBackupTest extends InstrumentationTestCase {
             Hawk.put("tag", "something");
             assertNotNull(Hawk.get("tag"));
 
-            Hawk.put("tag", null);
+            assertTrue(Hawk.put("tag", null));
             assertNull(Hawk.get("tag"));
         } catch (Exception e) {
             assertTrue(false);

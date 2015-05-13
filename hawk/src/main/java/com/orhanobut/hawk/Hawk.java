@@ -129,8 +129,7 @@ public final class Hawk {
         }
         //if the value is null, simply remove it
         if (value == null) {
-            remove(key);
-            return true;
+            return remove(key);
         }
 
         String encodedText = encode(value);
@@ -144,7 +143,7 @@ public final class Hawk {
     /**
      * Saves the list of objects to the storage
      *
-     * @param key  is used to save the data
+     * @param key   is used to save the data
      * @param value is the data that will be saved
      * @return true if put is successful
      */
@@ -154,8 +153,7 @@ public final class Hawk {
         }
         //if the value is null, simply remove it
         if (value == null) {
-            remove(key);
-            return true;
+            return remove(key);
         }
 
         String encodedText = encode(value);
