@@ -127,6 +127,11 @@ public final class Hawk {
         if (key == null) {
             throw new NullPointerException("Key cannot be null");
         }
+        //if the value is null, simply remove it
+        if (value == null) {
+            remove(key);
+            return true;
+        }
 
         String encodedText = encode(value);
         //if any exception occurs during encoding, encodedText will be null and thus operation is unsuccessful
@@ -140,15 +145,20 @@ public final class Hawk {
      * Saves the list of objects to the storage
      *
      * @param key  is used to save the data
-     * @param list is the data that will be saved
+     * @param value is the data that will be saved
      * @return true if put is successful
      */
-    public static <T> boolean put(String key, List<T> list) {
+    public static <T> boolean put(String key, List<T> value) {
         if (key == null) {
             throw new NullPointerException("Key cannot be null");
         }
+        //if the value is null, simply remove it
+        if (value == null) {
+            remove(key);
+            return true;
+        }
 
-        String encodedText = encode(list);
+        String encodedText = encode(value);
         //if any exception occurs during encoding, encodedText will be null and thus operation is unsuccessful
         if (encodedText == null) {
             return false;
