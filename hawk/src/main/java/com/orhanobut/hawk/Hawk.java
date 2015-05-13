@@ -32,6 +32,15 @@ public final class Hawk {
     }
 
     /**
+     * This will init the hawk without password protection.
+     *
+     * @param context is used to instantiate context based objects. ApplicationContext will be used
+     */
+    public static void init(Context context) {
+        init(context, null, LogLevel.NONE);
+    }
+
+    /**
      * This method must be called in order to initiate the hawk, all put and get methods should be called after
      * callback methods executed
      *
@@ -65,8 +74,10 @@ public final class Hawk {
         Context appContext = context.getApplicationContext();
         Hawk.logLevel = logLevel;
         Hawk.storage = new SharedPreferencesStorage(appContext, TAG);
-        Hawk.encryption = new AesEncryption(new SharedPreferencesStorage(appContext, TAG_CRYPTO), password);
-        Hawk.encoder = new HawkEncoder(encryption, new GsonParser(new Gson()));
+        Hawk.encoder = new HawkEncoder(new GsonParser(new Gson()));
+        Hawk.encryption = new AesEncryption(
+                new SharedPreferencesStorage(appContext, TAG_CRYPTO), encoder, password
+        );
     }
 
     /**
@@ -89,8 +100,10 @@ public final class Hawk {
                     Context appContext = context.getApplicationContext();
                     Hawk.logLevel = logLevel;
                     Hawk.storage = new SharedPreferencesStorage(appContext, TAG);
-                    Hawk.encryption = new AesEncryption(new SharedPreferencesStorage(appContext, TAG_CRYPTO), password);
-                    Hawk.encoder = new HawkEncoder(encryption, new GsonParser(new Gson()));
+                    Hawk.encoder = new HawkEncoder(new GsonParser(new Gson()));
+                    Hawk.encryption = new AesEncryption(
+                            new SharedPreferencesStorage(appContext, TAG_CRYPTO), encoder, password
+                    );
                     callback.onSuccess();
                 } catch (Exception e) {
                     Logger.e("Exception occurred while initialization : ", e);
@@ -153,7 +166,8 @@ public final class Hawk {
         if (value == null) {
             throw new NullPointerException("Value cannot be null");
         }
-        String cipherText = encoder.encode(value);
+        byte[] encodedValue = encoder.encode(value);
+        String cipherText = encryption.encrypt(encodedValue);
         if (cipherText == null) {
             return null;
         }
@@ -173,7 +187,8 @@ public final class Hawk {
         if (list.size() == 0) {
             throw new IllegalStateException("List<T> cannot be empty");
         }
-        String cipherText = encoder.encode(list);
+        byte[] encodedValue = encoder.encode(list);
+        String cipherText = encryption.encrypt(encodedValue);
         if (cipherText == null) {
             return null;
         }
@@ -190,8 +205,13 @@ public final class Hawk {
             throw new NullPointerException("Key cannot be null");
         }
         String fullText = storage.get(key);
+        if (fullText == null) {
+            return null;
+        }
+        DataInfo dataInfo = DataUtil.getDataInfo(fullText);
+        byte[] bytes = encryption.decrypt(dataInfo.getCipherText());
         try {
-            return encoder.decode(fullText);
+            return encoder.decode(bytes, dataInfo);
         } catch (Exception e) {
             Logger.d(e.getMessage());
         }
@@ -368,9 +388,10 @@ public final class Hawk {
      * onSuccess function will be called when action is successful
      * onFail function will be called when action fails due to a reason
      */
-    public static interface Callback {
-        public void onSuccess();
-        public void onFail(Exception e);
+    public interface Callback {
+        void onSuccess();
+
+        void onFail(Exception e);
     }
 
 }

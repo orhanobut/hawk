@@ -9,7 +9,7 @@ import java.util.List;
 /**
  * @author Orhan Obut
  */
-public class HawkTest extends InstrumentationTestCase {
+public class HawkBackupTest extends InstrumentationTestCase {
 
     Context context;
 
@@ -20,7 +20,7 @@ public class HawkTest extends InstrumentationTestCase {
                 "dexmaker.dexcache",
                 getInstrumentation().getTargetContext().getCacheDir().getPath());
         context = getInstrumentation().getContext();
-        Hawk.init(context, "testPassword");
+        Hawk.init(context);
     }
 
     @Override

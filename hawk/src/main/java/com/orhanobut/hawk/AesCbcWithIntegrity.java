@@ -113,7 +113,8 @@ final class AesCbcWithIntegrity {
 
             return new SecretKeys(
                     new SecretKeySpec(confidentialityKey, 0, confidentialityKey.length, CIPHER),
-                    new SecretKeySpec(integrityKey, HMAC_ALGORITHM));
+                    new SecretKeySpec(integrityKey, HMAC_ALGORITHM)
+            );
         }
     }
 
@@ -156,8 +157,7 @@ final class AesCbcWithIntegrity {
         //Get enough random bytes for both the AES key and the HMAC key:
         KeySpec keySpec = new PBEKeySpec(password.toCharArray(), salt,
                 PBE_ITERATION_COUNT, AES_KEY_LENGTH_BITS + HMAC_KEY_LENGTH_BITS);
-        SecretKeyFactory keyFactory = SecretKeyFactory
-                .getInstance(PBE_ALGORITHM);
+        SecretKeyFactory keyFactory = SecretKeyFactory.getInstance(PBE_ALGORITHM);
         byte[] keyBytes = keyFactory.generateSecret(keySpec).getEncoded();
 
         // Split the random bytes into two parts:

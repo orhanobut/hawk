@@ -21,22 +21,17 @@ import java.util.List;
  */
 final class HawkEncoder implements Encoder {
 
-    private final Encryption encryption;
     private final Parser parser;
 
-    public HawkEncoder(Encryption encryption, Parser parser) {
-        if (encryption == null) {
-            throw new NullPointerException("Encryption may not be null");
-        }
+    public HawkEncoder(Parser parser) {
         if (parser == null) {
             throw new NullPointerException("Parser may not be null");
         }
-        this.encryption = encryption;
         this.parser = parser;
     }
 
     @Override
-    public <T> String encode(T value) {
+    public <T> byte[] encode(T value) {
         if (value == null) {
             return null;
         }
@@ -49,38 +44,25 @@ final class HawkEncoder implements Encoder {
             bytes = json.getBytes();
         }
 
-        if (bytes == null) {
-            return null;
-        }
-
-        return encryption.encrypt(bytes);
+        return bytes;
     }
 
     @Override
-    public <T> String encode(List<T> value) {
+    public <T> byte[] encode(List<T> value) {
         if (value == null) {
             return null;
         }
         String json = parser.toJson(value);
-        byte[] bytes = json.getBytes();
-
-        return encryption.encrypt(bytes);
+        return json.getBytes();
     }
 
     @SuppressWarnings("unchecked")
     @Override
-    public <T> T decode(String value) throws Exception {
-        if (value == null) {
-            return null;
-        }
-        DataInfo info = DataUtil.getDataInfo(value);
-        boolean isList = info.isList();
-
-        byte[] bytes = encryption.decrypt(info.getCipherText());
-        //if any exception occurs during decrypt, bytes will be null
+    public <T> T decode(byte[] bytes, DataInfo info) throws Exception {
         if (bytes == null) {
             return null;
         }
+        boolean isList = info.isList();
 
         // if the value is not list and serializable, then use the normal deserialize
         if (!isList && info.isSerializable()) {
@@ -96,6 +78,11 @@ final class HawkEncoder implements Encoder {
         }
 
         return fromJsonList(json, type);
+    }
+
+    @Override
+    public <T> T decodeSerializable(String value) throws Exception {
+        return toSerializable(value.getBytes());
     }
 
     @SuppressWarnings("unchecked")
