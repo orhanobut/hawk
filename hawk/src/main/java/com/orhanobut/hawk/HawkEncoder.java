@@ -8,7 +8,6 @@ import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.io.Serializable;
-import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -42,7 +41,7 @@ final class HawkEncoder implements Encoder {
             bytes = fromSerializable((Serializable) value);
         } else {
             String json = parser.toJson(value);
-            bytes = json.getBytes(Charset.forName("UTF-8"));
+            bytes = json.getBytes();
         }
 
         return bytes;
