@@ -6,6 +6,14 @@ package com.orhanobut.hawk;
 interface Encryption {
 
     /**
+     * Initialize the encryption algorithm, If the device does not support required
+     * crypto return false
+     *
+     * @return true if crypto is supported
+     */
+    boolean init();
+
+    /**
      * Encrypt the given string and returns cipher text
      *
      * @param value is the plain text
@@ -25,5 +33,6 @@ interface Encryption {
      * Clear everything from the storage
      */
     boolean reset();
+
 
 }

@@ -1,6 +1,7 @@
 package com.orhanobut.hawk;
 
 import android.content.Context;
+import android.util.Base64;
 import android.util.Log;
 import android.util.Pair;
 
@@ -16,16 +17,28 @@ import java.util.concurrent.Executors;
  */
 public final class Hawk {
 
-    //never ever change this value since it will break backward compatibility in terms of keeping previous data
+    /**
+     * never ever change this value since it will break backward compatibility in terms of keeping previous data
+     */
     private static final String TAG = "HAWK";
-    //never ever change this value since it will break backward compatibility in terms of keeping previous data
+
+    /**
+     * never ever change this value since it will break backward compatibility in terms of keeping previous data
+     */
     private static final String TAG_CRYPTO = "324909sdfsd98098";
+
+    /**
+     * Key to store if the device does not support crypto
+     */
+    private static final String KEY_NO_CRYPTO = "dfsklj2342nasdfoasdfcrpknasdf";
 
     private static Encoder encoder;
     private static Storage storage;
     private static Encryption encryption;
     private static LogLevel logLevel;
     private static ExecutorService executorService;
+
+    private static boolean noEncryption;
 
     private Hawk() {
         // no instance
@@ -65,6 +78,8 @@ public final class Hawk {
 
     /**
      * This method must be called in order to initiate the hawk
+     * <p/>
+     * Some devices don't support the basic crypto, In that case encryption won't be enabled.
      *
      * @param context  is used to instantiate context based objects. ApplicationContext will be used
      * @param password is used for key generation
@@ -75,9 +90,25 @@ public final class Hawk {
         Hawk.logLevel = logLevel;
         Hawk.storage = new SharedPreferencesStorage(appContext, TAG);
         Hawk.encoder = new HawkEncoder(new GsonParser(new Gson()));
-        Hawk.encryption = new AesEncryption(
-                new SharedPreferencesStorage(appContext, TAG_CRYPTO), encoder, password
-        );
+
+        if (storage.contains(KEY_NO_CRYPTO)) {
+            noEncryption = true;
+            return;
+        }
+
+        Storage cryptoStorage = new SharedPreferencesStorage(appContext, TAG_CRYPTO);
+        Hawk.encryption = new AesEncryption(cryptoStorage, encoder, password);
+        boolean result = Hawk.encryption.init();
+        setEncryptionMode(result);
+    }
+
+    private static void setEncryptionMode(boolean isCryptoSupported) {
+        if (isCryptoSupported) {
+            noEncryption = false;
+            return;
+        }
+        storage.put(KEY_NO_CRYPTO, true);
+        noEncryption = true;
     }
 
     /**
@@ -97,13 +128,7 @@ public final class Hawk {
             @Override
             public void run() {
                 try {
-                    Context appContext = context.getApplicationContext();
-                    Hawk.logLevel = logLevel;
-                    Hawk.storage = new SharedPreferencesStorage(appContext, TAG);
-                    Hawk.encoder = new HawkEncoder(new GsonParser(new Gson()));
-                    Hawk.encryption = new AesEncryption(
-                            new SharedPreferencesStorage(appContext, TAG_CRYPTO), encoder, password
-                    );
+                    init(context, password, logLevel);
                     callback.onSuccess();
                 } catch (Exception e) {
                     Logger.e("Exception occurred while initialization : ", e);
@@ -114,6 +139,13 @@ public final class Hawk {
         };
         executorService.execute(runnable);
         executorService.shutdown();
+    }
+
+    /**
+     * Determines whether use crypto or not
+     */
+    public static void noEncryption() {
+        noEncryption = true;
     }
 
     /**
@@ -134,10 +166,7 @@ public final class Hawk {
 
         String encodedText = encode(value);
         //if any exception occurs during encoding, encodedText will be null and thus operation is unsuccessful
-        if (encodedText == null) {
-            return false;
-        }
-        return storage.put(key, encodedText);
+        return encodedText != null && storage.put(key, encodedText);
     }
 
     /**
@@ -158,10 +187,7 @@ public final class Hawk {
 
         String encodedText = encode(value);
         //if any exception occurs during encoding, encodedText will be null and thus operation is unsuccessful
-        if (encodedText == null) {
-            return false;
-        }
-        return storage.put(key, encodedText);
+        return encodedText != null && storage.put(key, encodedText);
     }
 
     /**
@@ -175,7 +201,15 @@ public final class Hawk {
             throw new NullPointerException("Value cannot be null");
         }
         byte[] encodedValue = encoder.encode(value);
-        String cipherText = encryption.encrypt(encodedValue);
+
+        String cipherText;
+
+        if (noEncryption) {
+            cipherText = Base64.encodeToString(encodedValue, Base64.DEFAULT);
+        } else {
+            cipherText = encryption.encrypt(encodedValue);
+        }
+
         if (cipherText == null) {
             return null;
         }
@@ -196,7 +230,15 @@ public final class Hawk {
             throw new IllegalStateException("List<T> cannot be empty");
         }
         byte[] encodedValue = encoder.encode(list);
-        String cipherText = encryption.encrypt(encodedValue);
+
+        String cipherText;
+
+        if (noEncryption) {
+            cipherText = Base64.encodeToString(encodedValue, Base64.DEFAULT);
+        } else {
+            cipherText = encryption.encrypt(encodedValue);
+        }
+
         if (cipherText == null) {
             return null;
         }
@@ -217,7 +259,13 @@ public final class Hawk {
             return null;
         }
         DataInfo dataInfo = DataUtil.getDataInfo(fullText);
-        byte[] bytes = encryption.decrypt(dataInfo.getCipherText());
+        byte[] bytes;
+
+        if (noEncryption) {
+            bytes = Base64.decode(dataInfo.getCipherText(), Base64.DEFAULT);
+        } else {
+            bytes = encryption.decrypt(dataInfo.getCipherText());
+        }
         try {
             return encoder.decode(bytes, dataInfo);
         } catch (Exception e) {

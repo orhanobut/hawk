@@ -16,6 +16,7 @@ final class AesEncryption implements Encryption {
     private static final String KEY_STORAGE_SALT = "asdf3242klj";
     private static final String KEY_GENERATED_SECRET_KEYS = "adsfjlkj234234dasfgenasdfas";
 
+    private final String password;
     private final Storage storage;
     private final Encoder encoder;
 
@@ -24,12 +25,20 @@ final class AesEncryption implements Encryption {
 
     AesEncryption(Storage storage, Encoder encoder, String password) {
         this.storage = storage;
-        this.saltKey = storage.get(KEY_STORAGE_SALT);
         this.encoder = encoder;
+        this.password = password;
+    }
+
+    @Override
+    public boolean init() {
+        this.saltKey = storage.get(KEY_STORAGE_SALT);
+
         try {
             generateSecretKey(password);
+            return true;
         } catch (GeneralSecurityException e) {
-            throw new IllegalStateException("GeneralSecurityException :", e);
+            Logger.w("Encryption is not supported in this device");
+            return false;
         }
     }
 
@@ -85,7 +94,7 @@ final class AesEncryption implements Encryption {
      */
     private void generateSecretKey(String password) throws GeneralSecurityException {
         if (password == null || storage.contains(KEY_GENERATED_SECRET_KEYS)) {
-            key = getSecretKeysBackup();
+            key = getSecretKeysWithoutPassword();
             Logger.w("key is generated without password");
             return;
         }
@@ -98,7 +107,7 @@ final class AesEncryption implements Encryption {
         Logger.w("key is generated from password");
     }
 
-    private AesCbcWithIntegrity.SecretKeys getSecretKeysBackup() {
+    private AesCbcWithIntegrity.SecretKeys getSecretKeysWithoutPassword() {
         try {
             AesCbcWithIntegrity.SecretKeys key = null;
             String keys = storage.get(KEY_GENERATED_SECRET_KEYS);
