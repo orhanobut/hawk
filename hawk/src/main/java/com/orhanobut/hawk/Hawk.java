@@ -102,6 +102,20 @@ public final class Hawk {
         setEncryptionMode(result);
     }
 
+    /**
+     * This will allow Hawk to store everything plaintext.
+     *
+     * @param context  is used to initiate context
+     * @param logLevel is used for logging
+     */
+    public static void initWithoutEncryption(Context context, LogLevel logLevel) {
+        Context appContext = context.getApplicationContext();
+        Hawk.logLevel = logLevel;
+        Hawk.storage = new SharedPreferencesStorage(appContext, TAG);
+        Hawk.encoder = new HawkEncoder(new GsonParser(new Gson()));
+        noEncryption = true;
+    }
+
     private static void setEncryptionMode(boolean isCryptoSupported) {
         if (isCryptoSupported) {
             noEncryption = false;
@@ -139,13 +153,6 @@ public final class Hawk {
         };
         executorService.execute(runnable);
         executorService.shutdown();
-    }
-
-    /**
-     * Determines whether use crypto or not
-     */
-    public static void noEncryption() {
-        noEncryption = true;
     }
 
     /**
@@ -363,7 +370,7 @@ public final class Hawk {
      * @return true if reset is successful
      */
     public static boolean resetCrypto() {
-        return encryption.reset();
+        return encryption == null || encryption.reset();
     }
 
     public static LogLevel getLogLevel() {

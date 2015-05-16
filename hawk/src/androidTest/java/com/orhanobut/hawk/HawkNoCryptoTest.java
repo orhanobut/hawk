@@ -20,8 +20,7 @@ public class HawkNoCryptoTest extends InstrumentationTestCase {
                 "dexmaker.dexcache",
                 getInstrumentation().getTargetContext().getCacheDir().getPath());
         context = getInstrumentation().getContext();
-        Hawk.init(context);
-        Hawk.noEncryption();
+        Hawk.initWithoutEncryption(context, LogLevel.FULL);
     }
 
     @Override

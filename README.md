@@ -17,7 +17,7 @@ Hawk provides:
 
 ###Add dependency
 ```groovy
-compile 'com.orhanobut:hawk:1.9'
+compile 'com.orhanobut:hawk:1.11'
 ```
 
 #### Initialize the hawk
@@ -47,8 +47,7 @@ Hawk.init(context, PASSWORD, new Hawk.Callback() {
 You can use no-crypto mode if you don't want encryption. This mode will be automatically used if the device does not
 support AES, PBE algorithm.
 ```java
-Hawk.init(context);
-Hawk.noEncryption();
+Hawk.initWithoutEncryption(context);
 ```
 
 #### Save
