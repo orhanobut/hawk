@@ -35,7 +35,7 @@ final class DataUtil {
         boolean isSerializable = text.charAt(text.length() - 1) == FLAG_SERIALIZABLE;
         boolean isList = text.charAt(text.length() - 2) == TYPE_LIST;
         String className = text.substring(0, text.length() - 2);
-        String cipherText = storedText.substring(index);
+        String cipherText = storedText.substring(index + 1);
 
         // if it is not list and serializable, no need to create the class object
         Class<?> clazz = null;
