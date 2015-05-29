@@ -33,6 +33,7 @@ public class HawkBackupTest extends InstrumentationTestCase {
 
     public void testBoolean() {
         Hawk.put("tag", true);
+        Hawk.init(context);
         assertEquals(true, Hawk.get("tag"));
     }
 
