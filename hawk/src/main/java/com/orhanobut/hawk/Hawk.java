@@ -97,7 +97,7 @@ public final class Hawk {
         }
 
         Storage cryptoStorage = new SharedPreferencesStorage(appContext, TAG_CRYPTO);
-        Hawk.encryption = new AesEncryption(cryptoStorage, encoder, password);
+        Hawk.encryption = new AesEncryption(cryptoStorage, encoder, new GsonParser(new Gson()), password);
         boolean result = Hawk.encryption.init();
         setEncryptionMode(result);
     }

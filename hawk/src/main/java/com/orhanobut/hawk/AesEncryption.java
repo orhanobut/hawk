@@ -19,14 +19,16 @@ final class AesEncryption implements Encryption {
     private final String password;
     private final Storage storage;
     private final Encoder encoder;
+    private final Parser parser;
 
     private AesCbcWithIntegrity.SecretKeys key;
     private String saltKey;
 
-    AesEncryption(Storage storage, Encoder encoder, String password) {
+    AesEncryption(Storage storage, Encoder encoder, Parser parser, String password) {
         this.storage = storage;
         this.encoder = encoder;
         this.password = password;
+        this.parser = parser;
     }
 
     @Override
@@ -112,11 +114,16 @@ final class AesEncryption implements Encryption {
             AesCbcWithIntegrity.SecretKeys key = null;
             String keys = storage.get(KEY_GENERATED_SECRET_KEYS);
             if (keys != null) {
-                key = encoder.decodeSerializable(keys);
+                try {
+                    key = AesCbcWithIntegrity.keys(keys);
+                } catch (Exception e) {
+                    Logger.i("keys was not correct value, it is reset");
+                }
             }
             if (key == null) {
                 key = AesCbcWithIntegrity.generateKey();
-                storage.put(KEY_GENERATED_SECRET_KEYS, encoder.encode(key));
+                String parsed = key.toString();
+                storage.put(KEY_GENERATED_SECRET_KEYS, parsed);
             }
             return key;
         } catch (GeneralSecurityException e) {

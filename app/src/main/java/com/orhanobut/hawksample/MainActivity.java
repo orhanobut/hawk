@@ -8,7 +8,6 @@ import android.util.Log;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 import com.orhanobut.hawk.Hawk;
-import com.orhanobut.hawk.LogLevel;
 
 import java.lang.reflect.Type;
 import java.util.ArrayList;
@@ -27,25 +26,33 @@ public class MainActivity extends Activity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        Hawk.init(this, "asdfasdfds", LogLevel.FULL);
+        //        Hawk.init(this, "asdfasdfds", LogLevel.FULL);
+        //
+        //        prefs = getSharedPreferences("BENCHARMK", MODE_PRIVATE);
+        //        editor = prefs.edit();
+        //
+        //        benchmarkPrimitivePut();
+        //        benchmarkStringPut();
+        //        benchmarkListObjectPut();
+        //        benchmarkListStringPut();
+        //        benchmarkObjectPut();
+        //
+        //
+        //        benchmarkPrimitiveGet();
+        //        benchmarkStringGet();
+        //        benchmarkListObjectGet();
+        //        benchmarkListStringGet();
+        //        benchmarkObjectGet();
+        //
+        //        benchmarkDelete();
+        testHawkInitWithoutPassword();
+    }
 
-        prefs = getSharedPreferences("BENCHARMK", MODE_PRIVATE);
-        editor = prefs.edit();
-
-        benchmarkPrimitivePut();
-        benchmarkStringPut();
-        benchmarkListObjectPut();
-        benchmarkListStringPut();
-        benchmarkObjectPut();
-
-
-        benchmarkPrimitiveGet();
-        benchmarkStringGet();
-        benchmarkListObjectGet();
-        benchmarkListStringGet();
-        benchmarkObjectGet();
-
-        benchmarkDelete();
+    private void testHawkInitWithoutPassword() {
+        Hawk.init(this);
+        Hawk.put("test123", "test");
+        Hawk.init(this);
+        Hawk.get("test123");
     }
 
     private static final String KEY = "KEY";

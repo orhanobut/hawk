@@ -443,6 +443,7 @@ final class AesCbcWithIntegrity {
         public String toString() {
             return Base64.encodeToString(getConfidentialityKey().getEncoded(), BASE64_FLAGS)
                     + ":" + Base64.encodeToString(getIntegrityKey().getEncoded(), BASE64_FLAGS);
+
         }
 
         @Override
