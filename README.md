@@ -17,7 +17,7 @@ Hawk provides:
 
 ###Add dependency
 ```groovy
-compile 'com.orhanobut:hawk:1.11'
+compile 'com.orhanobut:hawk:1.12'
 ```
 
 #### Initialize the hawk
