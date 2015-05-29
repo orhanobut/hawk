@@ -217,7 +217,7 @@ final class AesCbcWithIntegrity {
 
     private static byte[] randomBytes(int length) throws GeneralSecurityException {
         fixPrng();
-        SecureRandom random = SecureRandom.getInstance(RANDOM_ALGORITHM);
+        SecureRandom random = SecureRandom.getInstance(RANDOM_ALGORITHM, "Crypto");
         byte[] b = new byte[length];
         random.nextBytes(b);
         return b;
