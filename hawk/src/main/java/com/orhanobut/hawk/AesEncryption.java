@@ -18,17 +18,13 @@ final class AesEncryption implements Encryption {
 
     private final String password;
     private final Storage storage;
-    private final Encoder encoder;
-    private final Parser parser;
 
     private AesCbcWithIntegrity.SecretKeys key;
     private String saltKey;
 
-    AesEncryption(Storage storage, Encoder encoder, Parser parser, String password) {
+    AesEncryption(Storage storage, String password) {
         this.storage = storage;
-        this.encoder = encoder;
         this.password = password;
-        this.parser = parser;
     }
 
     @Override
@@ -97,19 +93,19 @@ final class AesEncryption implements Encryption {
     private void generateSecretKey(String password) throws GeneralSecurityException {
         if (password == null || storage.contains(KEY_GENERATED_SECRET_KEYS)) {
             key = getSecretKeysWithoutPassword();
-            Logger.w("key is generated without password");
             return;
         }
 
         key = generateSecretKeyFromPassword(password);
         if (key == null) {
-            key = AesCbcWithIntegrity.generateKey();
-            storage.put(KEY_GENERATED_SECRET_KEYS, encoder.encode(key));
+            key = getSecretKeysWithoutPassword();
+        } else {
+            Logger.w("key is generated from password");
         }
-        Logger.w("key is generated from password");
     }
 
     private AesCbcWithIntegrity.SecretKeys getSecretKeysWithoutPassword() {
+        Logger.w("key is generating without password");
         try {
             AesCbcWithIntegrity.SecretKeys key = null;
             String keys = storage.get(KEY_GENERATED_SECRET_KEYS);
@@ -117,6 +113,7 @@ final class AesEncryption implements Encryption {
                 try {
                     key = AesCbcWithIntegrity.keys(keys);
                 } catch (Exception e) {
+                    key = null;
                     Logger.i("keys was not correct value, it is reset");
                 }
             }
@@ -125,6 +122,7 @@ final class AesEncryption implements Encryption {
                 String parsed = key.toString();
                 storage.put(KEY_GENERATED_SECRET_KEYS, parsed);
             }
+            Logger.w("key is generated without password");
             return key;
         } catch (GeneralSecurityException e) {
             Logger.e(e.getMessage());
