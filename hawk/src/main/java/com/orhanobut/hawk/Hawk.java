@@ -241,7 +241,7 @@ public final class Hawk {
         String cipherText;
 
         if (noEncryption) {
-            cipherText = Base64.encodeToString(encodedValue, Base64.DEFAULT);
+            cipherText = DataUtil.encodeBase64(encodedValue);
         } else {
             cipherText = encryption.encrypt(encodedValue);
         }
@@ -269,10 +269,15 @@ public final class Hawk {
         byte[] bytes;
 
         if (noEncryption) {
-            bytes = Base64.decode(dataInfo.getCipherText(), Base64.DEFAULT);
+            bytes = DataUtil.decodeBase64(dataInfo.getCipherText());
         } else {
             bytes = encryption.decrypt(dataInfo.getCipherText());
         }
+
+        if (bytes == null) {
+            return null;
+        }
+
         try {
             return encoder.decode(bytes, dataInfo);
         } catch (Exception e) {
