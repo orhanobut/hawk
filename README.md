@@ -17,17 +17,17 @@ Hawk provides:
 
 ###Add dependency
 ```groovy
-compile 'com.orhanobut:hawk:1.12'
+compile 'com.orhanobut:hawk:1.13'
 ```
 
 #### Initialize the hawk
 ```java
-Hawk.init(context, PASSWORD);
+Hawk.init(context, PASSWORD); // might take 200ms
 ```
 if you don't put any password, it will use another approach, it is faster but less secure.
 
 ```java
-Hawk.init(context);
+Hawk.init(context);   // very fast
 ```
 
 init takes 200-400ms depends on the device. You may want to use async solution in order to avoid this. Add a callback to init and it will work asynchronous.

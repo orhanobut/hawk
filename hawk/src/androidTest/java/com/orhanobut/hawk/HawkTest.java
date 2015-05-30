@@ -325,6 +325,7 @@ public class HawkTest extends InstrumentationTestCase {
     }
 
     public void testCount() {
+        Hawk.clear();
         String value = "test";
         Hawk.put("tag", value);
         Hawk.put("tag1", value);
@@ -349,6 +350,7 @@ public class HawkTest extends InstrumentationTestCase {
     }
 
     public void testRemove() {
+        Hawk.clear();
         String value = "test";
         Hawk.put("tag", value);
         Hawk.put("tag1", value);
@@ -363,6 +365,7 @@ public class HawkTest extends InstrumentationTestCase {
     }
 
     public void testBulkRemoval() {
+        Hawk.clear();
         Hawk.put("tag", "test");
         Hawk.put("tag1", 1);
         Hawk.put("tag2", Boolean.FALSE);
