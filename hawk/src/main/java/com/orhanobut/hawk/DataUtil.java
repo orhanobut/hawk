@@ -1,5 +1,7 @@
 package com.orhanobut.hawk;
 
+import android.util.Base64;
+
 import java.io.Serializable;
 
 /**
@@ -73,6 +75,24 @@ final class DataUtil {
     static String addTypeAsList(String cipherText, Class clazz) {
         String className = clazz.getCanonicalName();
         return className + TYPE_LIST + FLAG_NON_SERIALIZABLE + DELIMITER + cipherText;
+    }
+
+    static String encodeBase64(byte[] bytes) {
+        try {
+            return Base64.encodeToString(bytes, Base64.DEFAULT);
+        } catch (Exception e) {
+            Logger.w(e.getMessage());
+            return null;
+        }
+    }
+
+    static byte[] decodeBase64(String value) {
+        try {
+            return Base64.decode(value, Base64.DEFAULT);
+        } catch (Exception e) {
+            Logger.w(e.getMessage());
+            return null;
+        }
     }
 
 
