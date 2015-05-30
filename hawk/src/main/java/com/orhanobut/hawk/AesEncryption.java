@@ -31,13 +31,8 @@ final class AesEncryption implements Encryption {
     public boolean init() {
         this.saltKey = storage.get(KEY_STORAGE_SALT);
 
-        try {
-            generateSecretKey(password);
-            return true;
-        } catch (GeneralSecurityException e) {
-            Logger.w("Encryption is not supported in this device");
-            return false;
-        }
+        key = generateSecretKey(password);
+        return key != null;
     }
 
     @Override
@@ -90,10 +85,10 @@ final class AesEncryption implements Encryption {
      * Some phones especially Samsung(I hate Samsung) do not support every algorithm. If it is not
      * supported, it will fall generate the key without password and store it.
      */
-    private void generateSecretKey(String password) throws GeneralSecurityException {
+    private AesCbcWithIntegrity.SecretKeys generateSecretKey(String password) {
+        AesCbcWithIntegrity.SecretKeys key;
         if (password == null || storage.contains(KEY_GENERATED_SECRET_KEYS)) {
-            key = getSecretKeysWithoutPassword();
-            return;
+            return getSecretKeysWithoutPassword();
         }
 
         key = generateSecretKeyFromPassword(password);
@@ -102,6 +97,7 @@ final class AesEncryption implements Encryption {
         } else {
             Logger.w("key is generated from password");
         }
+        return key;
     }
 
     private AesCbcWithIntegrity.SecretKeys getSecretKeysWithoutPassword() {
