@@ -27,10 +27,10 @@ Hawk.init(context, PASSWORD); // might take 200ms
 if you don't put any password, it will use another approach, it is faster but less secure.
 
 ```java
-Hawk.init(context);   // very fast
+Hawk.init(context);   // very fast, less secure
 ```
 
-init takes 200-400ms depends on the device. You may want to use async solution in order to avoid this. Add a callback to init and it will work asynchronous.
+init might take 36-400ms depends on the device. You may want to use async solution in order to avoid this. Add a callback to init and it will work asynchronous.
 ```java
 Hawk.init(context, PASSWORD, new Hawk.Callback() {
         @Override
@@ -155,6 +155,8 @@ I use the following implementation for the crypto and I believe it should get mo
 - [Bee](https://github.com/orhanobut/bee) QA/Debug tool
 - [DialogPlus](https://github.com/orhanobut/dialogplus) Easy,simple dialog solution
 - [SimpleListView](https://github.com/orhanobut/simplelistview) Simple basic listview implementation with linearlayout
+- [Logger](https://github.com/orhanobut/logger) Simple, pretty and advanced logger
+
 
 ###License
 <pre>
