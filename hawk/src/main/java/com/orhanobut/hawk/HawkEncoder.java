@@ -60,13 +60,14 @@ final class HawkEncoder implements Encoder {
       return null;
     }
 
-    if (!info.isNewVersion()) {
-      return decodeOld(bytes, info);
-    } else {
+    if (info.isNewVersion()) {
       return decodeNew(bytes, info);
+    } else {
+      return decodeOld(bytes, info);
     }
   }
 
+  @Deprecated
   private <T> T decodeOld(byte[] bytes, DataInfo info) throws Exception {
     boolean isList = info.getDataType() == DataType.LIST;
 
@@ -121,8 +122,7 @@ final class HawkEncoder implements Encoder {
     if (type == null) {
       return (T) new ArrayList<>();
     }
-    List<T> list;
-    list = parser.fromJson(json, new TypeToken<List<T>>() {
+    List<T> list = parser.fromJson(json, new TypeToken<List<T>>() {
     }.getType());
 
     int size = list.size();
@@ -134,14 +134,13 @@ final class HawkEncoder implements Encoder {
 
   @SuppressWarnings("unchecked")
   private <T> T toSet(String json, Class<?> type) throws Exception {
+    Set<T> resultSet = new HashSet<>();
     if (type == null) {
-      return (T) new HashSet<>();
+      return (T) resultSet;
     }
-    Set<T> set;
-    set = parser.fromJson(json, new TypeToken<Set<T>>() {
+    Set<T> set = parser.fromJson(json, new TypeToken<Set<T>>() {
     }.getType());
 
-    Set<T> resultSet = new HashSet<>();
     for (T t : set) {
       String valueJson = parser.toJson(t);
       T value = parser.fromJson(valueJson, type);
@@ -152,14 +151,13 @@ final class HawkEncoder implements Encoder {
 
   @SuppressWarnings("unchecked")
   private <K, V, T> T toMap(String json, Class<?> keyType, Class<?> valueType) throws Exception {
+    Map<K, V> resultMap = new HashMap<>();
     if (keyType == null || valueType == null) {
-      return (T) new HashMap<>();
+      return (T) resultMap;
     }
-    Map<K, V> map;
-    map = parser.fromJson(json, new TypeToken<Map<K, V>>() {
+    Map<K, V> map = parser.fromJson(json, new TypeToken<Map<K, V>>() {
     }.getType());
 
-    Map<K, V> resultMap = new HashMap<>();
     for (Map.Entry<K, V> entry : map.entrySet()) {
       String keyJson = parser.toJson(entry.getKey());
       K k = parser.fromJson(keyJson, keyType);

@@ -392,25 +392,6 @@ public final class Hawk {
     }
 
     /**
-     * Saves the list of objects to the storage
-     *
-     * @param key  is used to save the data
-     * @param list is the data that will be saved
-     */
-    public <T> Chain put(String key, List<T> list) {
-      if (key == null) {
-        throw new NullPointerException("Key cannot be null");
-      }
-      String encodedText = zip(list);
-      if (encodedText == null) {
-        Log.d(TAG, "Key : " + key + " is not added, encryption failed");
-        return this;
-      }
-      items.add(new Pair<>(key, encodedText));
-      return this;
-    }
-
-    /**
      * Commits the chained values to storage.
      *
      * @return true if successfully saved, false otherwise.

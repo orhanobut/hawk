@@ -88,6 +88,7 @@ final class DataHelper {
     return new DataInfo(dataType, cipherText, keyClazz, valueClazz);
   }
 
+  @Deprecated
   static DataInfo getOldDataInfo(String text, String cipherText) {
     boolean serializable = text.charAt(text.length() - 1) == FLAG_SERIALIZABLE;
     char type = text.charAt(text.length() - 2);
@@ -95,14 +96,11 @@ final class DataHelper {
 
     String className = text.substring(0, text.length() - 2);
 
-    // if it is collection and not serializable, no need to create the class object
     Class<?> clazz = null;
-    if (dataType.isCollection() || !serializable) {
-      try {
-        clazz = Class.forName(className);
-      } catch (ClassNotFoundException e) {
-        Logger.d(e.getMessage());
-      }
+    try {
+      clazz = Class.forName(className);
+    } catch (ClassNotFoundException e) {
+      Logger.d(e.getMessage());
     }
 
     return new DataInfo(dataType, serializable, cipherText, clazz);
