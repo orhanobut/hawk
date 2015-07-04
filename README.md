@@ -129,7 +129,7 @@ List<Foo> value = Hawk.get(key, new ArrayList<Foo>);
 
 ##### Benchmark result (ms)
 Done with Nexus 4, Android L. Note that this is not certain values, I just made a few runs and show it to give you an idea.
-
+<pre>
 | Hawk (ms)        | init | security| Primitive | Object | List<T> |   Map   |   Set   |
 |                  |      |  level  |  PUT/GET  | PUT/GET| PUT/GET | PUT/GET | PUT/SET |
 |------------------|------|---------|-----------|--------|---------|---------|---------|
@@ -137,6 +137,7 @@ Done with Nexus 4, Android L. Note that this is not certain values, I just made 
 | Without password | 16   | less    | 14  | 2   | 8  | 1 | 20 | 30 | 12 | 3  | 9  | 3  |
 | No encryption    | 14   | none    | 9   | 2   | 8  | 1 | 20 | 30 | 11 | 3  | 9  | 3  |
 | Prefs            | 5    | none    | 8   | 1   | 10 | 1 | 30 | 9  | 14 | 2  | 17 | 2  |
+</pre>
 
 ##### How Hawk works
 
