@@ -5,31 +5,52 @@ package com.orhanobut.hawk;
  */
 final class DataInfo {
 
-    private final boolean isSerializable;
-    private final boolean isList;
-    private final String cipherText;
-    private final Class clazz;
+  private final DataType dataType;
+  private final String cipherText;
+  private final Class keyClazz;
+  private final Class valueClazz;
+  private final boolean serializable;
+  private final boolean isNewVersion;
 
-    DataInfo(boolean isSerializable, boolean isList, String cipherText, Class clazz) {
-        this.isSerializable = isSerializable;
-        this.isList = isList;
-        this.cipherText = cipherText;
-        this.clazz = clazz;
-    }
+  DataInfo(DataType dataType, boolean serializable, String cipherText, Class keyClazz) {
+    this.cipherText = cipherText;
+    this.keyClazz = keyClazz;
+    this.valueClazz = null;
+    this.dataType = dataType;
+    this.serializable = serializable;
+    this.isNewVersion = false;
+  }
 
-    boolean isSerializable() {
-        return isSerializable;
-    }
+  DataInfo(DataType dataType, String cipherText, Class keyClazz, Class valueClazz) {
+    this.cipherText = cipherText;
+    this.keyClazz = keyClazz;
+    this.valueClazz = valueClazz;
+    this.dataType = dataType;
+    this.serializable = false;
+    this.isNewVersion = true;
+  }
 
-    boolean isList() {
-        return isList;
-    }
+  public DataType getDataType() {
+    return dataType;
+  }
 
-    String getCipherText() {
-        return cipherText;
-    }
+  String getCipherText() {
+    return cipherText;
+  }
 
-    Class getClazz() {
-        return clazz;
-    }
+  Class getKeyClazz() {
+    return keyClazz;
+  }
+
+  public Class getValueClazz() {
+    return valueClazz;
+  }
+
+  public boolean isSerializable() {
+    return serializable;
+  }
+
+  public boolean isNewVersion() {
+    return isNewVersion;
+  }
 }

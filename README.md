@@ -17,7 +17,7 @@ Hawk provides:
 
 ###Add dependency
 ```groovy
-compile 'com.orhanobut:hawk:1.14'
+compile 'com.orhanobut:hawk:1.15'
 ```
 
 #### Initialize the hawk
@@ -51,12 +51,9 @@ Hawk.initWithoutEncryption(context);
 ```
 
 #### Save
+put method accept any type such as list, map, primitive...
 ```java
 Hawk.put(key, T); // Returns the result as boolean
-```
-or
-```java
-Hawk.put(key, List<T>); // Returns the result as boolean
 ```
 You can also store multiple items at once by using chain feature. Remember to use commit() at the end. Either all of them will be saved or none.
 ```java
@@ -102,7 +99,9 @@ Hawk.put("key", "something"); // Save string
 Hawk.put("key", true); // save boolean
 Hawk.put("key", new Foo()); // save an object
 Hawk.put("key", List<String>); // save list
-Hawk.put("key", List<Foo>); // save list of any type
+Hawk.put("key", List<Foo>); // save list
+Hawk.put("key", Map<Foo,Foo>); // save map
+Hawk.put("key", Set<Foo>); // save set
 Hawk.put("key", 1234); // save numbers
 ```
 
@@ -115,6 +114,8 @@ Foo value = Hawk.get(key);
 boolean value = Hawk.get(key);
 List<String> value = Hawk.get(key);
 List<Foo> value = Hawk.get(key);
+Map<String,Foo> value = Hawk.get(key);
+Set<Foo> value = Hawk.get(key);
 ```
 or with the defaults
 ```java
@@ -129,7 +130,13 @@ List<Foo> value = Hawk.get(key, new ArrayList<Foo>);
 ##### Benchmark result (ms)
 Done with Nexus 4, Android L. Note that this is not certain values, I just made a few runs and show it to give you an idea.
 
-<img src='https://github.com/orhanobut/hawk/blob/master/images/benchmark.png'/>
+| Hawk (ms)        | init | security| Primitive | Object | List<T> |   Map   |   Set   |
+|                  |      |  level  |  PUT/GET  | PUT/GET| PUT/GET | PUT/GET | PUT/SET |
+|------------------|------|---------|-----------|--------|---------|---------|---------|
+| With password    | 24   | high    | 26  | 2   | 14 | 1 | 20 | 36 | 12 | 4  | 15 | 3  |
+| Without password | 16   | less    | 14  | 2   | 8  | 1 | 20 | 30 | 12 | 3  | 9  | 3  |
+| No encryption    | 14   | none    | 9   | 2   | 8  | 1 | 20 | 30 | 11 | 3  | 9  | 3  |
+| Prefs            | 5    | none    | 8   | 1   | 10 | 1 | 30 | 9  | 14 | 2  | 17 | 2  |
 
 ##### How Hawk works
 
