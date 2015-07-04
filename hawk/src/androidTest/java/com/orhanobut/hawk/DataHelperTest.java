@@ -6,7 +6,7 @@ import android.test.InstrumentationTestCase;
 /**
  * @author Orhan Obut
  */
-public class DataUtilTest extends InstrumentationTestCase {
+public class DataHelperTest extends InstrumentationTestCase {
 
     Context context;
 
@@ -27,7 +27,7 @@ public class DataUtilTest extends InstrumentationTestCase {
 
     public void testGetDataInfoShouldReturnNull_null() {
         try {
-            DataUtil.getDataInfo(null);
+            DataHelper.getDataInfo(null);
             assertTrue(false);
         } catch (Exception e) {
             assertTrue(true);
@@ -36,7 +36,7 @@ public class DataUtilTest extends InstrumentationTestCase {
 
     public void testGetDataInfoShouldThrowException_NotContainDelimiter() {
         try {
-            DataUtil.getDataInfo("324234");
+            DataHelper.getDataInfo("324234");
             assertTrue(false);
         } catch (Exception e) {
             assertTrue(true);
@@ -44,27 +44,27 @@ public class DataUtilTest extends InstrumentationTestCase {
     }
 
     public void testGetDataInfoShouldReturnNotNull() {
-        DataInfo info = DataUtil.getDataInfo("String11@asdfjasdf");
+        DataInfo info = DataHelper.getDataInfo("String11@asdfjasdf");
         assertNotNull(info);
     }
 
     public void testGetDataInfoShouldBeSerializable() {
-        DataInfo info = DataUtil.getDataInfo("String11@asdfjasdf");
+        DataInfo info = DataHelper.getDataInfo("String11@asdfjasdf");
         assertTrue(info.isSerializable());
     }
 
     public void testGetDataInfoShouldNotBeSerializable() {
-        DataInfo info = DataUtil.getDataInfo("String10@asdfjasdf");
+        DataInfo info = DataHelper.getDataInfo("String10@asdfjasdf");
         assertFalse(info.isSerializable());
     }
 
     public void testGetDataInfoShouldBeList() {
-        DataInfo info = DataUtil.getDataInfo("String11@asdfjasdf");
+        DataInfo info = DataHelper.getDataInfo("String11@asdfjasdf");
         assertTrue(info.isSerializable());
     }
 
     public void testGetDataInfoShouldNotBeList() {
-        DataInfo info = DataUtil.getDataInfo("String00@asdfjasdf");
+        DataInfo info = DataHelper.getDataInfo("String00@asdfjasdf");
         assertFalse(info.isSerializable());
     }
 
