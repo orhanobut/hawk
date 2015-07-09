@@ -22,15 +22,14 @@ compile 'com.orhanobut:hawk:1.15'
 
 #### Initialize the hawk
 ```java
-Hawk.init(context, PASSWORD); // might take 200ms
+Hawk.init(context, PASSWORD); // might take 36-400ms depends on device
 ```
 if you don't put any password, it will use another approach, it is faster but less secure.
 
 ```java
-Hawk.init(context);   // very fast, less secure
+Hawk.init(context);   // might take 36-60ms 
 ```
-
-init might take 36-400ms depends on the device. You may want to use async solution in order to avoid this. Add a callback to init and it will work asynchronous.
+. You may want to use async solution for init. Add a callback to init and it will work asynchronous.
 ```java
 Hawk.init(context, PASSWORD, new Hawk.Callback() {
         @Override
