@@ -72,7 +72,22 @@ public class MainActivity extends Activity {
   }
 
   private void testRx() {
-    Hawk.put(KEY, new Foo());
+    Hawk.putObservable(KEY, new Foo())
+        .observeOn(Schedulers.io())
+        .subscribeOn(AndroidSchedulers.mainThread())
+        .subscribe(new Subscriber<Boolean>() {
+          @Override
+          public void onCompleted() {
+          }
+
+          @Override
+          public void onError(Throwable e) {
+          }
+
+          @Override
+          public void onNext(Boolean s) {
+          }
+        });
 
     Hawk.<Foo>getObservable(KEY)
         .observeOn(Schedulers.io())
@@ -93,6 +108,7 @@ public class MainActivity extends Activity {
             Log.d("rxtest", s.toString());
           }
         });
+
   }
 
   private void testHawkInitWithoutPassword() {

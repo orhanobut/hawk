@@ -180,7 +180,7 @@ public final class Hawk {
   }
 
   /**
-   * Creates a stream to put data
+   * Creates a stream to put data, RxJava dependency is required
    *
    * @param <T> value type
    * @return Observable<Boolean>
@@ -207,7 +207,7 @@ public final class Hawk {
 
   private static void checkRx() {
     if (!Utils.hasRxJavaOnClasspath()) {
-      throw new NullPointerException("RxJava is not on classpath, " +
+      throw new NoClassDefFoundError("RxJava is not on classpath, " +
           "make sure that you have it in your dependencies");
     }
   }
@@ -288,10 +288,11 @@ public final class Hawk {
 
   /**
    * Creates a stream of data
+   * RxJava dependency is required
    *
    * @param key of the data
    * @param <T> type of the data
-   * @return Observable</T>
+   * @return Observable<T>
    */
   public static <T> Observable<T> getObservable(String key) {
     checkRx();
@@ -300,6 +301,7 @@ public final class Hawk {
 
   /**
    * Creates a stream of data
+   * RxJava dependency is required
    *
    * @param key          of the data
    * @param defaultValue of the default value if the value doesn't exists
