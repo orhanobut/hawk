@@ -8,7 +8,6 @@ import android.util.Log;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 import com.orhanobut.hawk.Hawk;
-import com.orhanobut.hawk.LogLevel;
 
 import java.lang.reflect.Type;
 import java.util.ArrayList;
@@ -17,6 +16,10 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+
+import rx.Subscriber;
+import rx.android.schedulers.AndroidSchedulers;
+import rx.schedulers.Schedulers;
 
 
 public class MainActivity extends Activity {
@@ -31,38 +34,81 @@ public class MainActivity extends Activity {
     super.onCreate(savedInstanceState);
     setContentView(R.layout.activity_main);
 
-    long start = System.nanoTime();
-    Hawk.initWithoutEncryption(this, LogLevel.FULL);
-    long end = System.nanoTime();
+    //    long start = System.nanoTime();
+    //    Hawk.initWithoutEncryption(this, LogLevel.FULL);
+    //    long end = System.nanoTime();
+    //
+    //    double resultHawk = getTime(start, end);
+    //    log("Hawk init with password : " + resultHawk);
+    //
+    //    start = System.nanoTime();
+    //    prefs = getSharedPreferences("BENCHARMK", MODE_PRIVATE);
+    //    editor = prefs.edit();
+    //    end = System.nanoTime();
+    //    double resultPref = getTime(start, end);
+    //    log("init: Prefs: " + resultPref + "    Hawk : " + resultHawk);
+    //
+    //
+    //    benchmarkPrimitivePut();
+    //    benchmarkStringPut();
+    //    benchmarkListObjectPut();
+    //    benchmarkListStringPut();
+    //    benchmarkObjectPut();
+    //    benchmarkMapPut();
+    //    benchmarkSetPut();
+    //
+    //    benchmarkPrimitiveGet();
+    //    benchmarkStringGet();
+    //    benchmarkListObjectGet();
+    //    benchmarkListStringGet();
+    //    benchmarkObjectGet();
+    //    benchmarkMapGet();
+    //    benchmarkSetGet();
+    //
+    //    benchmarkDelete();
 
-    double resultHawk = getTime(start, end);
-    log("Hawk init with password : " + resultHawk);
+    Hawk.init(this);
+    testRx();
+  }
 
-    start = System.nanoTime();
-    prefs = getSharedPreferences("BENCHARMK", MODE_PRIVATE);
-    editor = prefs.edit();
-    end = System.nanoTime();
-    double resultPref = getTime(start, end);
-    log("init: Prefs: " + resultPref + "    Hawk : " + resultHawk);
+  private void testRx() {
+    Hawk.putObservable(KEY, new Foo())
+        .observeOn(Schedulers.io())
+        .subscribeOn(AndroidSchedulers.mainThread())
+        .subscribe(new Subscriber<Boolean>() {
+          @Override
+          public void onCompleted() {
+          }
 
+          @Override
+          public void onError(Throwable e) {
+          }
 
-    benchmarkPrimitivePut();
-    benchmarkStringPut();
-    benchmarkListObjectPut();
-    benchmarkListStringPut();
-    benchmarkObjectPut();
-    benchmarkMapPut();
-    benchmarkSetPut();
+          @Override
+          public void onNext(Boolean s) {
+          }
+        });
 
-    benchmarkPrimitiveGet();
-    benchmarkStringGet();
-    benchmarkListObjectGet();
-    benchmarkListStringGet();
-    benchmarkObjectGet();
-    benchmarkMapGet();
-    benchmarkSetGet();
+    Hawk.<Foo>getObservable(KEY)
+        .observeOn(Schedulers.io())
+        .subscribeOn(AndroidSchedulers.mainThread())
+        .subscribe(new Subscriber<Foo>() {
+          @Override
+          public void onCompleted() {
+            Log.d("rxtest", "completed");
+          }
 
-    benchmarkDelete();
+          @Override
+          public void onError(Throwable e) {
+            Log.d("rxtest", "error");
+          }
+
+          @Override
+          public void onNext(Foo s) {
+            Log.d("rxtest", s.toString());
+          }
+        });
+
   }
 
   private void testHawkInitWithoutPassword() {

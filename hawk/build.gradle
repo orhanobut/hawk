@@ -1,22 +1,27 @@
 apply plugin: 'com.android.library'
+
 android {
-    compileSdkVersion 21
-    buildToolsVersion "21.1.2"
+  compileSdkVersion 21
+  buildToolsVersion "21.1.2"
 
-    defaultConfig {
-        minSdkVersion 8
-        targetSdkVersion 21
-        versionCode 1
-        versionName "1.0"
-    }
+  defaultConfig {
+    minSdkVersion 8
+    targetSdkVersion 21
+  }
 
-    lintOptions {
-        abortOnError false
-    }
+  lintOptions {
+    abortOnError false
+  }
+}
+
+configurations {
+  optional
+  compile.extendsFrom optional
 }
 
 dependencies {
-    compile 'com.google.code.gson:gson:2.3.1'
+  compile 'com.google.code.gson:gson:2.3.1'
+  optional 'io.reactivex:rxandroid:0.25.0'
 }
 
 apply from: '../maven_push.gradle'

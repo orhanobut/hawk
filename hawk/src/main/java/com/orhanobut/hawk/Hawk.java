@@ -12,6 +12,9 @@ import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
+import rx.Observable;
+import rx.Subscriber;
+
 /**
  * @author Orhan Obut
  */
@@ -175,28 +178,39 @@ public final class Hawk {
     //if any exception occurs during encoding, encodedText will be null and thus operation is unsuccessful
     return encodedText != null && storage.put(key, encodedText);
   }
-  //
-  //  /**
-  //   * Saves the list of objects to the storage
-  //   *
-  //   * @param key   is used to save the data
-  //   * @param value is the data that will be saved
-  //   * @return true if put is successful
-  //   */
-  //  @Deprecated
-  //  public static <T> boolean put(String key, List<T> value) {
-  //    if (key == null) {
-  //      throw new NullPointerException("Key cannot be null");
-  //    }
-  //    //if the value is null, simply remove it
-  //    if (value == null) {
-  //      return remove(key);
-  //    }
-  //
-  //    String encodedText = zip(value);
-  //    //if any exception occurs during encoding, encodedText will be null and thus operation is unsuccessful
-  //    return encodedText != null && storage.put(key, encodedText);
-  //  }
+
+  /**
+   * Creates a stream to put data, RxJava dependency is required
+   *
+   * @param <T> value type
+   * @return Observable<Boolean>
+   */
+  public static <T> Observable<Boolean> putObservable(final String key, final T value) {
+    checkRx();
+    return Observable.create(new Observable.OnSubscribe<Boolean>() {
+      @Override
+      public void call(Subscriber<? super Boolean> subscriber) {
+        try {
+          boolean result = put(key, value);
+          if (!subscriber.isUnsubscribed()) {
+            subscriber.onNext(result);
+            subscriber.onCompleted();
+          }
+        } catch (Exception e) {
+          if (!subscriber.isUnsubscribed()) {
+            subscriber.onError(e);
+          }
+        }
+      }
+    });
+  }
+
+  private static void checkRx() {
+    if (!Utils.hasRxJavaOnClasspath()) {
+      throw new NoClassDefFoundError("RxJava is not on classpath, " +
+          "make sure that you have it in your dependencies");
+    }
+  }
 
   /**
    * Encodes the given value as full text (cipher + data info)
@@ -270,6 +284,48 @@ public final class Hawk {
       return defaultValue;
     }
     return t;
+  }
+
+  /**
+   * Creates a stream of data
+   * RxJava dependency is required
+   *
+   * @param key of the data
+   * @param <T> type of the data
+   * @return Observable<T>
+   */
+  public static <T> Observable<T> getObservable(String key) {
+    checkRx();
+    return getObservable(key, null);
+  }
+
+  /**
+   * Creates a stream of data
+   * RxJava dependency is required
+   *
+   * @param key          of the data
+   * @param defaultValue of the default value if the value doesn't exists
+   * @param <T>          type of the data
+   * @return Observable</T>
+   */
+  public static <T> Observable<T> getObservable(final String key, final T defaultValue) {
+    checkRx();
+    return Observable.create(new Observable.OnSubscribe<T>() {
+      @Override
+      public void call(Subscriber<? super T> subscriber) {
+        try {
+          T t = get(key, defaultValue);
+          if (!subscriber.isUnsubscribed()) {
+            subscriber.onNext(t);
+            subscriber.onCompleted();
+          }
+        } catch (Exception e) {
+          if (!subscriber.isUnsubscribed()) {
+            subscriber.onError(e);
+          }
+        }
+      }
+    });
   }
 
   /**

@@ -17,8 +17,10 @@ Hawk provides:
 
 ###Add dependency
 ```groovy
-compile 'com.orhanobut:hawk:1.15'
+compile 'com.orhanobut:hawk:1.16'
 ```
+
+If you want to have Rx features, make sure to add Rx dependency
 
 #### Initialize the hawk
 ```java
@@ -63,6 +65,31 @@ Hawk.chain()
      .commit();
 ```
 
+#### Save (Rx)
+```java
+Observable<Boolean> result = Hawk.putObservable(key, T); // Returns the result as boolean
+```
+
+example usage
+```java
+Hawk.putObservable(KEY, new Foo())
+    .observeOn(Schedulers.io())
+    .subscribeOn(AndroidSchedulers.mainThread())
+    .subscribe(new Subscriber<Boolean>() {
+      @Override
+      public void onCompleted() {
+      }
+
+      @Override
+      public void onError(Throwable e) {
+      }
+
+      @Override
+      public void onNext(Boolean s) {
+      }
+    });
+```
+
 #### Get
 ```java
 T result = Hawk.get(key);
@@ -71,6 +98,40 @@ or with default value
 
 ```java
 T result = Hawk.get(key, T);
+```
+
+#### Get Observable (Rx support)
+To be able to use rx support, you need to add the dependency.
+```java
+Observable<T> result = Hawk.getObservable(key);
+```
+or with default value
+
+```java
+Observable<T> result = Hawk.getObservable(key, T);
+```
+
+example usage
+```java
+Hawk.<Foo>getObservable(KEY)
+    .observeOn(Schedulers.io())
+    .subscribeOn(AndroidSchedulers.mainThread())
+    .subscribe(new Subscriber<Foo>() {
+      @Override
+      public void onCompleted() {
+        Log.d("rxtest", "completed");
+      }
+
+      @Override
+      public void onError(Throwable e) {
+        Log.d("rxtest", "error");
+      }
+
+      @Override
+      public void onNext(Foo s) {
+        Log.d("rxtest", s.toString());
+      }
+    });
 ```
 
 #### Remove
