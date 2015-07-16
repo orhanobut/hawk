@@ -205,7 +205,6 @@ Done with Nexus 4, Android L. Note that this is not certain values, I just made 
 
 ##### Notes
 - Password should be provided by the user, we try to find better solution for this.
-- Hawk.init() takes around 200-500ms depends on the phone.
 - Salt key is stored plain text in the storage currently. We are checking to find a better solution for this. Any contribution about this will be great help as well.
 
 ##### Credits
