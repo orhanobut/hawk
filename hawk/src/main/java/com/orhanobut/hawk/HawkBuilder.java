@@ -6,8 +6,6 @@ import android.text.TextUtils;
 
 import com.google.gson.Gson;
 
-import java.util.concurrent.ExecutorService;
-
 /**
  * @author Orhan Obut
  */
@@ -33,12 +31,10 @@ public class HawkBuilder {
   private String password;
   private LogLevel logLevel;
   private Storage cryptoStorage;
-  private Storage infoStorage;
   private Encoder encoder;
   private Parser parser;
   private Encryption encryption;
   private Callback callback;
-  private static ExecutorService executorService;
 
   public enum EncryptionMethod {
     HIGHEST, MEDIUM, NO_ENCRYPTION
@@ -78,6 +74,9 @@ public class HawkBuilder {
   }
 
   public EncryptionMethod getEncryptionMethod() {
+    if (encryptionMethod == null) {
+      encryptionMethod = EncryptionMethod.MEDIUM;
+    }
     return encryptionMethod;
   }
 
@@ -86,18 +85,34 @@ public class HawkBuilder {
   }
 
   public LogLevel getLogLevel() {
+    if (logLevel == null) {
+      logLevel = LogLevel.NONE;
+    }
     return logLevel;
   }
 
   public Storage getStorage() {
+    if (cryptoStorage == null) {
+      cryptoStorage = new SharedPreferencesStorage(context, TAG);
+    }
     return cryptoStorage;
   }
 
   public Encoder getEncoder() {
+    if (encoder == null) {
+      encoder = new HawkEncoder(getParser());
+    }
     return encoder;
   }
 
+  public Storage getInfoStorage() {
+    return new SharedPreferencesStorage(context, TAG_INFO);
+  }
+
   public Parser getParser() {
+    if (parser == null) {
+      parser = new GsonParser(new Gson());
+    }
     return parser;
   }
 
@@ -109,28 +124,9 @@ public class HawkBuilder {
     return encryptionMethod != EncryptionMethod.NO_ENCRYPTION;
   }
 
-  private void init() {
-    infoStorage = new SharedPreferencesStorage(context, TAG_INFO);
-    if (logLevel == null) {
-      logLevel = LogLevel.NONE;
-    }
-    if (parser == null) {
-      parser = new GsonParser(new Gson());
-    }
-    if (encoder == null) {
-      encoder = new HawkEncoder(parser);
-    }
-    if (encryptionMethod == null) {
-      encryptionMethod = EncryptionMethod.MEDIUM;
-    }
-    if (cryptoStorage == null) {
-      cryptoStorage = new SharedPreferencesStorage(context, TAG);
-    }
-  }
-
   private void validate() {
-    if (encryptionMethod == EncryptionMethod.HIGHEST) {
-      if (TextUtils.isEmpty(password)) {
+    if (getEncryptionMethod() == EncryptionMethod.HIGHEST) {
+      if (TextUtils.isEmpty(getPassword())) {
         throw new IllegalStateException("Password cannot be null " +
             "if encryption mode is highest");
       }
@@ -157,26 +153,24 @@ public class HawkBuilder {
 
   private void startBuild() {
     validate();
-    init();
     setEncryption();
   }
 
   private void setEncryption() {
-    switch (encryptionMethod) {
+    switch (getEncryptionMethod()) {
       case NO_ENCRYPTION:
         break;
       case HIGHEST:
-        encryption = new AesEncryption(cryptoStorage, password);
-        boolean result = encryption.init();
-        if (!result) {
-          infoStorage.put(KEY_NO_CRYPTO, true);
+        encryption = new AesEncryption(getStorage(), getPassword());
+        if (!getEncryption().init()) {
+          getInfoStorage().put(KEY_NO_CRYPTO, true);
           encryptionMethod = EncryptionMethod.NO_ENCRYPTION;
         }
         break;
       case MEDIUM:
-        encryption = new AesEncryption(cryptoStorage, null);
-        if (encryption.init()) {
-          infoStorage.put(KEY_NO_CRYPTO, true);
+        encryption = new AesEncryption(getStorage(), null);
+        if (!getEncryption().init()) {
+          getInfoStorage().put(KEY_NO_CRYPTO, true);
           encryptionMethod = EncryptionMethod.NO_ENCRYPTION;
         }
         break;
