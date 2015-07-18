@@ -64,7 +64,7 @@ public interface Storage {
    *
    * @return entry count in the storage
    */
-  int count();
+  long count();
 
   /**
    * Checks whether the storage contains an entry.

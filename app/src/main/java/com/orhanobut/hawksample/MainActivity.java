@@ -9,6 +9,8 @@ import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 import com.orhanobut.hawk.Hawk;
 
+import org.joda.time.DateTime;
+
 import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -67,8 +69,11 @@ public class MainActivity extends Activity {
     //
     //    benchmarkDelete();
 
-    Hawk.init(this);
+    Hawk.init(this).build();
     testRx();
+
+    Hawk.put("joda", new DateTime());
+    DateTime dateTime = Hawk.get("joda");
   }
 
   private void testRx() {

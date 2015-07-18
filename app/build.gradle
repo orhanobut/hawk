@@ -28,4 +28,5 @@ dependencies {
     compile 'com.android.support:appcompat-v7:21.0.3'
 
     compile project(":hawk")
+  compile 'net.danlew:android.joda:2.8.1'
 }

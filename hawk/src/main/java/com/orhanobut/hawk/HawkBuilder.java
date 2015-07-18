@@ -183,6 +183,14 @@ public class HawkBuilder {
     }
   }
 
+  public static Storage newSharedPrefStorage(Context context) {
+    return new SharedPreferencesStorage(context, TAG);
+  }
+
+  public static Storage newSqliteStorage(Context context) {
+    return new SqliteStorage(context);
+  }
+
   /**
    * Callback interface to make actions on another place and execute code
    * based on a result of action

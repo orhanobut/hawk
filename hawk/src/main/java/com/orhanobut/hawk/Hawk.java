@@ -226,7 +226,7 @@ public final class Hawk {
    *
    * @return the size
    */
-  public static int count() {
+  public static long count() {
     return hawkBuilder.getStorage().count();
   }
 
