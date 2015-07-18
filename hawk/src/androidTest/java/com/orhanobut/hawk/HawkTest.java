@@ -24,6 +24,10 @@ public class HawkTest extends InstrumentationTestCase {
         "dexmaker.dexcache",
         getInstrumentation().getTargetContext().getCacheDir().getPath());
     context = getInstrumentation().getContext();
+    init();
+  }
+
+  public void init() {
     Hawk.init(context).build();
   }
 
@@ -250,6 +254,22 @@ public class HawkTest extends InstrumentationTestCase {
     for (int i = 0, s = stored.size(); i < s; i++) {
       assertEquals(items.get(i), stored.get(i));
     }
+  }
+
+  public void testHugeData() {
+    for (int i = 0; i < 100; i++) {
+      Hawk.put("" + i, "" + i);
+    }
+    assertTrue(true);
+  }
+
+  public void testHugeDataWithBulk() {
+    Hawk.Chain chain = Hawk.chain();
+    for (int i = 0; i < 10000; i++) {
+      chain.put("" + i, "" + i);
+    }
+    chain.commit();
+    assertTrue(true);
   }
 
 

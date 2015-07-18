@@ -74,8 +74,19 @@ public class MainActivity extends Activity {
     Hawk.init(this)
         .setEncryptionMethod(HawkBuilder.EncryptionMethod.HIGHEST)
         .setPassword("password")
-        .setStorage(HawkBuilder.newSqliteStorage(this))
+        .setStorage(HawkBuilder.newSharedPrefStorage(this))
         .setLogLevel(LogLevel.FULL)
+        .setCallback(new HawkBuilder.Callback() {
+          @Override
+          public void onSuccess() {
+
+          }
+
+          @Override
+          public void onFail(Exception e) {
+
+          }
+        })
         .build();
     testRx();
 

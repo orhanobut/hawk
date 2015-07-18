@@ -1,7 +1,6 @@
 package com.orhanobut.hawk;
 
 import android.content.Context;
-import android.util.Base64;
 import android.util.Log;
 import android.util.Pair;
 
@@ -101,7 +100,7 @@ public final class Hawk {
     String cipherText;
 
     if (!hawkBuilder.isEncrypted()) {
-      cipherText = Base64.encodeToString(encodedValue, Base64.DEFAULT);
+      cipherText = DataHelper.encodeBase64(encodedValue);
     } else {
       cipherText = hawkBuilder.getEncryption().encrypt(encodedValue);
     }
