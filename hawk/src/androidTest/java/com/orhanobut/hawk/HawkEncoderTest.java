@@ -80,14 +80,4 @@ public class HawkEncoderTest extends InstrumentationTestCase {
     assertNotNull(encoder.encode(list));
   }
 
-  public void testEncodeShouldNotReturnNull_list2() {
-    List<FooParcelable> list = new ArrayList<>();
-    list.add(new FooParcelable());
-    list.add(new FooParcelable());
-    list.add(new FooParcelable());
-    list.add(new FooParcelable());
-
-    assertNotNull(encoder.encode(list));
-  }
-
 }

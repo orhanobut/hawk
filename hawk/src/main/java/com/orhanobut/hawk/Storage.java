@@ -7,7 +7,7 @@ import java.util.List;
 /**
  * @author Orhan Obut
  */
-interface Storage {
+public interface Storage {
 
   /**
    * Put a single entry to storage
