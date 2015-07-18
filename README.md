@@ -17,38 +17,65 @@ Hawk provides:
 
 ###Add dependency
 ```groovy
-compile 'com.orhanobut:hawk:1.16'
+compile 'com.orhanobut:hawk:1.17'
 ```
 
 If you want to have Rx features, make sure to add Rx dependency
 
 #### Initialize the hawk
 ```java
-Hawk.init(context, PASSWORD); // might take 36-400ms depends on device
+Hawk.init(this)
+    .setEncryptionMethod(HawkBuilder.EncryptionMethod.MEDIUM)
+    .setStorage(HawkBuilder.newSqliteStorage(this))
+    .setLogLevel(LogLevel.FULL)
+    .build();
 ```
-if you don't put any password, it will use another approach, it is faster but less secure.
 
+You can use highest secure crypto approach, init might take 36-400ms. You also need to provide password
 ```java
-Hawk.init(context);   // might take 36-60ms 
-```
-. You may want to use async solution for init. Add a callback to init and it will work asynchronous.
-```java
-Hawk.init(context, PASSWORD, new Hawk.Callback() {
-        @Override
-        public void onSuccess() {
-        }
-
-        @Override
-        public void onFail(Exception e) {
-        }
-    }
-);
+Hawk.init(this)
+    .setEncryptionMethod(HawkBuilder.EncryptionMethod.HIGHEST)
+    .setStorage(HawkBuilder.newSqliteStorage(this))
+    .setLogLevel(LogLevel.FULL)
+    .build();
 ```
 
 You can use no-crypto mode if you don't want encryption. This mode will be automatically used if the device does not
 support AES, PBE algorithm.
 ```java
-Hawk.initWithoutEncryption(context);
+Hawk.init(context)
+    .setEncryptionMethod(HawkBuilder.EncryptionMethod.NO_ENCRYPTION)
+    .build();
+```
+
+Select the storage, you can either use sharedpreferences or sqlite to store data
+```java
+.setStorage(HawkBuilder.newSqliteStorage(this))
+```
+or
+```java
+.setStorage(HawkBuilder.newSharedPrefStorage(this))
+```
+
+You may want to use async solution for init. Add a callback to init and it will work asynchronous.
+```java
+Hawk.init(this)
+    .setEncryptionMethod(HawkBuilder.EncryptionMethod.HIGHEST)
+    .setPassword("password")
+    .setStorage(HawkBuilder.newSqliteStorage(this))
+    .setLogLevel(LogLevel.FULL)
+    .setCallback(new HawkBuilder.Callback() {
+      @Override
+      public void onSuccess() {
+
+      }
+
+      @Override
+      public void onFail(Exception e) {
+
+      }
+    })
+    .build();
 ```
 
 #### Save

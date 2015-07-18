@@ -62,7 +62,7 @@ final class SharedPreferencesStorage implements Storage {
   }
 
   @Override
-  public int count() {
+  public long count() {
     return preferences.getAll().size();
   }
 

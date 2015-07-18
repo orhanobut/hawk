@@ -1,16 +1,11 @@
 package com.orhanobut.hawk;
 
 import android.content.Context;
-import android.util.Base64;
 import android.util.Log;
 import android.util.Pair;
 
-import com.google.gson.Gson;
-
 import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 
 import rx.Observable;
 import rx.Subscriber;
@@ -20,28 +15,7 @@ import rx.Subscriber;
  */
 public final class Hawk {
 
-  /**
-   * never ever change this value since it will break backward compatibility in terms of keeping previous data
-   */
-  private static final String TAG = "HAWK";
-
-  /**
-   * never ever change this value since it will break backward compatibility in terms of keeping previous data
-   */
-  private static final String TAG_CRYPTO = "324909sdfsd98098";
-
-  /**
-   * Key to store if the device does not support crypto
-   */
-  private static final String KEY_NO_CRYPTO = "dfsklj2342nasdfoasdfcrpknasdf";
-
-  private static Encoder encoder;
-  private static Storage storage;
-  private static Encryption encryption;
-  private static LogLevel logLevel;
-  private static ExecutorService executorService;
-
-  private static boolean noEncryption;
+  private static HawkBuilder hawkBuilder;
 
   private Hawk() {
     // no instance
@@ -52,110 +26,9 @@ public final class Hawk {
    *
    * @param context is used to instantiate context based objects. ApplicationContext will be used
    */
-  public static void init(Context context) {
-    init(context, null, LogLevel.NONE);
-  }
-
-  /**
-   * This method must be called in order to initiate the hawk, all put and get methods should be called after
-   * callback methods executed
-   *
-   * @param context  is used to instantiate context based objects. ApplicationContext will be used
-   * @param password is used for key generation
-   * @param callback is used for executing the function in another thread and execute either onSuccess or onFail
-   *                 methods
-   */
-  public static void init(Context context, String password, Callback callback) {
-    init(context, password, LogLevel.NONE, callback);
-  }
-
-  /**
-   * This method must be called in order to initiate the hawk
-   *
-   * @param context  is used to instantiate context based objects. ApplicationContext will be used
-   * @param password is used for key generation
-   */
-  public static void init(Context context, String password) {
-    init(context, password, LogLevel.NONE);
-  }
-
-  /**
-   * This method must be called in order to initiate the hawk
-   * <p/>
-   * Some devices don't support the basic crypto, In that case encryption won't be enabled.
-   *
-   * @param context  is used to instantiate context based objects. ApplicationContext will be used
-   * @param password is used for key generation
-   * @param logLevel is used for logging
-   */
-  public static void init(Context context, String password, LogLevel logLevel) {
-    Context appContext = context.getApplicationContext();
-    Hawk.logLevel = logLevel;
-    Hawk.storage = new SharedPreferencesStorage(appContext, TAG);
-    Hawk.encoder = new HawkEncoder(new GsonParser(new Gson()));
-
-    if (storage.contains(KEY_NO_CRYPTO)) {
-      noEncryption = true;
-      return;
-    }
-
-    Storage cryptoStorage = new SharedPreferencesStorage(appContext, TAG_CRYPTO);
-    Hawk.encryption = new AesEncryption(cryptoStorage, password);
-    boolean result = Hawk.encryption.init();
-    setEncryptionMode(result);
-  }
-
-  /**
-   * This will allow Hawk to store everything plaintext.
-   *
-   * @param context  is used to initiate context
-   * @param logLevel is used for logging
-   */
-  public static void initWithoutEncryption(Context context, LogLevel logLevel) {
-    Context appContext = context.getApplicationContext();
-    Hawk.logLevel = logLevel;
-    Hawk.storage = new SharedPreferencesStorage(appContext, TAG);
-    Hawk.encoder = new HawkEncoder(new GsonParser(new Gson()));
-    noEncryption = true;
-  }
-
-  private static void setEncryptionMode(boolean isCryptoSupported) {
-    if (isCryptoSupported) {
-      noEncryption = false;
-      return;
-    }
-    storage.put(KEY_NO_CRYPTO, true);
-    noEncryption = true;
-  }
-
-  /**
-   * This method must be called in order to initiate the hawk, all put and get methods should be called after
-   * callback methods executed
-   *
-   * @param context  is used to instantiate context based objects. ApplicationContext will be used
-   * @param password is used for key generation
-   * @param logLevel is used for logging
-   * @param callback is used for executing the function in another thread and execute either onSuccess or onFail
-   *                 methods
-   */
-  public static void init(final Context context, final String password, final LogLevel logLevel,
-                          final Callback callback) {
-    Hawk.executorService = Executors.newSingleThreadExecutor();
-    Runnable runnable = new Runnable() {
-      @Override
-      public void run() {
-        try {
-          init(context, password, logLevel);
-          callback.onSuccess();
-        } catch (Exception e) {
-          Logger.e("Exception occurred while initialization : ", e);
-          callback.onFail(e);
-        }
-
-      }
-    };
-    executorService.execute(runnable);
-    executorService.shutdown();
+  public static HawkBuilder init(Context context) {
+    hawkBuilder = new HawkBuilder(context);
+    return hawkBuilder;
   }
 
   /**
@@ -176,7 +49,7 @@ public final class Hawk {
 
     String encodedText = zip(value);
     //if any exception occurs during encoding, encodedText will be null and thus operation is unsuccessful
-    return encodedText != null && storage.put(key, encodedText);
+    return encodedText != null && hawkBuilder.getStorage().put(key, encodedText);
   }
 
   /**
@@ -222,14 +95,14 @@ public final class Hawk {
     if (value == null) {
       throw new NullPointerException("Value cannot be null");
     }
-    byte[] encodedValue = encoder.encode(value);
+    byte[] encodedValue = hawkBuilder.getEncoder().encode(value);
 
     String cipherText;
 
-    if (noEncryption) {
-      cipherText = Base64.encodeToString(encodedValue, Base64.DEFAULT);
+    if (!hawkBuilder.isEncrypted()) {
+      cipherText = DataHelper.encodeBase64(encodedValue);
     } else {
-      cipherText = encryption.encrypt(encodedValue);
+      cipherText = hawkBuilder.getEncryption().encrypt(encodedValue);
     }
 
     if (cipherText == null) {
@@ -246,17 +119,17 @@ public final class Hawk {
     if (key == null) {
       throw new NullPointerException("Key cannot be null");
     }
-    String fullText = storage.get(key);
+    String fullText = hawkBuilder.getStorage().get(key);
     if (fullText == null) {
       return null;
     }
     DataInfo dataInfo = DataHelper.getDataInfo(fullText);
     byte[] bytes;
 
-    if (noEncryption) {
+    if (!hawkBuilder.isEncrypted()) {
       bytes = DataHelper.decodeBase64(dataInfo.getCipherText());
     } else {
-      bytes = encryption.decrypt(dataInfo.getCipherText());
+      bytes = hawkBuilder.getEncryption().decrypt(dataInfo.getCipherText());
     }
 
     if (bytes == null) {
@@ -264,7 +137,7 @@ public final class Hawk {
     }
 
     try {
-      return encoder.decode(bytes, dataInfo);
+      return hawkBuilder.getEncoder().decode(bytes, dataInfo);
     } catch (Exception e) {
       Logger.d(e.getMessage());
     }
@@ -352,8 +225,8 @@ public final class Hawk {
    *
    * @return the size
    */
-  public static int count() {
-    return storage.count();
+  public static long count() {
+    return hawkBuilder.getStorage().count();
   }
 
   /**
@@ -363,7 +236,7 @@ public final class Hawk {
    * @return true if clear is successful
    */
   public static boolean clear() {
-    return storage.clear();
+    return hawkBuilder.getStorage().clear();
   }
 
   /**
@@ -373,7 +246,7 @@ public final class Hawk {
    * @return true if remove is successful
    */
   public static boolean remove(String key) {
-    return storage.remove(key);
+    return hawkBuilder.getStorage().remove(key);
   }
 
   /**
@@ -383,7 +256,7 @@ public final class Hawk {
    * @return true if all removals are successful
    */
   public static boolean remove(String... keys) {
-    return storage.remove(keys);
+    return hawkBuilder.getStorage().remove(keys);
   }
 
   /**
@@ -393,7 +266,7 @@ public final class Hawk {
    * @return true if it exists in the storage
    */
   public static boolean contains(String key) {
-    return storage.contains(key);
+    return hawkBuilder.getStorage().contains(key);
   }
 
   /**
@@ -402,11 +275,11 @@ public final class Hawk {
    * @return true if reset is successful
    */
   public static boolean resetCrypto() {
-    return encryption == null || encryption.reset();
+    return hawkBuilder.getEncryption() == null || hawkBuilder.getEncryption().reset();
   }
 
   public static LogLevel getLogLevel() {
-    return logLevel;
+    return hawkBuilder.getLogLevel();
   }
 
   /**
@@ -440,7 +313,7 @@ public final class Hawk {
       }
       String encodedText = zip(value);
       if (encodedText == null) {
-        Log.d(TAG, "Key : " + key + " is not added, encryption failed");
+        Log.d("HAWK", "Key : " + key + " is not added, encryption failed");
         return this;
       }
       items.add(new Pair<>(key, encodedText));
@@ -453,21 +326,10 @@ public final class Hawk {
      * @return true if successfully saved, false otherwise.
      */
     public boolean commit() {
-      return storage.put(items);
+      return hawkBuilder.getStorage().put(items);
     }
 
   }
 
-  /**
-   * Callback interface to make actions on another place and execute code
-   * based on a result of action
-   * onSuccess function will be called when action is successful
-   * onFail function will be called when action fails due to a reason
-   */
-  public interface Callback {
-    void onSuccess();
-
-    void onFail(Exception e);
-  }
 
 }

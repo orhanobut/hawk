@@ -8,6 +8,10 @@ import android.util.Log;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 import com.orhanobut.hawk.Hawk;
+import com.orhanobut.hawk.HawkBuilder;
+import com.orhanobut.hawk.LogLevel;
+
+import org.joda.time.DateTime;
 
 import java.lang.reflect.Type;
 import java.util.ArrayList;
@@ -67,8 +71,27 @@ public class MainActivity extends Activity {
     //
     //    benchmarkDelete();
 
-    Hawk.init(this);
+    Hawk.init(this)
+        .setEncryptionMethod(HawkBuilder.EncryptionMethod.HIGHEST)
+        .setPassword("password")
+        .setStorage(HawkBuilder.newSharedPrefStorage(this))
+        .setLogLevel(LogLevel.FULL)
+        .setCallback(new HawkBuilder.Callback() {
+          @Override
+          public void onSuccess() {
+
+          }
+
+          @Override
+          public void onFail(Exception e) {
+
+          }
+        })
+        .build();
     testRx();
+
+    Hawk.put("joda", new DateTime());
+    DateTime dateTime = Hawk.get("joda");
   }
 
   private void testRx() {

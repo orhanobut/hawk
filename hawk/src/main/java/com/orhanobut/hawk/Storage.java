@@ -7,7 +7,7 @@ import java.util.List;
 /**
  * @author Orhan Obut
  */
-interface Storage {
+public interface Storage {
 
   /**
    * Put a single entry to storage
@@ -64,7 +64,7 @@ interface Storage {
    *
    * @return entry count in the storage
    */
-  int count();
+  long count();
 
   /**
    * Checks whether the storage contains an entry.

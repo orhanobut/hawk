@@ -22,7 +22,7 @@ public class HawkRxTest extends InstrumentationTestCase {
         "dexmaker.dexcache",
         getInstrumentation().getTargetContext().getCacheDir().getPath());
     context = getInstrumentation().getContext();
-    Hawk.init(context, "testPassword");
+    Hawk.init(context).build();
   }
 
   @Override
