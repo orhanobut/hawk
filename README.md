@@ -7,13 +7,12 @@ Secure, simple key-value storage for android
 
 Hawk uses:
 - AES for the crypto
-- SharedPreferences for the storage
+- SharedPreferences or Sqlite for the storage
 - Gson for parsing
 
 Hawk provides:
 - Secure data persistence
 - Save any type
-- Save list of any type
 
 ###Add dependency
 ```groovy
