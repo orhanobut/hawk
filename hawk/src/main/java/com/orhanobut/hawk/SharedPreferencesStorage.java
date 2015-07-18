@@ -9,11 +9,11 @@ import java.util.List;
 /**
  * @author Orhan Obut
  */
-public final class SharedPreferencesStorage implements Storage {
+final class SharedPreferencesStorage implements Storage {
 
   private final SharedPreferences preferences;
 
-  public SharedPreferencesStorage(Context context, String tag) {
+  SharedPreferencesStorage(Context context, String tag) {
     preferences = context.getSharedPreferences(tag, Context.MODE_PRIVATE);
   }
 

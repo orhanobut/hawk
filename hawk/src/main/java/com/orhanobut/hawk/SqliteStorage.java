@@ -12,11 +12,11 @@ import java.util.List;
 /**
  * @author Orhan Obut
  */
-public class SqliteStorage implements Storage {
+class SqliteStorage implements Storage {
 
   private final SqliteHelper helper;
 
-  public SqliteStorage(Context context) {
+  SqliteStorage(Context context) {
     helper = new SqliteHelper(context);
   }
 
