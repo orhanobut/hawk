@@ -1,10 +1,16 @@
 package com.orhanobut.hawk;
 
+import com.google.gson.Gson;
+
 import android.content.Context;
 import android.os.Handler;
 import android.text.TextUtils;
 
-import com.google.gson.Gson;
+import rx.Observable;
+import rx.Subscriber;
+import rx.android.schedulers.AndroidSchedulers;
+import rx.functions.Func0;
+import rx.schedulers.Schedulers;
 
 /**
  * @author Orhan Obut
@@ -196,4 +202,23 @@ public class HawkBuilder {
 
     void onFail(Exception e);
   }
+    public Observable<Boolean> buildRx() {
+        return Observable.defer(new Func0<Observable<Boolean>>() {
+            @Override
+            public Observable<Boolean> call() {
+                return Observable.create(new Observable.OnSubscribe<Boolean>() {
+                    @Override
+                    public void call(Subscriber<? super Boolean> subscriber) {
+                        try {
+                            startBuild();
+                            subscriber.onNext(true);
+                            subscriber.onCompleted();
+                        } catch (Exception e) {
+                            subscriber.onError(e);
+                        }
+                    }
+                });
+            }
+        }).subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread());
+    }
 }
