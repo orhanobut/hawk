@@ -17,4 +17,11 @@ final class Utils {
   private Utils() {
     //no instance
   }
+
+  public static void checkRx() {
+    if (!hasRxJavaOnClasspath()) {
+      throw new NoClassDefFoundError("RxJava is not on classpath, " +
+          "make sure that you have it in your dependencies");
+    }
+  }
 }

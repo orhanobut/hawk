@@ -4,8 +4,11 @@ import android.content.Context;
 import android.test.InstrumentationTestCase;
 import android.util.Log;
 
+import rx.Observable;
+import rx.Observer;
 import rx.Subscriber;
 import rx.android.schedulers.AndroidSchedulers;
+import rx.functions.Func1;
 import rx.schedulers.Schedulers;
 
 /**
@@ -62,4 +65,36 @@ public class HawkRxTest extends InstrumentationTestCase {
         });
   }
 
+  public void testBuildRx() {
+    Hawk.init(context)
+        .buildRx()
+        .concatMap(new Func1<Boolean, Observable<Boolean>>() {
+          @Override
+          public Observable<Boolean> call(Boolean aBoolean) {
+            return Hawk.putObservable(KEY, "hawk");
+          }
+        })
+        .concatMap(new Func1<Boolean, Observable<String>>() {
+          @Override
+          public Observable<String> call(Boolean aBoolean) {
+            return Hawk.getObservable(KEY);
+          }
+        })
+        .subscribe(new Observer<String>() {
+          @Override
+          public void onCompleted() {
+            assertTrue(true);
+          }
+
+          @Override
+          public void onError(Throwable throwable) {
+            assertTrue(false);
+          }
+
+          @Override
+          public void onNext(String storedValue) {
+            assertEquals(storedValue, "hawk");
+          }
+        });
+  }
 }
