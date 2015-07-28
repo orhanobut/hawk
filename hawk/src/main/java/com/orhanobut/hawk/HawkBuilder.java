@@ -33,13 +33,21 @@ public class HawkBuilder {
   private static final String KEY_NO_CRYPTO = "dfsklj2342nasdfoasdfcrpknasdf";
 
   private Context context;
+
   private EncryptionMethod encryptionMethod;
+
   private String password;
+
   private LogLevel logLevel;
+
   private Storage cryptoStorage;
+
   private Encoder encoder;
+
   private Parser parser;
+
   private Encryption encryption;
+
   private Callback callback;
 
   public enum EncryptionMethod {
@@ -198,27 +206,30 @@ public class HawkBuilder {
    * onFail function will be called when action fails due to a reason
    */
   public interface Callback {
+
     void onSuccess();
 
     void onFail(Exception e);
   }
-    public Observable<Boolean> buildRx() {
-        return Observable.defer(new Func0<Observable<Boolean>>() {
-            @Override
-            public Observable<Boolean> call() {
-                return Observable.create(new Observable.OnSubscribe<Boolean>() {
-                    @Override
-                    public void call(Subscriber<? super Boolean> subscriber) {
-                        try {
-                            startBuild();
-                            subscriber.onNext(true);
-                            subscriber.onCompleted();
-                        } catch (Exception e) {
-                            subscriber.onError(e);
-                        }
-                    }
-                });
+
+  public Observable<Boolean> buildRx() {
+    Utils.checkRx();
+    return Observable.defer(new Func0<Observable<Boolean>>() {
+      @Override
+      public Observable<Boolean> call() {
+        return Observable.create(new Observable.OnSubscribe<Boolean>() {
+          @Override
+          public void call(Subscriber<? super Boolean> subscriber) {
+            try {
+              startBuild();
+              subscriber.onNext(true);
+              subscriber.onCompleted();
+            } catch (Exception e) {
+              subscriber.onError(e);
             }
-        }).subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread());
-    }
+          }
+        });
+      }
+    }).subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread());
+  }
 }
