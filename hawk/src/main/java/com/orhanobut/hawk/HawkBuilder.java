@@ -1,10 +1,14 @@
 package com.orhanobut.hawk;
 
+import com.google.gson.Gson;
 import android.content.Context;
 import android.os.Handler;
 import android.text.TextUtils;
-
-import com.google.gson.Gson;
+import rx.Observable;
+import rx.Subscriber;
+import rx.android.schedulers.AndroidSchedulers;
+import rx.functions.Func0;
+import rx.schedulers.Schedulers;
 
 /**
  * @author Orhan Obut
@@ -25,7 +29,7 @@ public class HawkBuilder {
    * Key to store if the device does not support crypto
    */
   private static final String KEY_NO_CRYPTO = "dfsklj2342nasdfoasdfcrpknasdf";
-
+  
   private Context context;
   private EncryptionMethod encryptionMethod;
   private String password;
@@ -192,8 +196,30 @@ public class HawkBuilder {
    * onFail function will be called when action fails due to a reason
    */
   public interface Callback {
+
     void onSuccess();
 
     void onFail(Exception e);
+  }
+
+  public Observable<Boolean> buildRx() {
+    Utils.checkRx();
+    return Observable.defer(new Func0<Observable<Boolean>>() {
+      @Override
+      public Observable<Boolean> call() {
+        return Observable.create(new Observable.OnSubscribe<Boolean>() {
+          @Override
+          public void call(Subscriber<? super Boolean> subscriber) {
+            try {
+              startBuild();
+              subscriber.onNext(true);
+              subscriber.onCompleted();
+            } catch (Exception e) {
+              subscriber.onError(e);
+            }
+          }
+        });
+      }
+    }).subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread());
   }
 }

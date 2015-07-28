@@ -59,7 +59,7 @@ public final class Hawk {
    * @return Observable<Boolean>
    */
   public static <T> Observable<Boolean> putObservable(final String key, final T value) {
-    checkRx();
+    Utils.checkRx();
     return Observable.create(new Observable.OnSubscribe<Boolean>() {
       @Override
       public void call(Subscriber<? super Boolean> subscriber) {
@@ -76,13 +76,6 @@ public final class Hawk {
         }
       }
     });
-  }
-
-  private static void checkRx() {
-    if (!Utils.hasRxJavaOnClasspath()) {
-      throw new NoClassDefFoundError("RxJava is not on classpath, " +
-          "make sure that you have it in your dependencies");
-    }
   }
 
   /**
@@ -168,7 +161,7 @@ public final class Hawk {
    * @return Observable<T>
    */
   public static <T> Observable<T> getObservable(String key) {
-    checkRx();
+    Utils.checkRx();
     return getObservable(key, null);
   }
 
@@ -182,7 +175,7 @@ public final class Hawk {
    * @return Observable</T>
    */
   public static <T> Observable<T> getObservable(final String key, final T defaultValue) {
-    checkRx();
+    Utils.checkRx();
     return Observable.create(new Observable.OnSubscribe<T>() {
       @Override
       public void call(Subscriber<? super T> subscriber) {
