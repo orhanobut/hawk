@@ -1,11 +1,9 @@
 package com.orhanobut.hawk;
 
 import com.google.gson.Gson;
-
 import android.content.Context;
 import android.os.Handler;
 import android.text.TextUtils;
-
 import rx.Observable;
 import rx.Subscriber;
 import rx.android.schedulers.AndroidSchedulers;
@@ -31,23 +29,15 @@ public class HawkBuilder {
    * Key to store if the device does not support crypto
    */
   private static final String KEY_NO_CRYPTO = "dfsklj2342nasdfoasdfcrpknasdf";
-
+  
   private Context context;
-
   private EncryptionMethod encryptionMethod;
-
   private String password;
-
   private LogLevel logLevel;
-
   private Storage cryptoStorage;
-
   private Encoder encoder;
-
   private Parser parser;
-
   private Encryption encryption;
-
   private Callback callback;
 
   public enum EncryptionMethod {
