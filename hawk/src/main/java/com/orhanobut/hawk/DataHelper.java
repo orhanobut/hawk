@@ -41,15 +41,18 @@ final class DataHelper {
    * @return the DataInfo object which contains all necessary information
    */
   static DataInfo getDataInfo(String storedText) {
-    if (storedText == null) {
-      throw new NullPointerException("Text should not be null");
+    if (TextUtils.isEmpty(storedText)) {
+      throw new NullPointerException("Text should not be null or empty");
     }
     int index = storedText.indexOf(DELIMITER);
-    if (index == 0) {
+    if (index == -1) {
       throw new IllegalArgumentException("Text should contain delimiter");
     }
     String text = storedText.substring(0, index);
     String cipherText = storedText.substring(index + 1);
+    if (TextUtils.isEmpty(text) || TextUtils.isEmpty(cipherText)) {
+      throw new IllegalArgumentException("Invalid stored text");
+    }
     char firstChar = text.charAt(text.length() - 1);
     if (firstChar == NEW_VERSION) {
       return getNewDataInfo(text, cipherText);
@@ -59,7 +62,7 @@ final class DataHelper {
   }
 
   static DataInfo getNewDataInfo(String text, String cipherText) {
-    //first char is define if it is new version
+    //first char defines whether it is new version or not
 
     String[] infos = text.split(INFO_DELIMITER);
 
@@ -107,6 +110,12 @@ final class DataHelper {
   }
 
   static <T> String addType(String cipherText, T t) {
+    if (TextUtils.isEmpty(cipherText)) {
+      throw new NullPointerException("Cipher text should not be null or empty");
+    }
+    if (t == null) {
+      throw new NullPointerException("Value should not be null");
+    }
     String keyClassName = "";
     String valueClassName = "";
     DataType dataType;

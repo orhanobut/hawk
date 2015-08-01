@@ -1,9 +1,11 @@
 package com.orhanobut.hawk;
 
-import com.google.gson.Gson;
 import android.content.Context;
 import android.os.Handler;
 import android.text.TextUtils;
+
+import com.google.gson.Gson;
+
 import rx.Observable;
 import rx.Subscriber;
 import rx.android.schedulers.AndroidSchedulers;
@@ -29,7 +31,7 @@ public class HawkBuilder {
    * Key to store if the device does not support crypto
    */
   private static final String KEY_NO_CRYPTO = "dfsklj2342nasdfoasdfcrpknasdf";
-  
+
   private Context context;
   private EncryptionMethod encryptionMethod;
   private String password;
@@ -45,6 +47,9 @@ public class HawkBuilder {
   }
 
   public HawkBuilder(Context context) {
+    if (context == null) {
+      throw new NullPointerException("Context should not be null");
+    }
     this.context = context.getApplicationContext();
   }
 
@@ -54,6 +59,9 @@ public class HawkBuilder {
   }
 
   public HawkBuilder setPassword(String password) {
+    if (TextUtils.isEmpty(password)) {
+      throw new NullPointerException("Password should not be null or empty");
+    }
     this.password = password;
     return this;
   }

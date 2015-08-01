@@ -5,6 +5,7 @@ import android.database.Cursor;
 import android.database.DatabaseUtils;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
+import android.text.TextUtils;
 import android.util.Pair;
 
 import java.util.List;
@@ -17,11 +18,15 @@ class SqliteStorage implements Storage {
   private final SqliteHelper helper;
 
   SqliteStorage(Context context) {
+    if (context == null) {
+      throw new NullPointerException("Context should not be null");
+    }
     helper = new SqliteHelper(context);
   }
 
   @Override
   public <T> boolean put(String key, T value) {
+    checkKey(key);
     return helper.put(key, String.valueOf(value));
   }
 
@@ -32,11 +37,15 @@ class SqliteStorage implements Storage {
 
   @Override
   public <T> T get(String key) {
+    checkKey(key);
     return (T) helper.get(key);
   }
 
   @Override
   public boolean remove(String key) {
+    if (TextUtils.isEmpty(key)) {
+      return true;
+    }
     return helper.delete(key);
   }
 
@@ -57,7 +66,16 @@ class SqliteStorage implements Storage {
 
   @Override
   public boolean contains(String key) {
+    if (key == null) {
+      return false;
+    }
     return helper.contains(key);
+  }
+
+  private void checkKey(String key) {
+    if (TextUtils.isEmpty(key)) {
+      throw new NullPointerException("Key cannot be null or empty");
+    }
   }
 
   private static class SqliteHelper extends SQLiteOpenHelper {
@@ -126,6 +144,9 @@ class SqliteStorage implements Storage {
       try {
         db.beginTransaction();
         for (String key : keys) {
+          if (key == null) {
+            continue;
+          }
           int count = db.delete(TABLE_NAME, COL_KEY + "='" + key + "'", null);
         }
         db.setTransactionSuccessful();

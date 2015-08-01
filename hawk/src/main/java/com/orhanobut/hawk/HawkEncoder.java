@@ -26,7 +26,7 @@ final class HawkEncoder implements Encoder {
 
   public HawkEncoder(Parser parser) {
     if (parser == null) {
-      throw new NullPointerException("Parser may not be null");
+      throw new NullPointerException("Parser should not be null");
     }
     this.parser = parser;
   }
@@ -43,21 +43,15 @@ final class HawkEncoder implements Encoder {
     return bytes;
   }
 
-  @Override
-  @Deprecated
-  public <T> byte[] encode(List<T> value) {
-    if (value == null) {
-      return null;
-    }
-    String json = parser.toJson(value);
-    return json.getBytes();
-  }
-
   @SuppressWarnings("unchecked")
   @Override
   public <T> T decode(byte[] bytes, DataInfo info) throws Exception {
     if (bytes == null) {
       return null;
+    }
+
+    if (info == null) {
+      throw new NullPointerException("data info should not be null");
     }
 
     if (info.isNewVersion()) {
@@ -105,12 +99,6 @@ final class HawkEncoder implements Encoder {
         return toSet(json, keyType);
     }
     return null;
-  }
-
-  @Override
-  @Deprecated
-  public <T> T decodeSerializable(String value) throws Exception {
-    return toSerializable(value.getBytes());
   }
 
   private <T> T toObject(String json, Class<?> type) throws Exception {

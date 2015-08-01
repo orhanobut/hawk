@@ -15,10 +15,6 @@ enum DataType {
     this.type = type;
   }
 
-  boolean isCollection() {
-    return this != OBJECT;
-  }
-
   @Override
   public String toString() {
     return super.toString();
