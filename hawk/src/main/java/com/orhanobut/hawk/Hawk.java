@@ -27,6 +27,9 @@ public final class Hawk {
    * @param context is used to instantiate context based objects. ApplicationContext will be used
    */
   public static HawkBuilder init(Context context) {
+    if (context == null) {
+      throw new NullPointerException("Context should not be null");
+    }
     hawkBuilder = new HawkBuilder(context);
     return hawkBuilder;
   }
@@ -272,6 +275,9 @@ public final class Hawk {
   }
 
   public static LogLevel getLogLevel() {
+    if (hawkBuilder == null) {
+      return LogLevel.NONE;
+    }
     return hawkBuilder.getLogLevel();
   }
 
