@@ -6,6 +6,8 @@ import android.text.TextUtils;
 
 import com.google.gson.Gson;
 
+import java.util.UUID;
+
 import rx.Observable;
 import rx.Subscriber;
 import rx.android.schedulers.AndroidSchedulers;
@@ -30,7 +32,7 @@ public class HawkBuilder {
   /**
    * Key to store if the device does not support crypto
    */
-  private static final String KEY_NO_CRYPTO = "dfsklj2342nasdfoasdfcrpknasdf";
+  private static final String KEY_NO_CRYPTO = UUID.randomUUID().toString();
 
   private Context context;
   private EncryptionMethod encryptionMethod;
