@@ -122,7 +122,7 @@ final class DataHelper {
     if (List.class.isAssignableFrom(t.getClass())) {
       List<?> list = (List<?>) t;
       if (!list.isEmpty()) {
-        keyClassName = list.get(0).getClass().getCanonicalName();
+        keyClassName = list.get(0).getClass().getName();
       }
       dataType = DataType.LIST;
     } else if (Map.class.isAssignableFrom(t.getClass())) {
@@ -130,8 +130,8 @@ final class DataHelper {
       Map<?, ?> map = (Map) t;
       if (!map.isEmpty()) {
         for (Map.Entry<?, ?> entry : map.entrySet()) {
-          keyClassName = entry.getKey().getClass().getCanonicalName();
-          valueClassName = entry.getValue().getClass().getCanonicalName();
+          keyClassName = entry.getKey().getClass().getName();
+          valueClassName = entry.getValue().getClass().getName();
           break;
         }
       }
@@ -140,13 +140,13 @@ final class DataHelper {
       if (!set.isEmpty()) {
         Iterator<?> iterator = set.iterator();
         if (iterator.hasNext()) {
-          keyClassName = iterator.next().getClass().getCanonicalName();
+          keyClassName = iterator.next().getClass().getName();
         }
       }
       dataType = DataType.SET;
     } else {
       dataType = DataType.OBJECT;
-      keyClassName = t.getClass().getCanonicalName();
+      keyClassName = t.getClass().getName();
     }
 
     return keyClassName + INFO_DELIMITER +

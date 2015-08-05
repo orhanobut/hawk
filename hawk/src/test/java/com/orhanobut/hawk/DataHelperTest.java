@@ -47,12 +47,12 @@ public class DataHelperTest extends TestCase {
   public void addTypeAsObject() {
     String text = "test";
     String actual = DataHelper.addType(CIPHER_TEXT, text);
-    String expected = text.getClass().getCanonicalName() + "##0V@" + CIPHER_TEXT;
+    String expected = text.getClass().getName() + "##0V@" + CIPHER_TEXT;
     assertThat(actual).isEqualTo(expected);
 
     Foo foo = new Foo();
     String actualFoo = DataHelper.addType(CIPHER_TEXT, foo);
-    String expectedFoo = foo.getClass().getCanonicalName() + "##0V@" + CIPHER_TEXT;
+    String expectedFoo = foo.getClass().getName() + "##0V@" + CIPHER_TEXT;
     assertThat(actualFoo).isEqualTo(expectedFoo);
   }
 
@@ -61,13 +61,13 @@ public class DataHelperTest extends TestCase {
     List<String> list = new ArrayList<>();
     list.add("test");
     String actual = DataHelper.addType(CIPHER_TEXT, list);
-    String expected = list.get(0).getClass().getCanonicalName() + "##1V@" + CIPHER_TEXT;
+    String expected = list.get(0).getClass().getName() + "##1V@" + CIPHER_TEXT;
     assertThat(actual).isEqualTo(expected);
 
     List<Foo> list2 = new ArrayList<>();
     list2.add(new Foo());
     String actual2 = DataHelper.addType(CIPHER_TEXT, list2);
-    String expected2 = list2.get(0).getClass().getCanonicalName() + "##1V@" + CIPHER_TEXT;
+    String expected2 = list2.get(0).getClass().getName() + "##1V@" + CIPHER_TEXT;
     assertThat(actual2).isEqualTo(expected2);
   }
 
@@ -76,15 +76,15 @@ public class DataHelperTest extends TestCase {
     Map<String, String> map = new HashMap<>();
     map.put("key", "value");
     String actual = DataHelper.addType(CIPHER_TEXT, map);
-    String expected = String.class.getCanonicalName() + "#" +
-        String.class.getCanonicalName() + "#2V@" + CIPHER_TEXT;
+    String expected = String.class.getName() + "#" +
+        String.class.getName() + "#2V@" + CIPHER_TEXT;
     assertThat(actual).isEqualTo(expected);
 
     Map<String, Foo> map2 = new HashMap<>();
     map2.put("key", new Foo());
     String actual2 = DataHelper.addType(CIPHER_TEXT, map2);
-    String expected2 = String.class.getCanonicalName() + "#" +
-        Foo.class.getCanonicalName() + "#2V@" + CIPHER_TEXT;
+    String expected2 = String.class.getName() + "#" +
+        Foo.class.getName() + "#2V@" + CIPHER_TEXT;
     assertThat(actual2).isEqualTo(expected2);
   }
 
@@ -112,13 +112,13 @@ public class DataHelperTest extends TestCase {
     Set<String> set = new HashSet<>();
     set.add("key");
     String actual = DataHelper.addType(CIPHER_TEXT, set);
-    String expected = String.class.getCanonicalName() + "##3V@" + CIPHER_TEXT;
+    String expected = String.class.getName() + "##3V@" + CIPHER_TEXT;
     assertThat(actual).isEqualTo(expected);
 
     Set<Foo> set2 = new HashSet<>();
     set2.add(new Foo());
     String actual2 = DataHelper.addType(CIPHER_TEXT, set2);
-    String expected2 = Foo.class.getCanonicalName() + "##3V@" + CIPHER_TEXT;
+    String expected2 = Foo.class.getName() + "##3V@" + CIPHER_TEXT;
     assertThat(actual2).isEqualTo(expected2);
   }
 
@@ -130,8 +130,8 @@ public class DataHelperTest extends TestCase {
     DataInfo dataInfo = DataHelper.getDataInfo(clazz + "#" + clazz + "#" + info + "@" + cipher);
     assertThat(dataInfo).isNotNull();
     assertThat(dataInfo.isNewVersion()).isTrue();
-    assertThat(dataInfo.getKeyClazz().getCanonicalName()).isEqualTo(clazz);
-    assertThat(dataInfo.getValueClazz().getCanonicalName()).isEqualTo(clazz);
+    assertThat(dataInfo.getKeyClazz().getName()).isEqualTo(clazz);
+    assertThat(dataInfo.getValueClazz().getName()).isEqualTo(clazz);
     assertThat(dataInfo.getDataType()).isEqualTo(DataType.OBJECT);
   }
 
@@ -143,7 +143,7 @@ public class DataHelperTest extends TestCase {
     DataInfo dataInfo = DataHelper.getDataInfo(clazz + "##" + info + "@" + cipher);
     assertThat(dataInfo).isNotNull();
     assertThat(dataInfo.isNewVersion()).isTrue();
-    assertThat(dataInfo.getKeyClazz().getCanonicalName()).isEqualTo(clazz);
+    assertThat(dataInfo.getKeyClazz().getName()).isEqualTo(clazz);
     assertThat(dataInfo.getValueClazz()).isNull();
     assertThat(dataInfo.getDataType()).isEqualTo(DataType.LIST);
   }
@@ -156,8 +156,8 @@ public class DataHelperTest extends TestCase {
     DataInfo dataInfo = DataHelper.getDataInfo(clazz + "#" + clazz + "#" + info + "@" + cipher);
     assertThat(dataInfo).isNotNull();
     assertThat(dataInfo.isNewVersion()).isTrue();
-    assertThat(dataInfo.getKeyClazz().getCanonicalName()).isEqualTo(clazz);
-    assertThat(dataInfo.getValueClazz().getCanonicalName()).isEqualTo(clazz);
+    assertThat(dataInfo.getKeyClazz().getName()).isEqualTo(clazz);
+    assertThat(dataInfo.getValueClazz().getName()).isEqualTo(clazz);
     assertThat(dataInfo.getDataType()).isEqualTo(DataType.MAP);
   }
 
@@ -169,7 +169,7 @@ public class DataHelperTest extends TestCase {
     DataInfo dataInfo = DataHelper.getDataInfo(clazz + "##" + info + "@" + cipher);
     assertThat(dataInfo).isNotNull();
     assertThat(dataInfo.isNewVersion()).isTrue();
-    assertThat(dataInfo.getKeyClazz().getCanonicalName()).isEqualTo(clazz);
+    assertThat(dataInfo.getKeyClazz().getName()).isEqualTo(clazz);
     assertThat(dataInfo.getValueClazz()).isNull();
     assertThat(dataInfo.getDataType()).isEqualTo(DataType.SET);
   }

@@ -91,6 +91,11 @@ public class HawkTest extends TestCase {
 
     assertThat(fooBar).isNotNull();
     assertThat(fooBar.name).isEqualTo("hawk");
+
+    assertTrue(Hawk.put("innerClass", new FooBar.InnerFoo()));
+    FooBar.InnerFoo innerFoo = Hawk.get("innerClass");
+    assertThat(innerFoo).isNotNull();
+    assertThat(innerFoo.name).isEqualTo("hawk");
   }
 
   @Test
