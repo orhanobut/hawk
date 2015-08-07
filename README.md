@@ -16,7 +16,7 @@ Hawk provides:
 
 ###Add dependency
 ```groovy
-compile 'com.orhanobut:hawk:1.17'
+compile 'com.orhanobut:hawk:1.18'
 ```
 
 If you want to have Rx features, make sure to add Rx dependency
