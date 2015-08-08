@@ -79,7 +79,9 @@ public class MainActivity extends Activity {
         .setCallback(new HawkBuilder.Callback() {
           @Override
           public void onSuccess() {
-
+            Hawk.put("joda", new DateTime());
+            DateTime dateTime = Hawk.get("joda");
+            testRx();
           }
 
           @Override
@@ -87,11 +89,7 @@ public class MainActivity extends Activity {
 
           }
         })
-        .build();
-    testRx();
-
-    Hawk.put("joda", new DateTime());
-    DateTime dateTime = Hawk.get("joda");
+            .build();
   }
 
   private void testRx() {
