@@ -2,6 +2,12 @@ package com.orhanobut.hawk;
 
 import android.app.Activity;
 import android.content.Context;
+import android.text.TextUtils;
+
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.google.gson.JsonSyntaxException;
+import com.orhanobut.hawk.GsonParser;
 
 import junit.framework.TestCase;
 
@@ -12,6 +18,10 @@ import org.junit.runner.RunWith;
 import org.robolectric.Robolectric;
 import org.robolectric.RobolectricGradleTestRunner;
 import org.robolectric.annotation.Config;
+
+import java.lang.reflect.Type;
+
+import dalvik.annotation.TestTarget;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -28,6 +38,28 @@ public class HawkBuilderTest extends TestCase {
   public HawkBuilderTest() {
     context = Robolectric.buildActivity(Activity.class).create().get();
     builder = Hawk.init(context);
+  }
+
+  class CustomParser implements Parser {
+    private final Gson gson;
+
+    public CustomParser(Gson gson) {
+      this.gson = gson;
+    }
+
+    @Override
+    public <T> T fromJson(String content, Type type) throws JsonSyntaxException {
+      if (TextUtils.isEmpty(content)) {
+        return null;
+      }
+      return gson.fromJson(content, type);
+    }
+
+    @Override
+    public String toJson(Object body) {
+      return gson.toJson(body);
+    }
+
   }
 
   @Before
@@ -147,6 +179,14 @@ public class HawkBuilderTest extends TestCase {
   public void testDefaultParser() {
     builder.build();
     assertThat(builder.getParser()).isInstanceOf(GsonParser.class);
+  }
+
+  @Test
+  public void testCustomParser() {
+    CustomParser parser = new CustomParser(new Gson());
+    builder.setParser(parser)
+            .build();
+    assertThat(builder.getParser()).isInstanceOf(CustomParser.class);
   }
 
   @Test

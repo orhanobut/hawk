@@ -81,6 +81,11 @@ public class HawkBuilder {
     return this;
   }
 
+  public HawkBuilder setParser(Parser parser) {
+    this.parser = parser;
+    return this;
+  }
+
   public Context getContext() {
     return context;
   }
