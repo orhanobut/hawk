@@ -49,23 +49,10 @@ task javadocJar(type: Jar, dependsOn: javadoc) {
 configurations {
   optional
   compile.extendsFrom optional
-
-  provided
-
-}
-
-sourceSets {
-  main {
-    compileClasspath += configurations.provided
-  }
-  test {
-    compileClasspath += configurations.provided
-    runtimeClasspath += configurations.provided
-  }
 }
 
 dependencies {
-  provided 'com.google.code.gson:gson:2.3.1'
+  compile 'com.google.code.gson:gson:2.3.1'
   optional 'io.reactivex:rxandroid:1.0.1'
 
   testCompile 'junit:junit:4.12'
