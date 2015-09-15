@@ -15,8 +15,16 @@ Hawk provides:
 - Save any type
 
 ###Add dependency
+https://jitpack.io/#orhanobut/hawk/1.19
 ```groovy
-compile 'com.orhanobut:hawk:1.18'
+repositories {
+  // ...
+  maven { url "https://jitpack.io" }
+}
+
+dependencies {
+  compile 'com.github.orhanobut:hawk:1.19'
+}
 ```
 
 If you want to have Rx features, make sure to add Rx dependency
