@@ -10,9 +10,6 @@ import android.util.Pair;
 
 import java.util.List;
 
-/**
- * @author Orhan Obut
- */
 class SqliteStorage implements Storage {
 
   private final SqliteHelper helper;

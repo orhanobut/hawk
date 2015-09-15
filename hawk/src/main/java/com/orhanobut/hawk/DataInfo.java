@@ -1,8 +1,5 @@
 package com.orhanobut.hawk;
 
-/**
- * @author Orhan Obut
- */
 final class DataInfo {
 
   private final DataType dataType;

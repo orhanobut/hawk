@@ -5,9 +5,7 @@ import android.content.Context;
 import android.text.TextUtils;
 
 import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
 import com.google.gson.JsonSyntaxException;
-import com.orhanobut.hawk.GsonParser;
 
 import junit.framework.TestCase;
 
@@ -20,17 +18,16 @@ import org.robolectric.RobolectricGradleTestRunner;
 import org.robolectric.annotation.Config;
 
 import java.lang.reflect.Type;
-
-import dalvik.annotation.TestTarget;
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.TimeUnit;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-/**
- * @author Orhan Obut
- */
 @RunWith(RobolectricGradleTestRunner.class)
 @Config(constants = BuildConfig.class, sdk = 21)
 public class HawkBuilderTest extends TestCase {
+
+  private static final long LATCH_TIMEOUT_IN_SECONDS = 5;
 
   private HawkBuilder builder;
   private Context context;
@@ -185,7 +182,7 @@ public class HawkBuilderTest extends TestCase {
   public void testCustomParser() {
     CustomParser parser = new CustomParser(new Gson());
     builder.setParser(parser)
-            .build();
+        .build();
     assertThat(builder.getParser()).isInstanceOf(CustomParser.class);
   }
 
@@ -202,18 +199,22 @@ public class HawkBuilderTest extends TestCase {
   }
 
   @Test
-  public void initWithCallback() {
+  public void initWithCallback() throws InterruptedException {
+    final CountDownLatch latch = new CountDownLatch(1);
     HawkBuilder.Callback callback = new HawkBuilder.Callback() {
       @Override
       public void onSuccess() {
         assertTrue(true);
+        latch.countDown();
       }
 
       @Override
       public void onFail(Exception e) {
         assertTrue(true);
+        latch.countDown();
       }
     };
     builder.setCallback(callback).build();
+    assertThat(latch.await(LATCH_TIMEOUT_IN_SECONDS, TimeUnit.SECONDS)).isTrue();
   }
 }

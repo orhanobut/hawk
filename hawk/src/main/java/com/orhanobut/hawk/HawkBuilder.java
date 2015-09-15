@@ -8,13 +8,8 @@ import com.google.gson.Gson;
 
 import rx.Observable;
 import rx.Subscriber;
-import rx.android.schedulers.AndroidSchedulers;
 import rx.functions.Func0;
-import rx.schedulers.Schedulers;
 
-/**
- * @author Orhan Obut
- */
 public class HawkBuilder {
 
   /**
@@ -191,6 +186,8 @@ public class HawkBuilder {
           encryptionMethod = EncryptionMethod.NO_ENCRYPTION;
         }
         break;
+      default:
+        throw new IllegalStateException("Encryption mode is not correct");
     }
   }
 
@@ -233,6 +230,6 @@ public class HawkBuilder {
           }
         });
       }
-    }).subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread());
+    });
   }
 }

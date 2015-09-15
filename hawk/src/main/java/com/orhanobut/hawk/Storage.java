@@ -4,9 +4,6 @@ import android.util.Pair;
 
 import java.util.List;
 
-/**
- * @author Orhan Obut
- */
 public interface Storage {
 
   /**

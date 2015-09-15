@@ -9,9 +9,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-/**
- * @author Orhan Obut
- */
 final class DataHelper {
 
   private static final String DELIMITER = "@";
@@ -21,13 +18,13 @@ final class DataHelper {
   @Deprecated
   private static final char FLAG_SERIALIZABLE = '1';
 
-  private static final Map<Character, DataType> typeMap = new HashMap<>();
+  private static final Map<Character, DataType> TYPE_MAP = new HashMap<>();
 
   static {
-    typeMap.put(DataType.OBJECT.getType(), DataType.OBJECT);
-    typeMap.put(DataType.LIST.getType(), DataType.LIST);
-    typeMap.put(DataType.MAP.getType(), DataType.MAP);
-    typeMap.put(DataType.SET.getType(), DataType.SET);
+    TYPE_MAP.put(DataType.OBJECT.getType(), DataType.OBJECT);
+    TYPE_MAP.put(DataType.LIST.getType(), DataType.LIST);
+    TYPE_MAP.put(DataType.MAP.getType(), DataType.MAP);
+    TYPE_MAP.put(DataType.SET.getType(), DataType.SET);
   }
 
   private DataHelper() {
@@ -67,7 +64,7 @@ final class DataHelper {
     String[] infos = text.split(INFO_DELIMITER);
 
     char type = infos[2].charAt(0);
-    DataType dataType = typeMap.get(type);
+    DataType dataType = TYPE_MAP.get(type);
 
     // if it is collection, no need to create the class object
     Class<?> keyClazz = null;
@@ -95,7 +92,7 @@ final class DataHelper {
   static DataInfo getOldDataInfo(String text, String cipherText) {
     boolean serializable = text.charAt(text.length() - 1) == FLAG_SERIALIZABLE;
     char type = text.charAt(text.length() - 2);
-    DataType dataType = typeMap.get(type);
+    DataType dataType = TYPE_MAP.get(type);
 
     String className = text.substring(0, text.length() - 2);
 

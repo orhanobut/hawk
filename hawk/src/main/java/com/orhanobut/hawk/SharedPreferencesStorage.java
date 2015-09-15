@@ -6,9 +6,6 @@ import android.util.Pair;
 
 import java.util.List;
 
-/**
- * @author Orhan Obut
- */
 final class SharedPreferencesStorage implements Storage {
 
   private final SharedPreferences preferences;

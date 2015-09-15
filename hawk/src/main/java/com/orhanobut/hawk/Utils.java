@@ -1,8 +1,5 @@
 package com.orhanobut.hawk;
 
-/**
- * @author Orhan Obut
- */
 final class Utils {
 
   static boolean hasRxJavaOnClasspath() {
@@ -10,6 +7,7 @@ final class Utils {
       Class.forName("rx.Observable");
       return true;
     } catch (ClassNotFoundException ignored) {
+      Logger.e("something happened", ignored);
     }
     return false;
   }

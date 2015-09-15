@@ -1,9 +1,3 @@
-<manifest
-    package="com.orhanobut.hawk"
-    xmlns:android="http://schemas.android.com/apk/res/android">
-
-    <application android:allowBackup="true">
-
-    </application>
-
+<manifest package="com.orhanobut.hawk">
+  <application/>
 </manifest>

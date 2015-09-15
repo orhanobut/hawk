@@ -19,11 +19,12 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.TimeUnit;
 
 import rx.Observable;
 import rx.Observer;
 import rx.Subscriber;
-import rx.android.schedulers.AndroidSchedulers;
 import rx.functions.Func1;
 import rx.schedulers.Schedulers;
 
@@ -37,6 +38,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 public class HawkTest extends TestCase {
 
   private static final String KEY = "TAG";
+  private static final long LATCH_TIMEOUT_IN_SECONDS = 5;
 
   protected final Context context;
 
@@ -371,18 +373,20 @@ public class HawkTest extends TestCase {
   public void getRxString() throws Exception {
     Hawk.put(KEY, "hawk");
 
+    final CountDownLatch latch = new CountDownLatch(1);
     Hawk.<String>getObservable(KEY)
         .observeOn(Schedulers.io())
-        .subscribeOn(AndroidSchedulers.mainThread())
         .subscribe(new Subscriber<String>() {
           @Override
           public void onCompleted() {
             assertTrue(true);
+            latch.countDown();
           }
 
           @Override
           public void onError(Throwable e) {
             assertTrue(false);
+            latch.countDown();
           }
 
           @Override
@@ -390,22 +394,26 @@ public class HawkTest extends TestCase {
             assertThat(s).isEqualTo("hawk");
           }
         });
+
+    assertThat(latch.await(LATCH_TIMEOUT_IN_SECONDS, TimeUnit.SECONDS)).isTrue();
   }
 
   @Test
   public void getRxStringDefaultValue() throws Exception {
+    final CountDownLatch latch = new CountDownLatch(1);
     Hawk.<String>getObservable(KEY, "test")
         .observeOn(Schedulers.io())
-        .subscribeOn(AndroidSchedulers.mainThread())
         .subscribe(new Subscriber<String>() {
           @Override
           public void onCompleted() {
             assertTrue(true);
+            latch.countDown();
           }
 
           @Override
           public void onError(Throwable e) {
             fail();
+            latch.countDown();
           }
 
           @Override
@@ -413,12 +421,16 @@ public class HawkTest extends TestCase {
             assertThat(s).isEqualTo("test");
           }
         });
+
+    assertThat(latch.await(LATCH_TIMEOUT_IN_SECONDS, TimeUnit.SECONDS)).isTrue();
   }
 
   @Test
-  public void testBuildRx() {
+  public void testBuildRx() throws InterruptedException {
+    final CountDownLatch latch = new CountDownLatch(1);
     Hawk.init(context)
         .buildRx()
+        .observeOn(Schedulers.io())
         .concatMap(new Func1<Boolean, Observable<Boolean>>() {
           @Override
           public Observable<Boolean> call(Boolean aBoolean) {
@@ -435,11 +447,13 @@ public class HawkTest extends TestCase {
           @Override
           public void onCompleted() {
             assertTrue(true);
+            latch.countDown();
           }
 
           @Override
           public void onError(Throwable throwable) {
             assertTrue(false);
+            latch.countDown();
           }
 
           @Override
@@ -447,6 +461,8 @@ public class HawkTest extends TestCase {
             assertEquals(storedValue, "hawk");
           }
         });
+
+    assertThat(latch.await(LATCH_TIMEOUT_IN_SECONDS, TimeUnit.SECONDS)).isTrue();
   }
 
 }
