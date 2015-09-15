@@ -1,4 +1,5 @@
 apply plugin: 'com.android.library'
+apply plugin: 'com.github.dcendents.android-maven'
 
 apply plugin: 'checkstyle'
 
@@ -25,6 +26,24 @@ android {
   lintOptions {
     abortOnError false
   }
+}
+
+// build a jar with source files
+task sourcesJar(type: Jar) {
+  from android.sourceSets.main.java.srcDirs
+  classifier = 'sources'
+}
+
+task javadoc(type: Javadoc) {
+  failOnError  false
+  source = android.sourceSets.main.java.sourceFiles
+  classpath += project.files(android.getBootClasspath().join(File.pathSeparator))
+}
+
+// build a jar with javadoc
+task javadocJar(type: Jar, dependsOn: javadoc) {
+  classifier = 'javadoc'
+  from javadoc.destinationDir
 }
 
 configurations {
@@ -54,5 +73,3 @@ dependencies {
   testCompile "org.robolectric:robolectric:3.0"
   testCompile 'org.assertj:assertj-core:1.7.0'
 }
-
-apply from: '../maven_push.gradle'
