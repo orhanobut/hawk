@@ -10,9 +10,6 @@ import java.util.List;
 import rx.Observable;
 import rx.Subscriber;
 
-/**
- * @author Orhan Obut
- */
 public final class Hawk {
 
   private static HawkBuilder hawkBuilder;

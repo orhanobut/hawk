@@ -1,11 +1,24 @@
 apply plugin: 'com.android.library'
 
+apply plugin: 'checkstyle'
+
+check.dependsOn('checkstyle')
+
+task checkstyle(type: Checkstyle) {
+  configFile = rootProject.file('checkstyle.xml')
+  source 'src'
+  include '**/*.java'
+  exclude '**/gen/**'
+
+  classpath = files()
+}
+
 android {
   compileSdkVersion 21
   buildToolsVersion "21.1.2"
 
   defaultConfig {
-    minSdkVersion 8
+    minSdkVersion 9
     targetSdkVersion 21
   }
 
@@ -17,11 +30,24 @@ android {
 configurations {
   optional
   compile.extendsFrom optional
+
+  provided
+
+}
+
+sourceSets {
+  main {
+    compileClasspath += configurations.provided
+  }
+  test {
+    compileClasspath += configurations.provided
+    runtimeClasspath += configurations.provided
+  }
 }
 
 dependencies {
-  compile 'com.google.code.gson:gson:2.3.1'
-  optional 'io.reactivex:rxandroid:0.25.0'
+  provided 'com.google.code.gson:gson:2.3.1'
+  optional 'io.reactivex:rxandroid:1.0.1'
 
   testCompile 'junit:junit:4.12'
   testCompile "org.mockito:mockito-core:1.9.5"

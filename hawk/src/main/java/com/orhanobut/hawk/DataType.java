@@ -1,8 +1,5 @@
 package com.orhanobut.hawk;
 
-/**
- * @author Orhan Obut
- */
 enum DataType {
   OBJECT('0'),
   LIST('1'),

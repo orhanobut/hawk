@@ -1,8 +1,5 @@
 package com.orhanobut.hawk;
 
-/**
- * @author Orhan Obut
- */
 public class HawkSharedPrefsTest extends HawkTest {
 
   @Override

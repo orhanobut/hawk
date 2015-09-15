@@ -7,8 +7,6 @@ import java.security.GeneralSecurityException;
 
 /**
  * Provides AES algorithm
- *
- * @author Orhan Obut
  */
 final class AesEncryption implements Encryption {
 

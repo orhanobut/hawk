@@ -73,9 +73,13 @@ final class AesCbcWithIntegrity {
   private static final int PBE_SALT_LENGTH_BITS = AES_KEY_LENGTH_BITS; // same size as key output
   private static final String PBE_ALGORITHM = "PBKDF2WithHmacSHA1";
   private static final int BASE64_FLAGS = Base64.NO_WRAP;
-  private static final AtomicBoolean prngFixed = new AtomicBoolean(false);
+  private static final AtomicBoolean PRNG_FIXED = new AtomicBoolean(false);
   private static final String HMAC_ALGORITHM = "HmacSHA256";
   private static final int HMAC_KEY_LENGTH_BITS = 256;
+
+  private AesCbcWithIntegrity() {
+    //no instance
+  }
 
   /**
    * Converts the given AES/HMAC keys into a base64 encoded string suitable for
@@ -136,7 +140,7 @@ final class AesCbcWithIntegrity {
     SecretKey confidentialityKey = keyGen.generateKey();
 
     //Now make the HMAC key
-    byte[] integrityKeyBytes = randomBytes(HMAC_KEY_LENGTH_BITS / 8);//to get bytes
+    byte[] integrityKeyBytes = randomBytes(HMAC_KEY_LENGTH_BITS / 8); //to get bytes
     SecretKey integrityKey = new SecretKeySpec(integrityKeyBytes, HMAC_ALGORITHM);
 
     return new SecretKeys(confidentialityKey, integrityKey);
@@ -162,7 +166,9 @@ final class AesCbcWithIntegrity {
 
     // Split the random bytes into two parts:
     byte[] confidentialityKeyBytes = copyOfRange(keyBytes, 0, AES_KEY_LENGTH_BITS / 8);
-    byte[] integrityKeyBytes = copyOfRange(keyBytes, AES_KEY_LENGTH_BITS / 8, AES_KEY_LENGTH_BITS / 8 + HMAC_KEY_LENGTH_BITS / 8);
+    byte[] integrityKeyBytes = copyOfRange(
+        keyBytes, AES_KEY_LENGTH_BITS / 8, AES_KEY_LENGTH_BITS / 8 + HMAC_KEY_LENGTH_BITS / 8
+    );
 
     //Generate the AES key
     SecretKey confidentialityKey = new SecretKeySpec(confidentialityKeyBytes, CIPHER);
@@ -237,7 +243,7 @@ final class AesCbcWithIntegrity {
     System.arraycopy(from, start, result, 0, length);
     return result;
   }
-    
+
     /*
      * -----------------------------------------------------------------
      * Encryption
@@ -307,11 +313,11 @@ final class AesCbcWithIntegrity {
    * Will only run once, and every subsequent call should return immediately.
    */
   private static void fixPrng() {
-    if (!prngFixed.get()) {
+    if (!PRNG_FIXED.get()) {
       synchronized (PrngFixes.class) {
-        if (!prngFixed.get()) {
+        if (!PRNG_FIXED.get()) {
           PrngFixes.apply();
-          prngFixed.set(true);
+          PRNG_FIXED.set(true);
         }
       }
     }
@@ -391,11 +397,12 @@ final class AesCbcWithIntegrity {
    * @throws java.security.NoSuchAlgorithmException
    * @throws java.security.InvalidKeyException
    */
-  public static byte[] generateMac(byte[] byteCipherText, SecretKey integrityKey) throws NoSuchAlgorithmException, InvalidKeyException {
+  public static byte[] generateMac(byte[] byteCipherText, SecretKey integrityKey)
+      throws NoSuchAlgorithmException, InvalidKeyException {
     //Now compute the mac for later integrity checking
-    Mac sha256_HMAC = Mac.getInstance(HMAC_ALGORITHM);
-    sha256_HMAC.init(integrityKey);
-    return sha256_HMAC.doFinal(byteCipherText);
+    Mac sha256HMAC = Mac.getInstance(HMAC_ALGORITHM);
+    sha256HMAC.init(integrityKey);
+    return sha256HMAC.doFinal(byteCipherText);
   }
 
   /**
@@ -759,7 +766,7 @@ final class AesCbcWithIntegrity {
 
       private static final File URANDOM_FILE = new File("/dev/urandom");
 
-      private static final Object sLock = new Object();
+      private static final Object LOCK = new Object();
 
       /**
        * Input stream for reading from Linux PRNG or {@code null} if not
@@ -788,7 +795,7 @@ final class AesCbcWithIntegrity {
       protected void engineSetSeed(byte[] bytes) {
         try {
           OutputStream out;
-          synchronized (sLock) {
+          synchronized (LOCK) {
             out = getUrandomOutputStream();
           }
           out.write(bytes);
@@ -812,7 +819,7 @@ final class AesCbcWithIntegrity {
 
         try {
           DataInputStream in;
-          synchronized (sLock) {
+          synchronized (LOCK) {
             in = getUrandomInputStream();
           }
           synchronized (in) {
@@ -831,7 +838,7 @@ final class AesCbcWithIntegrity {
       }
 
       private DataInputStream getUrandomInputStream() {
-        synchronized (sLock) {
+        synchronized (LOCK) {
           if (sUrandomIn == null) {
             // NOTE: Consider inserting a BufferedInputStream
             // between DataInputStream and FileInputStream if you need
@@ -849,7 +856,7 @@ final class AesCbcWithIntegrity {
       }
 
       private OutputStream getUrandomOutputStream() throws IOException {
-        synchronized (sLock) {
+        synchronized (LOCK) {
           if (sUrandomOut == null) {
             sUrandomOut = new FileOutputStream(URANDOM_FILE);
           }

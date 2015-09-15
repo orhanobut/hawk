@@ -2,9 +2,6 @@ package com.orhanobut.hawk;
 
 import android.util.Log;
 
-/**
- * @author Orhan Obut
- */
 @SuppressWarnings("unused")
 final class Logger {
 
@@ -38,6 +35,10 @@ final class Logger {
 
   static void wtf(String message) {
     log(Log.ASSERT, message, null);
+  }
+
+  private Logger() {
+    // no instance
   }
 
   private static void log(int logType, String message, Throwable throwable) {

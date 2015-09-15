@@ -17,8 +17,6 @@ import java.util.Set;
  * List types will be encoded/decoded by parser
  * Serializable types will be encoded/decoded object stream
  * Not serializable objects will be encoded/decoded by parser
- *
- * @author Orhan Obut
  */
 final class HawkEncoder implements Encoder {
 
@@ -97,8 +95,9 @@ final class HawkEncoder implements Encoder {
         return toMap(json, keyType, valueType);
       case SET:
         return toSet(json, keyType);
+      default:
+        return null;
     }
-    return null;
   }
 
   private <T> T toObject(String json, Class<?> type) throws Exception {
@@ -110,8 +109,11 @@ final class HawkEncoder implements Encoder {
     if (type == null) {
       return (T) new ArrayList<>();
     }
-    List<T> list = parser.fromJson(json, new TypeToken<List<T>>() {
-    }.getType());
+    List<T> list = parser.fromJson(
+        json,
+        new TypeToken<List<T>>() {
+        } .getType()
+    );
 
     int size = list.size();
     for (int i = 0; i < size; i++) {
@@ -127,7 +129,7 @@ final class HawkEncoder implements Encoder {
       return (T) resultSet;
     }
     Set<T> set = parser.fromJson(json, new TypeToken<Set<T>>() {
-    }.getType());
+    } .getType());
 
     for (T t : set) {
       String valueJson = parser.toJson(t);
@@ -144,7 +146,7 @@ final class HawkEncoder implements Encoder {
       return (T) resultMap;
     }
     Map<K, V> map = parser.fromJson(json, new TypeToken<Map<K, V>>() {
-    }.getType());
+    } .getType());
 
     for (Map.Entry<K, V> entry : map.entrySet()) {
       String keyJson = parser.toJson(entry.getKey());
