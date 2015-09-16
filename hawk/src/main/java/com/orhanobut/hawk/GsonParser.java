@@ -7,7 +7,7 @@ import com.google.gson.JsonSyntaxException;
 
 import java.lang.reflect.Type;
 
-final class GsonParser implements Parser {
+public final class GsonParser implements Parser {
 
   private final Gson gson;
 
