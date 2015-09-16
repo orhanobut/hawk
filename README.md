@@ -38,6 +38,11 @@ Hawk.init(this)
     .build();
 ```
 
+or use buildRx to add init to your rx stream
+```java
+.buildRx().
+```
+
 You can use highest secure crypto approach, init might take 36-400ms. You also need to provide password
 ```java
 Hawk.init(this)
