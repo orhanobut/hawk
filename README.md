@@ -249,13 +249,12 @@ Done with Nexus 4, Android L. Note that this is not certain values, I just made 
 ##### Credits
 I use the following implementation for the crypto and I believe it should get more attention. Thanks for this great hard work. https://github.com/tozny/java-aes-crypto and a great article about it : http://tozny.com/blog/encrypting-strings-in-android-lets-make-better-mistakes/
 
-#### You might also like
-- [Wasp](https://github.com/orhanobut/wasp) All-in-one network solution
-- [Bee](https://github.com/orhanobut/bee) QA/Debug tool
-- [DialogPlus](https://github.com/orhanobut/dialogplus) Easy,simple dialog solution
-- [SimpleListView](https://github.com/orhanobut/simplelistview) Simple basic listview implementation with linearlayout
-- [Logger](https://github.com/orhanobut/logger) Simple, pretty and advanced logger
-
+#### Proguard
+```
+#Gson
+-keep class com.google.gson.** { *; }
+-keepattributes Signature
+```
 
 ###License
 <pre>
