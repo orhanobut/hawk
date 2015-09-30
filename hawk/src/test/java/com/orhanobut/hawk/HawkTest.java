@@ -5,8 +5,6 @@ import android.content.Context;
 
 import junit.framework.TestCase;
 
-import org.junit.After;
-import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.robolectric.Robolectric;
@@ -46,8 +44,7 @@ public class HawkTest extends TestCase {
     context = Robolectric.buildActivity(Activity.class).create().get();
   }
 
-  @Before
-  public void setUp() throws Exception {
+  @Override public void setUp() throws Exception {
     init();
   }
 
@@ -55,14 +52,12 @@ public class HawkTest extends TestCase {
     Hawk.init(context).build();
   }
 
-  @After
-  public void tearDown() throws Exception {
+  @Override public void tearDown() throws Exception {
     super.tearDown();
     Hawk.clear();
   }
 
-  @Test
-  public void initWithInvalidValues() {
+  @Test public void initWithInvalidValues() {
     try {
       Hawk.init(null);
       fail();
@@ -71,8 +66,7 @@ public class HawkTest extends TestCase {
     }
   }
 
-  @Test
-  public void testSingleItem() {
+  @Test public void testSingleItem() {
     Hawk.put("boolean", true);
     assertThat(Hawk.get("boolean")).isEqualTo(true);
 
@@ -100,14 +94,12 @@ public class HawkTest extends TestCase {
     assertThat(innerFoo.name).isEqualTo("hawk");
   }
 
-  @Test
-  public void testSingleItemDefault() {
+  @Test public void testSingleItemDefault() {
     boolean result = Hawk.get("tag", true);
     assertThat(result).isEqualTo(true);
   }
 
-  @Test
-  public void testList() {
+  @Test public void testList() {
     List<String> list = new ArrayList<>();
     list.add("foo");
     list.add("bar");
@@ -121,8 +113,7 @@ public class HawkTest extends TestCase {
     assertThat(list1.get(1)).isEqualTo("bar");
   }
 
-  @Test
-  public void testEmptyList() {
+  @Test public void testEmptyList() {
     List<FooBar> list = new ArrayList<>();
     Hawk.put("tag", list);
 
@@ -131,8 +122,7 @@ public class HawkTest extends TestCase {
     assertThat(list1).isNotNull();
   }
 
-  @Test
-  public void testMap() {
+  @Test public void testMap() {
     Map<String, String> map = new HashMap<>();
     map.put("key", "value");
     Hawk.put("map", map);
@@ -143,8 +133,7 @@ public class HawkTest extends TestCase {
     assertThat(map1.get("key")).isEqualTo("value");
   }
 
-  @Test
-  public void testEmptyMap() {
+  @Test public void testEmptyMap() {
     Map<String, FooBar> map = new HashMap<>();
     Hawk.put("tag", map);
 
@@ -153,8 +142,7 @@ public class HawkTest extends TestCase {
     assertThat(map1).isNotNull();
   }
 
-  @Test
-  public void testSet() {
+  @Test public void testSet() {
     Set<String> set = new HashSet<>();
     set.add("foo");
     Hawk.put("set", set);
@@ -165,8 +153,7 @@ public class HawkTest extends TestCase {
     assertThat(set1.contains("foo")).isTrue();
   }
 
-  @Test
-  public void testEmptySet() {
+  @Test public void testEmptySet() {
     Set<FooBar> set = new HashSet<>();
     Hawk.put("tag", set);
 
@@ -175,8 +162,7 @@ public class HawkTest extends TestCase {
     assertThat(set1).isNotNull();
   }
 
-  @Test
-  public void testNullKeyPut() {
+  @Test public void testNullKeyPut() {
     try {
       Hawk.put(null, "test");
       fail();
@@ -185,8 +171,7 @@ public class HawkTest extends TestCase {
     }
   }
 
-  @Test
-  public void testNullKeyGet() {
+  @Test public void testNullKeyGet() {
     try {
       Hawk.get(null);
       fail();
@@ -195,8 +180,7 @@ public class HawkTest extends TestCase {
     }
   }
 
-  @Test
-  public void testNullValuePut() {
+  @Test public void testNullValuePut() {
     try {
       Hawk.put("tag", "something");
       assertThat(Hawk.get("tag")).isNotNull();
@@ -208,8 +192,7 @@ public class HawkTest extends TestCase {
     }
   }
 
-  @Test
-  public void testCount() {
+  @Test public void testCount() {
     Hawk.clear();
     String value = "test";
     Hawk.put("tag", value);
@@ -221,8 +204,7 @@ public class HawkTest extends TestCase {
     assertThat(Hawk.count()).isEqualTo(5);
   }
 
-  @Test
-  public void testClear() {
+  @Test public void testClear() {
     String value = "test";
     Hawk.put("tag", value);
     Hawk.put("tag1", value);
@@ -233,8 +215,7 @@ public class HawkTest extends TestCase {
     assertThat(Hawk.count()).isEqualTo(0);
   }
 
-  @Test
-  public void testRemove() {
+  @Test public void testRemove() {
     Hawk.clear();
     String value = "test";
     Hawk.put("tag", value);
@@ -249,8 +230,7 @@ public class HawkTest extends TestCase {
     assertThat(Hawk.count()).isEqualTo(2);
   }
 
-  @Test
-  public void testBulkRemoval() {
+  @Test public void testBulkRemoval() {
     Hawk.clear();
     Hawk.put("tag", "test");
     Hawk.put("tag1", 1);
@@ -264,8 +244,7 @@ public class HawkTest extends TestCase {
     assertThat(Hawk.count()).isEqualTo(1);
   }
 
-  @Test
-  public void testContains() {
+  @Test public void testContains() {
     String value = "test";
     String key = "tag";
     Hawk.put(key, value);
@@ -277,8 +256,7 @@ public class HawkTest extends TestCase {
     assertThat(Hawk.contains(key)).isFalse();
   }
 
-  @Test
-  public void testChain() {
+  @Test public void testChain() {
     Hawk.chain()
         .put("tag", 1)
         .put("tag1", "yes")
@@ -290,8 +268,7 @@ public class HawkTest extends TestCase {
     assertThat(Hawk.get("tag2")).isEqualTo(false);
   }
 
-  @Test
-  public void testChainWithCapacity() {
+  @Test public void testChainWithCapacity() {
     Hawk.chain(10)
         .put("tag", 1)
         .put("tag1", "yes")
@@ -303,8 +280,7 @@ public class HawkTest extends TestCase {
     assertThat(Hawk.get("tag2")).isEqualTo(false);
   }
 
-  @Test
-  public void testChainWithLists() {
+  @Test public void testChainWithLists() {
     List<String> items = new ArrayList<>();
     items.add("fst");
     items.add("snd");
@@ -331,16 +307,14 @@ public class HawkTest extends TestCase {
     }
   }
 
-  @Test
-  public void testHugeData() {
+  @Test public void testHugeData() {
     for (int i = 0; i < 100; i++) {
       Hawk.put("" + i, "" + i);
     }
     assertThat(true).isTrue();
   }
 
-  @Test
-  public void testHugeDataWithBulk() {
+  @Test public void testHugeDataWithBulk() {
     Hawk.Chain chain = Hawk.chain();
     for (int i = 0; i < 10000; i++) {
       chain.put("" + i, "" + i);
@@ -349,8 +323,7 @@ public class HawkTest extends TestCase {
     assertThat(true).isTrue();
   }
 
-  @Test
-  public void testLogLevel() {
+  @Test public void testLogLevel() {
     Hawk.init(context)
         .setLogLevel(LogLevel.NONE)
         .build();
@@ -364,33 +337,28 @@ public class HawkTest extends TestCase {
     assertThat(Hawk.getLogLevel()).isEqualTo(LogLevel.FULL);
   }
 
-  @Test
-  public void resetCrypto() {
+  @Test public void resetCrypto() {
     assertThat(Hawk.resetCrypto()).isTrue();
   }
 
-  @Test
-  public void getRxString() throws Exception {
+  @Test public void getRxString() throws Exception {
     Hawk.put(KEY, "hawk");
 
     final CountDownLatch latch = new CountDownLatch(1);
     Hawk.<String>getObservable(KEY)
         .observeOn(Schedulers.io())
         .subscribe(new Subscriber<String>() {
-          @Override
-          public void onCompleted() {
+          @Override public void onCompleted() {
             assertTrue(true);
             latch.countDown();
           }
 
-          @Override
-          public void onError(Throwable e) {
+          @Override public void onError(Throwable e) {
             assertTrue(false);
             latch.countDown();
           }
 
-          @Override
-          public void onNext(String s) {
+          @Override public void onNext(String s) {
             assertThat(s).isEqualTo("hawk");
           }
         });
@@ -398,26 +366,22 @@ public class HawkTest extends TestCase {
     assertThat(latch.await(LATCH_TIMEOUT_IN_SECONDS, TimeUnit.SECONDS)).isTrue();
   }
 
-  @Test
-  public void getRxStringDefaultValue() throws Exception {
+  @Test public void getRxStringDefaultValue() throws Exception {
     final CountDownLatch latch = new CountDownLatch(1);
     Hawk.<String>getObservable(KEY, "test")
         .observeOn(Schedulers.io())
         .subscribe(new Subscriber<String>() {
-          @Override
-          public void onCompleted() {
+          @Override public void onCompleted() {
             assertTrue(true);
             latch.countDown();
           }
 
-          @Override
-          public void onError(Throwable e) {
+          @Override public void onError(Throwable e) {
             fail();
             latch.countDown();
           }
 
-          @Override
-          public void onNext(String s) {
+          @Override public void onNext(String s) {
             assertThat(s).isEqualTo("test");
           }
         });
@@ -425,39 +389,33 @@ public class HawkTest extends TestCase {
     assertThat(latch.await(LATCH_TIMEOUT_IN_SECONDS, TimeUnit.SECONDS)).isTrue();
   }
 
-  @Test
-  public void testBuildRx() throws InterruptedException {
+  @Test public void testBuildRx() throws InterruptedException {
     final CountDownLatch latch = new CountDownLatch(1);
     Hawk.init(context)
         .buildRx()
         .observeOn(Schedulers.io())
         .concatMap(new Func1<Boolean, Observable<Boolean>>() {
-          @Override
-          public Observable<Boolean> call(Boolean aBoolean) {
+          @Override public Observable<Boolean> call(Boolean aBoolean) {
             return Hawk.putObservable(KEY, "hawk");
           }
         })
         .concatMap(new Func1<Boolean, Observable<String>>() {
-          @Override
-          public Observable<String> call(Boolean aBoolean) {
+          @Override public Observable<String> call(Boolean aBoolean) {
             return Hawk.getObservable(KEY);
           }
         })
         .subscribe(new Observer<String>() {
-          @Override
-          public void onCompleted() {
+          @Override public void onCompleted() {
             assertTrue(true);
             latch.countDown();
           }
 
-          @Override
-          public void onError(Throwable throwable) {
+          @Override public void onError(Throwable throwable) {
             assertTrue(false);
             latch.countDown();
           }
 
-          @Override
-          public void onNext(String storedValue) {
+          @Override public void onNext(String storedValue) {
             assertEquals(storedValue, "hawk");
           }
         });

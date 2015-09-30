@@ -21,33 +21,30 @@ class SqliteStorage implements Storage {
     helper = new SqliteHelper(context);
   }
 
-  @Override
-  public <T> boolean put(String key, T value) {
+  @Override public <T> boolean put(String key, T value) {
     checkKey(key);
     return helper.put(key, String.valueOf(value));
   }
 
-  @Override
-  public boolean put(List<Pair<String, ?>> items) {
+  @Override public boolean put(List<Pair<String, ?>> items) {
     return helper.put(items);
   }
 
-  @Override
-  public <T> T get(String key) {
+  @SuppressWarnings("unchecked")
+  @Override public <T> T get(String key) {
     checkKey(key);
     return (T) helper.get(key);
   }
 
-  @Override
-  public boolean remove(String key) {
+  @SuppressWarnings("SimplifiableIfStatement")
+  @Override public boolean remove(String key) {
     if (TextUtils.isEmpty(key)) {
       return true;
     }
     return helper.delete(key);
   }
 
-  @Override
-  public boolean remove(String... keys) {
+  @Override public boolean remove(String... keys) {
     return helper.delete(keys);
   }
 
@@ -61,8 +58,8 @@ class SqliteStorage implements Storage {
     return helper.count();
   }
 
-  @Override
-  public boolean contains(String key) {
+  @SuppressWarnings("SimplifiableIfStatement")
+  @Override public boolean contains(String key) {
     if (key == null) {
       return false;
     }
@@ -87,15 +84,13 @@ class SqliteStorage implements Storage {
       super(context, DB_NAME, null, VERSION);
     }
 
-    @Override
-    public void onCreate(SQLiteDatabase db) {
+    @Override public void onCreate(SQLiteDatabase db) {
       db.execSQL("CREATE TABLE " + TABLE_NAME +
           " ( " + COL_KEY + " text primary key not null, " +
           COL_VALUE + " text null);");
     }
 
-    @Override
-    public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
+    @Override public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
     }
 
     public boolean put(String key, String value) {

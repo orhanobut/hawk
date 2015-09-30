@@ -6,8 +6,6 @@ import android.util.Pair;
 
 import junit.framework.TestCase;
 
-import org.junit.After;
-import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.robolectric.Robolectric;
@@ -31,21 +29,17 @@ public class SqliteStorageTest extends TestCase {
     context = Robolectric.buildActivity(Activity.class).create().get();
   }
 
-  @Override
-  @Before
-  public void setUp() throws Exception {
+  @Override public void setUp() throws Exception {
     super.setUp();
     storage = new SqliteStorage(context);
   }
 
-  @Test
-  public void init() {
+  @Test public void init() {
     assertThat(context).isNotNull();
     assertThat(storage).isNotNull();
   }
 
-  @Test
-  public void createInstanceWithInvalidValues() {
+  @Test public void createInstanceWithInvalidValues() {
     try {
       new SqliteStorage(null);
       fail();
@@ -54,13 +48,11 @@ public class SqliteStorageTest extends TestCase {
     }
   }
 
-  @After
-  public void tearDown() {
+  @Override public void tearDown() {
     storage = null;
   }
 
-  @Test
-  public void clearAll() {
+  @Test public void clearAll() {
     storage.put("a1", "String");
     storage.put("a2", "String");
 
@@ -72,14 +64,12 @@ public class SqliteStorageTest extends TestCase {
     assertThat(storage.get("a2")).isNull();
   }
 
-  @Test
-  public void put() {
+  @Test public void put() {
     storage.put("string", "String");
     assertThat(storage.get("string")).isEqualTo("String");
   }
 
-  @Test
-  public void putInvalidValues() {
+  @Test public void putInvalidValues() {
     try {
       storage.put(null, "test");
       fail();
@@ -94,8 +84,7 @@ public class SqliteStorageTest extends TestCase {
     }
   }
 
-  @Test
-  public void putBulk() {
+  @Test public void putBulk() {
     List<Pair<String, ?>> list = new ArrayList<>();
     Pair<String, String> pair = new Pair<>("a1", "b1");
     Pair<String, String> pair2 = new Pair<>("a2", "b2");
@@ -107,8 +96,7 @@ public class SqliteStorageTest extends TestCase {
     assertThat(storage.get("a2")).isEqualTo("b2");
   }
 
-  @Test
-  public void getInvalidValues() {
+  @Test public void getInvalidValues() {
     try {
       storage.get(null);
       fail();
@@ -123,15 +111,13 @@ public class SqliteStorageTest extends TestCase {
     }
   }
 
-  @Test
-  public void contains() {
+  @Test public void contains() {
     storage.put("string", "String");
     assertThat(storage.contains("string")).isTrue();
     assertThat(storage.contains(null)).isFalse();
   }
 
-  @Test
-  public void remove() {
+  @Test public void remove() {
     storage.put("string", "string");
     assertThat(storage.get("string")).isNotNull();
 
@@ -139,14 +125,12 @@ public class SqliteStorageTest extends TestCase {
     assertThat(storage.get("string")).isNull();
   }
 
-  @Test
-  public void removeInvalid() {
+  @Test public void removeInvalid() {
     assertThat(storage.remove(null, null)).isTrue();
     assertThat(storage.remove("")).isTrue();
   }
 
-  @Test
-  public void bulkRemove() {
+  @Test public void bulkRemove() {
     storage.put("a1", "string");
     storage.put("a2", "string");
     assertThat(storage.get("a1")).isNotNull();
@@ -157,8 +141,7 @@ public class SqliteStorageTest extends TestCase {
     assertThat(storage.get("a2")).isNull();
   }
 
-  @Test
-  public void count() {
+  @Test public void count() {
     storage.put("a1", "string");
     storage.put("a2", "string");
     assertThat(storage.get("a1")).isNotNull();
@@ -167,8 +150,7 @@ public class SqliteStorageTest extends TestCase {
     assertThat(storage.count()).isEqualTo(2);
   }
 
-  @Test
-  public void update() {
+  @Test public void update() {
     storage.put("a1", "b1");
     assertThat(storage.get("a1")).isEqualTo("b1");
 

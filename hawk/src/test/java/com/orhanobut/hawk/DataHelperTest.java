@@ -28,20 +28,17 @@ public class DataHelperTest extends TestCase {
     String name = "Hawk";
   }
 
-  @Test
-  public void testNewVersionCheck() {
+  @Test public void testNewVersionCheck() {
     DataInfo info = DataHelper.getDataInfo("java.lang.String##00V@asdfjasdf");
     assertThat(info.isNewVersion()).isTrue();
   }
 
-  @Test
-  public void testOldVersionCheck() {
+  @Test public void testOldVersionCheck() {
     DataInfo info = DataHelper.getDataInfo("java.lang.String##00@asdfjasdf");
     assertThat(info.isNewVersion()).isFalse();
   }
 
-  @Test
-  public void addTypeAsObject() {
+  @Test public void addTypeAsObject() {
     String text = "test";
     String actual = DataHelper.addType(CIPHER_TEXT, text);
     String expected = text.getClass().getName() + "##0V@" + CIPHER_TEXT;
@@ -53,8 +50,7 @@ public class DataHelperTest extends TestCase {
     assertThat(actualFoo).isEqualTo(expectedFoo);
   }
 
-  @Test
-  public void addTypeAsList() {
+  @Test public void addTypeAsList() {
     List<String> list = new ArrayList<>();
     list.add("test");
     String actual = DataHelper.addType(CIPHER_TEXT, list);
@@ -68,8 +64,7 @@ public class DataHelperTest extends TestCase {
     assertThat(actual2).isEqualTo(expected2);
   }
 
-  @Test
-  public void addTypeAsMap() {
+  @Test public void addTypeAsMap() {
     Map<String, String> map = new HashMap<>();
     map.put("key", "value");
     String actual = DataHelper.addType(CIPHER_TEXT, map);
@@ -85,8 +80,7 @@ public class DataHelperTest extends TestCase {
     assertThat(actual2).isEqualTo(expected2);
   }
 
-  @Test
-  public void addTypeInvalidValues() {
+  @Test public void addTypeInvalidValues() {
     try {
       DataHelper.addType(null, null);
     } catch (Exception e) {
@@ -104,8 +98,7 @@ public class DataHelperTest extends TestCase {
     }
   }
 
-  @Test
-  public void addTypeAsSet() {
+  @Test public void addTypeAsSet() {
     Set<String> set = new HashSet<>();
     set.add("key");
     String actual = DataHelper.addType(CIPHER_TEXT, set);
@@ -119,8 +112,7 @@ public class DataHelperTest extends TestCase {
     assertThat(actual2).isEqualTo(expected2);
   }
 
-  @Test
-  public void getDataInfoAsObject() {
+  @Test public void getDataInfoAsObject() {
     String clazz = "java.lang.String";
     String info = "00V";
     String cipher = "cipher";
@@ -132,8 +124,7 @@ public class DataHelperTest extends TestCase {
     assertThat(dataInfo.getDataType()).isEqualTo(DataType.OBJECT);
   }
 
-  @Test
-  public void getDataInfoAsList() {
+  @Test public void getDataInfoAsList() {
     String clazz = "java.lang.String";
     String info = "1V";
     String cipher = "cipher";
@@ -145,8 +136,7 @@ public class DataHelperTest extends TestCase {
     assertThat(dataInfo.getDataType()).isEqualTo(DataType.LIST);
   }
 
-  @Test
-  public void getDataInfoAsMap() {
+  @Test public void getDataInfoAsMap() {
     String clazz = "java.lang.String";
     String info = "2V";
     String cipher = "cipher";
@@ -158,8 +148,7 @@ public class DataHelperTest extends TestCase {
     assertThat(dataInfo.getDataType()).isEqualTo(DataType.MAP);
   }
 
-  @Test
-  public void getDataInfoAsSet() {
+  @Test public void getDataInfoAsSet() {
     String clazz = "java.lang.String";
     String info = "3V";
     String cipher = "cipher";
@@ -171,8 +160,7 @@ public class DataHelperTest extends TestCase {
     assertThat(dataInfo.getDataType()).isEqualTo(DataType.SET);
   }
 
-  @Test
-  public void getDataInfoAsInvalidValues() {
+  @Test public void getDataInfoAsInvalidValues() {
     try {
       DataHelper.getDataInfo(null);
       fail();
@@ -209,8 +197,7 @@ public class DataHelperTest extends TestCase {
     }
   }
 
-  @Test
-  public void getNewDataInfoWithInvalidValues() {
+  @Test public void getNewDataInfoWithInvalidValues() {
     try {
       DataHelper.getNewDataInfo(null, null);
       fail();
@@ -225,8 +212,7 @@ public class DataHelperTest extends TestCase {
     }
   }
 
-  @Test
-  public void getOldDataInfo() {
+  @Test public void getOldDataInfo() {
     try {
       DataHelper.getOldDataInfo(null, null);
       fail();
@@ -241,8 +227,7 @@ public class DataHelperTest extends TestCase {
     }
   }
 
-  @Test
-  public void encodeBase64() {
+  @Test public void encodeBase64() {
     String text = "hawk";
     String expected = Base64.encodeToString(text.getBytes(), Base64.DEFAULT);
     String actual = DataHelper.encodeBase64(text.getBytes());
@@ -252,8 +237,7 @@ public class DataHelperTest extends TestCase {
     assertThat(DataHelper.encodeBase64(null)).isNull();
   }
 
-  @Test
-  public void decodeBase64() {
+  @Test public void decodeBase64() {
     String text = "hawk";
     byte[] expected = Base64.decode(text, Base64.DEFAULT);
     byte[] actual = DataHelper.decodeBase64(text);

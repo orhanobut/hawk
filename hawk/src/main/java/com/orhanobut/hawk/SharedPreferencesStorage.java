@@ -14,13 +14,11 @@ final class SharedPreferencesStorage implements Storage {
     preferences = context.getSharedPreferences(tag, Context.MODE_PRIVATE);
   }
 
-  @Override
-  public <T> boolean put(String key, T value) {
+  @Override public <T> boolean put(String key, T value) {
     return getEditor().putString(key, String.valueOf(value)).commit();
   }
 
-  @Override
-  public boolean put(List<Pair<String, ?>> items) {
+  @Override public boolean put(List<Pair<String, ?>> items) {
     SharedPreferences.Editor editor = getEditor();
     for (Pair<String, ?> item : items) {
       editor.putString(item.first, String.valueOf(item.second));
@@ -29,18 +27,15 @@ final class SharedPreferencesStorage implements Storage {
   }
 
   @SuppressWarnings("unchecked")
-  @Override
-  public <T> T get(String key) {
+  @Override public <T> T get(String key) {
     return (T) preferences.getString(key, null);
   }
 
-  @Override
-  public boolean remove(String key) {
+  @Override public boolean remove(String key) {
     return getEditor().remove(key).commit();
   }
 
-  @Override
-  public boolean remove(String... keys) {
+  @Override public boolean remove(String... keys) {
     SharedPreferences.Editor editor = getEditor();
     for (String key : keys) {
       editor.remove(key);
@@ -48,18 +43,15 @@ final class SharedPreferencesStorage implements Storage {
     return editor.commit();
   }
 
-  @Override
-  public boolean contains(String key) {
+  @Override public boolean contains(String key) {
     return preferences.contains(key);
   }
 
-  @Override
-  public boolean clear() {
+  @Override public boolean clear() {
     return getEditor().clear().commit();
   }
 
-  @Override
-  public long count() {
+  @Override public long count() {
     return preferences.getAll().size();
   }
 

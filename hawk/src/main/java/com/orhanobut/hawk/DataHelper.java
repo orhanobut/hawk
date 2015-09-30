@@ -15,8 +15,7 @@ final class DataHelper {
   private static final String INFO_DELIMITER = "#";
   private static final char NEW_VERSION = 'V';
 
-  @Deprecated
-  private static final char FLAG_SERIALIZABLE = '1';
+  @Deprecated private static final char FLAG_SERIALIZABLE = '1';
 
   private static final Map<Character, DataType> TYPE_MAP = new HashMap<>();
 
@@ -88,8 +87,7 @@ final class DataHelper {
     return new DataInfo(dataType, cipherText, keyClazz, valueClazz);
   }
 
-  @Deprecated
-  static DataInfo getOldDataInfo(String text, String cipherText) {
+  @Deprecated static DataInfo getOldDataInfo(String text, String cipherText) {
     boolean serializable = text.charAt(text.length() - 1) == FLAG_SERIALIZABLE;
     char type = text.charAt(text.length() - 2);
     DataType dataType = TYPE_MAP.get(type);
