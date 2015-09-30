@@ -37,40 +37,35 @@ public class HawkBuilderTest extends TestCase {
     builder = Hawk.init(context);
   }
 
-  class CustomParser implements Parser {
+  static class CustomParser implements Parser {
     private final Gson gson;
 
     public CustomParser(Gson gson) {
       this.gson = gson;
     }
 
-    @Override
-    public <T> T fromJson(String content, Type type) throws JsonSyntaxException {
+    @Override public <T> T fromJson(String content, Type type) throws JsonSyntaxException {
       if (TextUtils.isEmpty(content)) {
         return null;
       }
       return gson.fromJson(content, type);
     }
 
-    @Override
-    public String toJson(Object body) {
+    @Override public String toJson(Object body) {
       return gson.toJson(body);
     }
 
   }
 
-  @Before
-  public void setup() {
+  @Before public void setup() {
     builder = new HawkBuilder(context);
   }
 
-  @After
-  public void tearDown() {
+  @After public void tearDown() {
     builder = null;
   }
 
-  @Test
-  public void createInstanceWithInvalidValues() {
+  @Test public void createInstanceWithInvalidValues() {
     try {
       new HawkBuilder(null);
       fail();
@@ -79,20 +74,17 @@ public class HawkBuilderTest extends TestCase {
     }
   }
 
-  @Test
-  public void testDefaultEncryptionMode() {
+  @Test public void testDefaultEncryptionMode() {
     assertThat(builder.getEncryptionMethod()).isEqualTo(HawkBuilder.EncryptionMethod.MEDIUM);
   }
 
-  @Test
-  public void testNoEncrpytionMode() {
+  @Test public void testNoEncrpytionMode() {
     builder.setEncryptionMethod(HawkBuilder.EncryptionMethod.NO_ENCRYPTION).build();
     assertThat(builder.getEncryptionMethod())
         .isEqualTo(HawkBuilder.EncryptionMethod.NO_ENCRYPTION);
   }
 
-  @Test
-  public void testHighestEncryptionModeWithoutPassword() {
+  @Test public void testHighestEncryptionModeWithoutPassword() {
     try {
       builder.setEncryptionMethod(HawkBuilder.EncryptionMethod.HIGHEST).build();
       fail();
@@ -102,16 +94,14 @@ public class HawkBuilderTest extends TestCase {
     }
   }
 
-  @Test
-  public void testHighestEncryptionMethodWithPasword() {
+  @Test public void testHighestEncryptionMethodWithPasword() {
     builder.setEncryptionMethod(HawkBuilder.EncryptionMethod.HIGHEST)
         .setPassword("test");
     assertThat(builder.getEncryptionMethod()).isEqualTo(
         HawkBuilder.EncryptionMethod.HIGHEST);
   }
 
-  @Test
-  public void testPassword() {
+  @Test public void testPassword() {
     try {
       builder.setPassword(null);
       fail();
@@ -129,77 +119,49 @@ public class HawkBuilderTest extends TestCase {
     assertThat(builder.getPassword()).isEqualTo("password");
   }
 
-  @Test
-  public void testDefaultLogLevel() {
+  @Test public void testDefaultLogLevel() {
     builder.build();
     assertThat(builder.getLogLevel()).isEqualTo(LogLevel.NONE);
   }
 
-  @Test
-  public void testCustomLogLevel() {
+  @Test public void testCustomLogLevel() {
     builder.setLogLevel(LogLevel.FULL).build();
     assertThat(builder.getLogLevel()).isEqualTo(LogLevel.FULL);
   }
 
-  @Test
-  public void testDefaultStorage() {
+  @Test public void testDefaultStorage() {
     builder.build();
     assertThat(builder.getStorage()).isInstanceOf(SharedPreferencesStorage.class);
   }
 
-  @Test
-  public void testCustomStorage() {
+  @Test public void testCustomStorage() {
     builder.setStorage(HawkBuilder.newSqliteStorage(context)).build();
     assertThat(builder.getStorage()).isInstanceOf(SqliteStorage.class);
   }
 
-  //TODO cannot test because of missing crypto
-  //  @Test
-  //  public void testIsEncrypted() {
-  //    builder.build();
-  //    assertThat(builder.getEncryptionMethod()).isEqualTo(HawkBuilder.EncryptionMethod.MEDIUM);
-  ////    assertThat(builder.isEncrypted()).isTrue();
-  //
-  //    builder = new HawkBuilder(context);
-  //    builder.setEncryptionMethod(HawkBuilder.EncryptionMethod.NO_ENCRYPTION)
-  //        .build();
-  ////    assertThat(builder.isEncrypted()).isFalse();
-  //
-  //    builder = new HawkBuilder(context);
-  //    builder.setEncryptionMethod(HawkBuilder.EncryptionMethod.HIGHEST)
-  //        .setPassword("asdfasdf")
-  //        .build();
-  //    assertThat(builder.isEncrypted()).isTrue();
-  //  }
-
-  @Test
-  public void testDefaultParser() {
+  @Test public void testDefaultParser() {
     builder.build();
     assertThat(builder.getParser()).isInstanceOf(GsonParser.class);
   }
 
-  @Test
-  public void testCustomParser() {
+  @Test public void testCustomParser() {
     CustomParser parser = new CustomParser(new Gson());
     builder.setParser(parser)
         .build();
     assertThat(builder.getParser()).isInstanceOf(CustomParser.class);
   }
 
-  @Test
-  public void testDefaultEncoded() {
+  @Test public void testDefaultEncoded() {
     builder.build();
     assertThat(builder.getEncoder()).isInstanceOf(HawkEncoder.class);
   }
 
-  @Test
-  public void testDefaultEncryption() {
+  @Test public void testDefaultEncryption() {
     builder.build();
     assertThat(builder.getEncryption()).isInstanceOf(AesEncryption.class);
   }
 
-  @Test
-  public void initWithCallback() throws InterruptedException {
+  @Test public void initWithCallback() throws InterruptedException {
     final CountDownLatch latch = new CountDownLatch(1);
     HawkBuilder.Callback callback = new HawkBuilder.Callback() {
       @Override

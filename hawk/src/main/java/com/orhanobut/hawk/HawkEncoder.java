@@ -29,8 +29,7 @@ final class HawkEncoder implements Encoder {
     this.parser = parser;
   }
 
-  @Override
-  public <T> byte[] encode(T value) {
+  @Override public <T> byte[] encode(T value) {
     if (value == null) {
       return null;
     }
@@ -42,16 +41,13 @@ final class HawkEncoder implements Encoder {
   }
 
   @SuppressWarnings("unchecked")
-  @Override
-  public <T> T decode(byte[] bytes, DataInfo info) throws Exception {
+  @Override public <T> T decode(byte[] bytes, DataInfo info) throws Exception {
     if (bytes == null) {
       return null;
     }
-
     if (info == null) {
       throw new NullPointerException("data info should not be null");
     }
-
     if (info.isNewVersion()) {
       return decodeNew(bytes, info);
     } else {
@@ -59,8 +55,7 @@ final class HawkEncoder implements Encoder {
     }
   }
 
-  @Deprecated
-  private <T> T decodeOld(byte[] bytes, DataInfo info) throws Exception {
+  @Deprecated private <T> T decodeOld(byte[] bytes, DataInfo info) throws Exception {
     boolean isList = info.getDataType() == DataType.LIST;
 
     // if the value is not list and serializable, then use the normal deserialize
@@ -167,8 +162,7 @@ final class HawkEncoder implements Encoder {
    * @return the serializable object
    */
   @SuppressWarnings("unchecked")
-  @Deprecated
-  private <T> T toSerializable(byte[] bytes) {
+  @Deprecated private <T> T toSerializable(byte[] bytes) {
     ObjectInputStream inputStream = null;
     try {
       inputStream = new ObjectInputStream(new ByteArrayInputStream(bytes));

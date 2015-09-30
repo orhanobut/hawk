@@ -148,8 +148,7 @@ public class HawkBuilder {
   public void build() {
     if (callback != null) {
       new Handler().post(new Runnable() {
-        @Override
-        public void run() {
+        @Override public void run() {
           try {
             startBuild();
             callback.onSuccess();
@@ -215,11 +214,9 @@ public class HawkBuilder {
   public Observable<Boolean> buildRx() {
     Utils.checkRx();
     return Observable.defer(new Func0<Observable<Boolean>>() {
-      @Override
-      public Observable<Boolean> call() {
+      @Override public Observable<Boolean> call() {
         return Observable.create(new Observable.OnSubscribe<Boolean>() {
-          @Override
-          public void call(Subscriber<? super Boolean> subscriber) {
+          @Override public void call(Subscriber<? super Boolean> subscriber) {
             try {
               startBuild();
               subscriber.onNext(true);

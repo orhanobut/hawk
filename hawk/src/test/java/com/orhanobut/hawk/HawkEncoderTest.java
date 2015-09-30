@@ -34,8 +34,7 @@ public class HawkEncoderTest extends TestCase {
     String name = "hawk";
   }
 
-  @Test
-  public void createInstanceWithInvalidValues() {
+  @Test public void createInstanceWithInvalidValues() {
     try {
       new HawkEncoder(null);
       fail();
@@ -44,13 +43,11 @@ public class HawkEncoderTest extends TestCase {
     }
   }
 
-  @Test
-  public void encodeInvalidValues() {
+  @Test public void encodeInvalidValues() {
     assertThat(encoder.encode(null)).isNull();
   }
 
-  @Test
-  public void encodeString() {
+  @Test public void encodeString() {
     String text = "text";
     byte[] expected = parser.toJson(text).getBytes();
     byte[] actual = encoder.encode(text);
@@ -58,8 +55,7 @@ public class HawkEncoderTest extends TestCase {
     assertThat(actual).isEqualTo(expected);
   }
 
-  @Test
-  public void encodeCustomObject() {
+  @Test public void encodeCustomObject() {
     Foo data = new Foo();
     byte[] expected = parser.toJson(data).getBytes();
     byte[] actual = encoder.encode(data);
@@ -67,8 +63,7 @@ public class HawkEncoderTest extends TestCase {
     assertThat(actual).isEqualTo(expected);
   }
 
-  @Test
-  public void encodeList() {
+  @Test public void encodeList() {
     List<String> data = new ArrayList<>();
     data.add("test");
     byte[] expected = parser.toJson(data).getBytes();
@@ -77,8 +72,7 @@ public class HawkEncoderTest extends TestCase {
     assertThat(actual).isEqualTo(expected);
   }
 
-  @Test
-  public void encodeMap() {
+  @Test public void encodeMap() {
     Map<String, String> data = new HashMap<>();
     data.put("key", "value");
     byte[] expected = parser.toJson(data).getBytes();
@@ -87,8 +81,7 @@ public class HawkEncoderTest extends TestCase {
     assertThat(actual).isEqualTo(expected);
   }
 
-  @Test
-  public void encodeSet() {
+  @Test public void encodeSet() {
     Set<String> data = new HashSet<>();
     data.add("key");
     byte[] expected = parser.toJson(data).getBytes();
@@ -97,8 +90,7 @@ public class HawkEncoderTest extends TestCase {
     assertThat(actual).isEqualTo(expected);
   }
 
-  @Test
-  public void decodeInvalidValues() throws Exception {
+  @Test public void decodeInvalidValues() throws Exception {
     assertThat(encoder.decode(null, null)).isNull();
     try {
       assertThat(encoder.decode(new byte[34], null)).isNull();
@@ -108,8 +100,7 @@ public class HawkEncoderTest extends TestCase {
     }
   }
 
-  @Test
-  public void decodeObject() throws Exception {
+  @Test public void decodeObject() throws Exception {
     String clazz = "java.lang.String";
     String info = "00V";
     String cipher = "cipher";

@@ -12,8 +12,7 @@ enum DataType {
     this.type = type;
   }
 
-  @Override
-  public String toString() {
+  @Override public String toString() {
     return super.toString();
   }
 

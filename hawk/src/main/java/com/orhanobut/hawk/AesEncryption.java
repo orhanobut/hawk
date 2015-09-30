@@ -25,16 +25,14 @@ final class AesEncryption implements Encryption {
     this.password = password;
   }
 
-  @Override
-  public boolean init() {
+  @Override public boolean init() {
     this.saltKey = storage.get(KEY_STORAGE_SALT);
 
     key = generateSecretKey(password);
     return key != null;
   }
 
-  @Override
-  public String encrypt(byte[] value) {
+  @Override public String encrypt(byte[] value) {
     if (value == null) {
       return null;
     }
@@ -49,8 +47,7 @@ final class AesEncryption implements Encryption {
     return result;
   }
 
-  @Override
-  public byte[] decrypt(String value) {
+  @Override public byte[] decrypt(String value) {
     if (value == null) {
       return null;
     }
@@ -66,8 +63,7 @@ final class AesEncryption implements Encryption {
     return result;
   }
 
-  @Override
-  public boolean reset() {
+  @Override public boolean reset() {
     return storage.clear();
   }
 
