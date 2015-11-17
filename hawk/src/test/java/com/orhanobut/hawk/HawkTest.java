@@ -27,6 +27,7 @@ import rx.functions.Func1;
 import rx.schedulers.Schedulers;
 
 import static junit.framework.Assert.assertEquals;
+import static junit.framework.Assert.assertFalse;
 import static junit.framework.Assert.assertTrue;
 import static junit.framework.Assert.fail;
 import static org.assertj.core.api.Assertions.assertThat;
@@ -350,17 +351,20 @@ public class HawkTest {
     Hawk.<String>getObservable(KEY)
         .observeOn(Schedulers.io())
         .subscribe(new Subscriber<String>() {
-          @Override public void onCompleted() {
+          @Override
+          public void onCompleted() {
             assertTrue(true);
             latch.countDown();
           }
 
-          @Override public void onError(Throwable e) {
+          @Override
+          public void onError(Throwable e) {
             assertTrue(false);
             latch.countDown();
           }
 
-          @Override public void onNext(String s) {
+          @Override
+          public void onNext(String s) {
             assertThat(s).isEqualTo("hawk");
           }
         });
@@ -373,17 +377,20 @@ public class HawkTest {
     Hawk.<String>getObservable(KEY, "test")
         .observeOn(Schedulers.io())
         .subscribe(new Subscriber<String>() {
-          @Override public void onCompleted() {
+          @Override
+          public void onCompleted() {
             assertTrue(true);
             latch.countDown();
           }
 
-          @Override public void onError(Throwable e) {
+          @Override
+          public void onError(Throwable e) {
             fail();
             latch.countDown();
           }
 
-          @Override public void onNext(String s) {
+          @Override
+          public void onNext(String s) {
             assertThat(s).isEqualTo("test");
           }
         });
@@ -397,27 +404,32 @@ public class HawkTest {
         .buildRx()
         .observeOn(Schedulers.io())
         .concatMap(new Func1<Boolean, Observable<Boolean>>() {
-          @Override public Observable<Boolean> call(Boolean aBoolean) {
+          @Override
+          public Observable<Boolean> call(Boolean aBoolean) {
             return Hawk.putObservable(KEY, "hawk");
           }
         })
         .concatMap(new Func1<Boolean, Observable<String>>() {
-          @Override public Observable<String> call(Boolean aBoolean) {
+          @Override
+          public Observable<String> call(Boolean aBoolean) {
             return Hawk.getObservable(KEY);
           }
         })
         .subscribe(new Observer<String>() {
-          @Override public void onCompleted() {
+          @Override
+          public void onCompleted() {
             assertTrue(true);
             latch.countDown();
           }
 
-          @Override public void onError(Throwable throwable) {
+          @Override
+          public void onError(Throwable throwable) {
             assertTrue(false);
             latch.countDown();
           }
 
-          @Override public void onNext(String storedValue) {
+          @Override
+          public void onNext(String storedValue) {
             assertEquals(storedValue, "hawk");
           }
         });
@@ -425,4 +437,69 @@ public class HawkTest {
     assertThat(latch.await(LATCH_TIMEOUT_IN_SECONDS, TimeUnit.SECONDS)).isTrue();
   }
 
+  @Test public void statusNotInitialisedBeforeBuild() {
+    Hawk.init(context);
+    assertEquals(Hawk.getStatus(), Hawk.Status.NOT_INITIALISED);
+  }
+
+  @Test public void statusInitialisedAfterBuild() {
+    Hawk.init(context).build();
+    assertEquals(Hawk.getStatus(), Hawk.Status.INITIALISED);
+  }
+
+  @Test public void testGetReturnsNullWhenNotInitialised() {
+    Hawk.init(context);
+    assertEquals(Hawk.get(KEY), null);
+  }
+
+  @Test public void testGetReturnsDefaultWhenNotInitialised() {
+    Hawk.init(context);
+    String defaultValue = "default";
+    assertEquals(Hawk.get(KEY, defaultValue), defaultValue);
+  }
+
+  @Test public void testPutReturnsFalseWhenNotInitialised() {
+    Hawk.init(context);
+    assertFalse(Hawk.put(KEY, "value"));
+  }
+
+  @Test public void testClearWhenNotInitialised() {
+    Hawk.init(context);
+    assertFalse(Hawk.clear());
+  }
+
+  @Test public void testContainsReturnsFalseWhenNotInitialised() {
+    Hawk.init(context);
+    assertFalse(Hawk.contains(KEY));
+  }
+
+  @Test public void testRemoveReturnsFalseWhenNotInitialised() {
+    Hawk.init(context);
+    assertFalse(Hawk.remove(KEY));
+  }
+
+  @Test public void testRemoveMultiKeysReturnsFalseWhenNotInitialised() {
+    Hawk.init(context);
+    assertFalse(Hawk.remove(KEY, KEY));
+  }
+
+  @Test public void testResetCryptoReturnsFalseWhenNotInitialised() {
+    Hawk.init(context);
+    assertFalse(Hawk.resetCrypto());
+  }
+
+  @Test public void testCountReturnsZeroWhenNotInitialised() {
+    Hawk.init(context);
+    assertEquals(Hawk.count(), 0);
+  }
+
+  @Test public void testPutInChainThrowsExceptionWhenNotInitialised() {
+    Hawk.init(context);
+    try {
+      Hawk.chain().put(KEY, "value");
+      fail("Did not throw an exception");
+    }catch (IllegalStateException ise){
+      assertThat(ise).hasMessage("Hawk has not been built");
+    }
+  }
 }

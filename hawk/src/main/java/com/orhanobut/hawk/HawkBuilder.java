@@ -5,6 +5,7 @@ import android.os.Handler;
 import android.text.TextUtils;
 
 import com.google.gson.Gson;
+import com.orhanobut.hawk.Hawk.Status;
 
 import rx.Observable;
 import rx.Subscriber;
@@ -36,6 +37,7 @@ public class HawkBuilder {
   private Parser parser;
   private Encryption encryption;
   private Callback callback;
+  private Status status;
 
   public enum EncryptionMethod {
     HIGHEST, MEDIUM, NO_ENCRYPTION
@@ -46,6 +48,7 @@ public class HawkBuilder {
       throw new NullPointerException("Context should not be null");
     }
     this.context = context.getApplicationContext();
+    this.status = Status.NOT_INITIALISED;
   }
 
   public HawkBuilder setEncryptionMethod(EncryptionMethod encryptionMethod) {
@@ -128,11 +131,19 @@ public class HawkBuilder {
     return encryption;
   }
 
+  public boolean isEncrypted() {
+    return encryptionMethod != EncryptionMethod.NO_ENCRYPTION;
+  }
+
+  Status getStatus() {
+    return status;
+  }
+
   private void validate() {
     if (getEncryptionMethod() == EncryptionMethod.HIGHEST) {
       if (TextUtils.isEmpty(getPassword())) {
         throw new IllegalStateException("Password cannot be null " +
-            "if encryption mode is highest");
+                "if encryption mode is highest");
       }
     }
   }
@@ -140,7 +151,8 @@ public class HawkBuilder {
   public void build() {
     if (callback != null) {
       new Handler().post(new Runnable() {
-        @Override public void run() {
+        @Override
+        public void run() {
           try {
             startBuild();
             callback.onSuccess();
@@ -155,9 +167,16 @@ public class HawkBuilder {
   }
 
   private void startBuild() {
-    validate();
-    setEncryption();
-    Hawk.onHawkBuilt(this);
+    try {
+      validate();
+      setEncryption();
+      Hawk.onHawkBuilt(this);
+
+      status = Status.INITIALISED;
+    } catch (Exception e) {
+      status = Status.NOT_INITIALISED;
+      throw e;
+    }
   }
 
   private void setEncryption() {
@@ -206,15 +225,18 @@ public class HawkBuilder {
   public Observable<Boolean> buildRx() {
     Utils.checkRx();
     return Observable.defer(new Func0<Observable<Boolean>>() {
-      @Override public Observable<Boolean> call() {
+      @Override
+      public Observable<Boolean> call() {
         return Observable.create(new Observable.OnSubscribe<Boolean>() {
-          @Override public void call(Subscriber<? super Boolean> subscriber) {
+          @Override
+          public void call(Subscriber<? super Boolean> subscriber) {
             try {
               startBuild();
               subscriber.onNext(true);
               subscriber.onCompleted();
             } catch (Exception e) {
               subscriber.onError(e);
+              status = Status.NOT_INITIALISED;
             }
           }
         });
