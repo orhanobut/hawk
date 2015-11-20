@@ -81,59 +81,51 @@ public class HawkBuilder {
     return this;
   }
 
-  public Context getContext() {
-    return context;
-  }
-
-  public EncryptionMethod getEncryptionMethod() {
+  private EncryptionMethod getEncryptionMethod() {
     if (encryptionMethod == null) {
       encryptionMethod = EncryptionMethod.MEDIUM;
     }
     return encryptionMethod;
   }
 
-  public String getPassword() {
+  private String getPassword() {
     return password;
   }
 
-  public LogLevel getLogLevel() {
+  LogLevel getLogLevel() {
     if (logLevel == null) {
       logLevel = LogLevel.NONE;
     }
     return logLevel;
   }
 
-  public Storage getStorage() {
+  Storage getStorage() {
     if (cryptoStorage == null) {
       cryptoStorage = new SharedPreferencesStorage(context, TAG);
     }
     return cryptoStorage;
   }
 
-  public Encoder getEncoder() {
+  Encoder getEncoder() {
     if (encoder == null) {
       encoder = new HawkEncoder(getParser());
     }
     return encoder;
   }
 
-  public Storage getInfoStorage() {
+  private Storage getInfoStorage() {
     return new SharedPreferencesStorage(context, TAG_INFO);
   }
 
-  public Parser getParser() {
+  private Parser getParser() {
     if (parser == null) {
       parser = new GsonParser(new Gson());
     }
     return parser;
   }
 
-  public Encryption getEncryption() {
+   Encryption getEncryption() {
     return encryption;
-  }
-
-  public boolean isEncrypted() {
-    return encryptionMethod != EncryptionMethod.NO_ENCRYPTION;
   }
 
   private void validate() {
@@ -165,11 +157,13 @@ public class HawkBuilder {
   private void startBuild() {
     validate();
     setEncryption();
+    Hawk.onHawkBuilt(this);
   }
 
   private void setEncryption() {
     switch (getEncryptionMethod()) {
       case NO_ENCRYPTION:
+        encryption = new Base64Encryption();
         break;
       case HIGHEST:
         encryption = new AesEncryption(getStorage(), getPassword());
@@ -185,8 +179,6 @@ public class HawkBuilder {
           encryptionMethod = EncryptionMethod.NO_ENCRYPTION;
         }
         break;
-      default:
-        throw new IllegalStateException("Encryption mode is not correct");
     }
   }
 

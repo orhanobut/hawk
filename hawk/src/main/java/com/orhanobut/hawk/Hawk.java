@@ -12,7 +12,7 @@ import rx.Subscriber;
 
 public final class Hawk {
 
-  private static HawkBuilder hawkBuilder;
+  private static HawkInternal internal;
 
   private Hawk() {
     // no instance
@@ -27,8 +27,12 @@ public final class Hawk {
     if (context == null) {
       throw new NullPointerException("Context should not be null");
     }
-    hawkBuilder = new HawkBuilder(context);
-    return hawkBuilder;
+
+    return new HawkBuilder(context);
+  }
+
+  static void onHawkBuilt(HawkBuilder builder) {
+    Hawk.internal = new HawkInternal(builder);
   }
 
   /**
@@ -49,7 +53,7 @@ public final class Hawk {
 
     String encodedText = zip(value);
     //if any exception occurs during encoding, encodedText will be null and thus operation is unsuccessful
-    return encodedText != null && hawkBuilder.getStorage().put(key, encodedText);
+    return encodedText != null && internal.getStorage().put(key, encodedText);
   }
 
   /**
@@ -88,15 +92,9 @@ public final class Hawk {
     if (value == null) {
       throw new NullPointerException("Value cannot be null");
     }
-    byte[] encodedValue = hawkBuilder.getEncoder().encode(value);
+    byte[] encodedValue = internal.getEncoder().encode(value);
 
-    String cipherText;
-
-    if (!hawkBuilder.isEncrypted()) {
-      cipherText = DataHelper.encodeBase64(encodedValue);
-    } else {
-      cipherText = hawkBuilder.getEncryption().encrypt(encodedValue);
-    }
+    String cipherText = internal.getEncryption().encrypt(encodedValue);
 
     if (cipherText == null) {
       return null;
@@ -112,25 +110,19 @@ public final class Hawk {
     if (key == null) {
       throw new NullPointerException("Key cannot be null");
     }
-    String fullText = hawkBuilder.getStorage().get(key);
+    String fullText = internal.getStorage().get(key);
     if (fullText == null) {
       return null;
     }
     DataInfo dataInfo = DataHelper.getDataInfo(fullText);
-    byte[] bytes;
-
-    if (!hawkBuilder.isEncrypted()) {
-      bytes = DataHelper.decodeBase64(dataInfo.getCipherText());
-    } else {
-      bytes = hawkBuilder.getEncryption().decrypt(dataInfo.getCipherText());
-    }
+    byte[] bytes = internal.getEncryption().decrypt(dataInfo.getCipherText());
 
     if (bytes == null) {
       return null;
     }
 
     try {
-      return hawkBuilder.getEncoder().decode(bytes, dataInfo);
+      return internal.getEncoder().decode(bytes, dataInfo);
     } catch (Exception e) {
       Logger.d(e.getMessage());
     }
@@ -219,7 +211,7 @@ public final class Hawk {
    * @return the size
    */
   public static long count() {
-    return hawkBuilder.getStorage().count();
+    return internal.getStorage().count();
   }
 
   /**
@@ -229,7 +221,7 @@ public final class Hawk {
    * @return true if clear is successful
    */
   public static boolean clear() {
-    return hawkBuilder.getStorage().clear();
+    return internal.getStorage().clear();
   }
 
   /**
@@ -239,7 +231,7 @@ public final class Hawk {
    * @return true if remove is successful
    */
   public static boolean remove(String key) {
-    return hawkBuilder.getStorage().remove(key);
+    return internal.getStorage().remove(key);
   }
 
   /**
@@ -249,7 +241,7 @@ public final class Hawk {
    * @return true if all removals are successful
    */
   public static boolean remove(String... keys) {
-    return hawkBuilder.getStorage().remove(keys);
+    return internal.getStorage().remove(keys);
   }
 
   /**
@@ -259,7 +251,7 @@ public final class Hawk {
    * @return true if it exists in the storage
    */
   public static boolean contains(String key) {
-    return hawkBuilder.getStorage().contains(key);
+    return internal.getStorage().contains(key);
   }
 
   /**
@@ -268,14 +260,14 @@ public final class Hawk {
    * @return true if reset is successful
    */
   public static boolean resetCrypto() {
-    return hawkBuilder.getEncryption() == null || hawkBuilder.getEncryption().reset();
+    return internal.getEncryption().reset();
   }
 
   public static LogLevel getLogLevel() {
-    if (hawkBuilder == null) {
+    if (internal == null) {
       return LogLevel.NONE;
     }
-    return hawkBuilder.getLogLevel();
+    return internal.getLogLevel();
   }
 
   /**
@@ -322,7 +314,7 @@ public final class Hawk {
      * @return true if successfully saved, false otherwise.
      */
     public boolean commit() {
-      return hawkBuilder.getStorage().put(items);
+      return internal.getStorage().put(items);
     }
 
   }
