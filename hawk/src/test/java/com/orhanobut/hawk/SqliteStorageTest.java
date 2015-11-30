@@ -6,6 +6,8 @@ import android.util.Pair;
 
 import junit.framework.TestCase;
 
+import org.junit.After;
+import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.robolectric.Robolectric;
@@ -29,7 +31,7 @@ public class SqliteStorageTest extends TestCase {
     context = Robolectric.buildActivity(Activity.class).create().get();
   }
 
-  @Override public void setUp() throws Exception {
+  @Override @Before public void setUp() throws Exception {
     super.setUp();
     storage = new SqliteStorage(context);
   }
@@ -48,7 +50,7 @@ public class SqliteStorageTest extends TestCase {
     }
   }
 
-  @Override public void tearDown() {
+  @Override @After public void tearDown() {
     storage = null;
   }
 

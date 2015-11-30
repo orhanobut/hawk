@@ -28,6 +28,7 @@ public final class Hawk {
       throw new NullPointerException("Context should not be null");
     }
 
+    internal = null;
     return new HawkBuilder(context);
   }
 

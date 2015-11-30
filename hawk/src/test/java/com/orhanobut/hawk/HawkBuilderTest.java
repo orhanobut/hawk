@@ -158,7 +158,12 @@ public class HawkBuilderTest extends TestCase {
 
   @Test public void testDefaultEncryption() {
     builder.build();
-    assertThat(builder.getEncryption()).isInstanceOf(AesEncryption.class);
+    try {
+      assertThat(builder.getEncryption()).isInstanceOf(AesEncryption.class);
+    } catch (AssertionError e){
+      assertThat(builder.getEncryptionMethod()).isEqualTo(HawkBuilder.EncryptionMethod.MEDIUM);
+      assertThat(builder.getEncryption()).isInstanceOf(Base64Encryption.class);
+    }
   }
 
   @Test public void initWithCallback() throws InterruptedException {

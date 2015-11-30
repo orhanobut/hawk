@@ -5,6 +5,8 @@ import android.content.Context;
 
 import junit.framework.TestCase;
 
+import org.junit.After;
+import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.robolectric.Robolectric;
@@ -44,7 +46,7 @@ public class HawkTest extends TestCase {
     context = Robolectric.buildActivity(Activity.class).create().get();
   }
 
-  @Override public void setUp() throws Exception {
+  @Override @Before public void setUp(){
     init();
   }
 
@@ -52,8 +54,7 @@ public class HawkTest extends TestCase {
     Hawk.init(context).build();
   }
 
-  @Override public void tearDown() throws Exception {
-    super.tearDown();
+  @Override @After public void tearDown()  {
     Hawk.clear();
   }
 
@@ -129,7 +130,7 @@ public class HawkTest extends TestCase {
 
     Map<String, String> map1 = Hawk.get("map");
 
-    assertThat(map).isNotNull();
+    assertThat(map1).isNotNull();
     assertThat(map1.get("key")).isEqualTo("value");
   }
 

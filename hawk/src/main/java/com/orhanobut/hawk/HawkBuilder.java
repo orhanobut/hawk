@@ -81,14 +81,14 @@ public class HawkBuilder {
     return this;
   }
 
-  private EncryptionMethod getEncryptionMethod() {
+  EncryptionMethod getEncryptionMethod() {
     if (encryptionMethod == null) {
       encryptionMethod = EncryptionMethod.MEDIUM;
     }
     return encryptionMethod;
   }
 
-  private String getPassword() {
+  String getPassword() {
     return password;
   }
 
@@ -113,18 +113,18 @@ public class HawkBuilder {
     return encoder;
   }
 
-  private Storage getInfoStorage() {
+  Storage getInfoStorage() {
     return new SharedPreferencesStorage(context, TAG_INFO);
   }
 
-  private Parser getParser() {
+  Parser getParser() {
     if (parser == null) {
       parser = new GsonParser(new Gson());
     }
     return parser;
   }
 
-   Encryption getEncryption() {
+  Encryption getEncryption() {
     return encryption;
   }
 
@@ -169,14 +169,14 @@ public class HawkBuilder {
         encryption = new AesEncryption(getStorage(), getPassword());
         if (!getEncryption().init()) {
           getInfoStorage().put(KEY_NO_CRYPTO, true);
-          encryptionMethod = EncryptionMethod.NO_ENCRYPTION;
+          encryption = new Base64Encryption();
         }
         break;
       case MEDIUM:
         encryption = new AesEncryption(getStorage(), null);
         if (!getEncryption().init()) {
           getInfoStorage().put(KEY_NO_CRYPTO, true);
-          encryptionMethod = EncryptionMethod.NO_ENCRYPTION;
+          encryption = new Base64Encryption();
         }
         break;
     }
