@@ -351,20 +351,17 @@ public class HawkTest {
     Hawk.<String>getObservable(KEY)
         .observeOn(Schedulers.io())
         .subscribe(new Subscriber<String>() {
-          @Override
-          public void onCompleted() {
+          @Override public void onCompleted() {
             assertTrue(true);
             latch.countDown();
           }
 
-          @Override
-          public void onError(Throwable e) {
+          @Override public void onError(Throwable e) {
             assertTrue(false);
             latch.countDown();
           }
 
-          @Override
-          public void onNext(String s) {
+          @Override public void onNext(String s) {
             assertThat(s).isEqualTo("hawk");
           }
         });
@@ -377,20 +374,17 @@ public class HawkTest {
     Hawk.<String>getObservable(KEY, "test")
         .observeOn(Schedulers.io())
         .subscribe(new Subscriber<String>() {
-          @Override
-          public void onCompleted() {
+          @Override public void onCompleted() {
             assertTrue(true);
             latch.countDown();
           }
 
-          @Override
-          public void onError(Throwable e) {
+          @Override public void onError(Throwable e) {
             fail();
             latch.countDown();
           }
 
-          @Override
-          public void onNext(String s) {
+          @Override public void onNext(String s) {
             assertThat(s).isEqualTo("test");
           }
         });
@@ -404,32 +398,27 @@ public class HawkTest {
         .buildRx()
         .observeOn(Schedulers.io())
         .concatMap(new Func1<Boolean, Observable<Boolean>>() {
-          @Override
-          public Observable<Boolean> call(Boolean aBoolean) {
+          @Override public Observable<Boolean> call(Boolean aBoolean) {
             return Hawk.putObservable(KEY, "hawk");
           }
         })
         .concatMap(new Func1<Boolean, Observable<String>>() {
-          @Override
-          public Observable<String> call(Boolean aBoolean) {
+          @Override public Observable<String> call(Boolean aBoolean) {
             return Hawk.getObservable(KEY);
           }
         })
         .subscribe(new Observer<String>() {
-          @Override
-          public void onCompleted() {
+          @Override public void onCompleted() {
             assertTrue(true);
             latch.countDown();
           }
 
-          @Override
-          public void onError(Throwable throwable) {
+          @Override public void onError(Throwable throwable) {
             assertTrue(false);
             latch.countDown();
           }
 
-          @Override
-          public void onNext(String storedValue) {
+          @Override public void onNext(String storedValue) {
             assertEquals(storedValue, "hawk");
           }
         });
@@ -439,12 +428,12 @@ public class HawkTest {
 
   @Test public void statusNotInitialisedBeforeBuild() {
     Hawk.init(context);
-    assertEquals(Hawk.getStatus(), Hawk.Status.NOT_INITIALISED);
+    assertFalse(Hawk.isInitialised());
   }
 
   @Test public void statusInitialisedAfterBuild() {
     Hawk.init(context).build();
-    assertEquals(Hawk.getStatus(), Hawk.Status.INITIALISED);
+    assertTrue(Hawk.isInitialised());
   }
 
   @Test public void testGetReturnsNullWhenNotInitialised() {
@@ -498,7 +487,7 @@ public class HawkTest {
     try {
       Hawk.chain().put(KEY, "value");
       fail("Did not throw an exception");
-    }catch (IllegalStateException ise){
+    } catch (IllegalStateException ise) {
       assertThat(ise).hasMessage("Hawk has not been built");
     }
   }
