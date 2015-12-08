@@ -2,8 +2,6 @@ package com.orhanobut.hawk;
 
 import android.util.Base64;
 
-import junit.framework.TestCase;
-
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.robolectric.RobolectricGradleTestRunner;
@@ -16,11 +14,13 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import static junit.framework.Assert.assertTrue;
+import static junit.framework.Assert.fail;
 import static org.assertj.core.api.Assertions.assertThat;
 
 @RunWith(RobolectricGradleTestRunner.class)
 @Config(constants = BuildConfig.class, sdk = 18)
-public class DataHelperTest extends TestCase {
+public class DataHelperTest {
 
   private static final String CIPHER_TEXT = "CIPHER";
 

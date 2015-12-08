@@ -3,8 +3,6 @@ package com.orhanobut.hawk;
 import android.app.Activity;
 import android.content.Context;
 
-import junit.framework.TestCase;
-
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -28,6 +26,9 @@ import rx.Subscriber;
 import rx.functions.Func1;
 import rx.schedulers.Schedulers;
 
+import static junit.framework.Assert.assertEquals;
+import static junit.framework.Assert.assertTrue;
+import static junit.framework.Assert.fail;
 import static org.assertj.core.api.Assertions.assertThat;
 
 /**
@@ -35,7 +36,7 @@ import static org.assertj.core.api.Assertions.assertThat;
  */
 @RunWith(RobolectricGradleTestRunner.class)
 @Config(constants = BuildConfig.class, sdk = 21)
-public class HawkTest extends TestCase {
+public class HawkTest {
 
   private static final String KEY = "TAG";
   private static final long LATCH_TIMEOUT_IN_SECONDS = 5;
@@ -46,7 +47,7 @@ public class HawkTest extends TestCase {
     context = Robolectric.buildActivity(Activity.class).create().get();
   }
 
-  @Override @Before public void setUp(){
+  @Before public void setUp() {
     init();
   }
 
@@ -54,7 +55,7 @@ public class HawkTest extends TestCase {
     Hawk.init(context).build();
   }
 
-  @Override @After public void tearDown()  {
+  @After public void tearDown() {
     Hawk.clear();
   }
 

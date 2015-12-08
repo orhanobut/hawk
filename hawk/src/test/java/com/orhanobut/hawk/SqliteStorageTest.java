@@ -4,8 +4,6 @@ import android.app.Activity;
 import android.content.Context;
 import android.util.Pair;
 
-import junit.framework.TestCase;
-
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -17,11 +15,12 @@ import org.robolectric.annotation.Config;
 import java.util.ArrayList;
 import java.util.List;
 
+import static junit.framework.Assert.fail;
 import static org.assertj.core.api.Assertions.assertThat;
 
 @RunWith(RobolectricGradleTestRunner.class)
 @Config(constants = BuildConfig.class, sdk = 18)
-public class SqliteStorageTest extends TestCase {
+public class SqliteStorageTest {
 
   private final Context context;
 
@@ -31,8 +30,7 @@ public class SqliteStorageTest extends TestCase {
     context = Robolectric.buildActivity(Activity.class).create().get();
   }
 
-  @Override @Before public void setUp() throws Exception {
-    super.setUp();
+  @Before public void setUp() throws Exception {
     storage = new SqliteStorage(context);
   }
 
@@ -50,7 +48,7 @@ public class SqliteStorageTest extends TestCase {
     }
   }
 
-  @Override @After public void tearDown() {
+  @After public void tearDown() {
     storage = null;
   }
 
