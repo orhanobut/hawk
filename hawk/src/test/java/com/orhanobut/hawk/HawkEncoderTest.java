@@ -2,8 +2,6 @@ package com.orhanobut.hawk;
 
 import com.google.gson.Gson;
 
-import junit.framework.TestCase;
-
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.robolectric.RobolectricGradleTestRunner;
@@ -16,11 +14,12 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import static junit.framework.Assert.fail;
 import static org.assertj.core.api.Assertions.assertThat;
 
 @RunWith(RobolectricGradleTestRunner.class)
 @Config(constants = BuildConfig.class, sdk = 18)
-public class HawkEncoderTest extends TestCase {
+public class HawkEncoderTest {
 
   private final Encoder encoder;
   private final Parser parser;

@@ -81,59 +81,51 @@ public class HawkBuilder {
     return this;
   }
 
-  public Context getContext() {
-    return context;
-  }
-
-  public EncryptionMethod getEncryptionMethod() {
+  EncryptionMethod getEncryptionMethod() {
     if (encryptionMethod == null) {
       encryptionMethod = EncryptionMethod.MEDIUM;
     }
     return encryptionMethod;
   }
 
-  public String getPassword() {
+  String getPassword() {
     return password;
   }
 
-  public LogLevel getLogLevel() {
+  LogLevel getLogLevel() {
     if (logLevel == null) {
       logLevel = LogLevel.NONE;
     }
     return logLevel;
   }
 
-  public Storage getStorage() {
+  Storage getStorage() {
     if (cryptoStorage == null) {
       cryptoStorage = new SharedPreferencesStorage(context, TAG);
     }
     return cryptoStorage;
   }
 
-  public Encoder getEncoder() {
+  Encoder getEncoder() {
     if (encoder == null) {
       encoder = new HawkEncoder(getParser());
     }
     return encoder;
   }
 
-  public Storage getInfoStorage() {
+  Storage getInfoStorage() {
     return new SharedPreferencesStorage(context, TAG_INFO);
   }
 
-  public Parser getParser() {
+  Parser getParser() {
     if (parser == null) {
       parser = new GsonParser(new Gson());
     }
     return parser;
   }
 
-  public Encryption getEncryption() {
+  Encryption getEncryption() {
     return encryption;
-  }
-
-  public boolean isEncrypted() {
-    return encryptionMethod != EncryptionMethod.NO_ENCRYPTION;
   }
 
   private void validate() {
@@ -165,28 +157,28 @@ public class HawkBuilder {
   private void startBuild() {
     validate();
     setEncryption();
+    Hawk.onHawkBuilt(this);
   }
 
   private void setEncryption() {
     switch (getEncryptionMethod()) {
       case NO_ENCRYPTION:
+        encryption = new Base64Encryption();
         break;
       case HIGHEST:
         encryption = new AesEncryption(getStorage(), getPassword());
         if (!getEncryption().init()) {
           getInfoStorage().put(KEY_NO_CRYPTO, true);
-          encryptionMethod = EncryptionMethod.NO_ENCRYPTION;
+          encryption = new Base64Encryption();
         }
         break;
       case MEDIUM:
         encryption = new AesEncryption(getStorage(), null);
         if (!getEncryption().init()) {
           getInfoStorage().put(KEY_NO_CRYPTO, true);
-          encryptionMethod = EncryptionMethod.NO_ENCRYPTION;
+          encryption = new Base64Encryption();
         }
         break;
-      default:
-        throw new IllegalStateException("Encryption mode is not correct");
     }
   }
 

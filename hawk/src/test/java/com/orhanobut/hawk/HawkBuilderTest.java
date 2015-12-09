@@ -7,8 +7,6 @@ import android.text.TextUtils;
 import com.google.gson.Gson;
 import com.google.gson.JsonSyntaxException;
 
-import junit.framework.TestCase;
-
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -21,11 +19,13 @@ import java.lang.reflect.Type;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 
+import static junit.framework.Assert.assertTrue;
+import static junit.framework.Assert.fail;
 import static org.assertj.core.api.Assertions.assertThat;
 
 @RunWith(RobolectricGradleTestRunner.class)
 @Config(constants = BuildConfig.class, sdk = 21)
-public class HawkBuilderTest extends TestCase {
+public class HawkBuilderTest {
 
   private static final long LATCH_TIMEOUT_IN_SECONDS = 5;
 
@@ -158,7 +158,12 @@ public class HawkBuilderTest extends TestCase {
 
   @Test public void testDefaultEncryption() {
     builder.build();
-    assertThat(builder.getEncryption()).isInstanceOf(AesEncryption.class);
+    try {
+      assertThat(builder.getEncryption()).isInstanceOf(AesEncryption.class);
+    } catch (AssertionError e) {
+      assertThat(builder.getEncryptionMethod()).isEqualTo(HawkBuilder.EncryptionMethod.MEDIUM);
+      assertThat(builder.getEncryption()).isInstanceOf(Base64Encryption.class);
+    }
   }
 
   @Test public void initWithCallback() throws InterruptedException {

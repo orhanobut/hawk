@@ -107,7 +107,7 @@ final class HawkEncoder implements Encoder {
     List<T> list = parser.fromJson(
         json,
         new TypeToken<List<T>>() {
-        } .getType()
+        }.getType()
     );
 
     int size = list.size();
@@ -124,7 +124,7 @@ final class HawkEncoder implements Encoder {
       return (T) resultSet;
     }
     Set<T> set = parser.fromJson(json, new TypeToken<Set<T>>() {
-    } .getType());
+    }.getType());
 
     for (T t : set) {
       String valueJson = parser.toJson(t);
@@ -141,7 +141,7 @@ final class HawkEncoder implements Encoder {
       return (T) resultMap;
     }
     Map<K, V> map = parser.fromJson(json, new TypeToken<Map<K, V>>() {
-    } .getType());
+    }.getType());
 
     for (Map.Entry<K, V> entry : map.entrySet()) {
       String keyJson = parser.toJson(entry.getKey());
