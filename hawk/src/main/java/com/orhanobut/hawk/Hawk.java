@@ -47,10 +47,7 @@ public final class Hawk {
     if (key == null) {
       throw new NullPointerException("Key cannot be null");
     }
-
-    if (!isInitialised()) {
-      return false;
-    }
+    Utils.validate();
 
     //if the value is null, simply remove it
     if (value == null) {
@@ -116,10 +113,7 @@ public final class Hawk {
     if (key == null) {
       throw new NullPointerException("Key cannot be null");
     }
-    if (!isInitialised()) {
-      return null;
-    }
-
+    Utils.validate();
     String fullText = internal.getStorage().get(key);
     if (fullText == null) {
       return null;
@@ -222,9 +216,7 @@ public final class Hawk {
    * @return the size
    */
   public static long count() {
-    if (!isInitialised()) {
-      return 0;
-    }
+    Utils.validate();
     return internal.getStorage().count();
   }
 
@@ -235,9 +227,7 @@ public final class Hawk {
    * @return true if clear is successful
    */
   public static boolean clear() {
-    if (!isInitialised()) {
-      return false;
-    }
+    Utils.validate();
     return internal.getStorage().clear();
   }
 
@@ -248,9 +238,7 @@ public final class Hawk {
    * @return true if remove is successful
    */
   public static boolean remove(String key) {
-    if (!isInitialised()) {
-      return false;
-    }
+    Utils.validate();
     return internal.getStorage().remove(key);
   }
 
@@ -261,9 +249,7 @@ public final class Hawk {
    * @return true if all removals are successful
    */
   public static boolean remove(String... keys) {
-    if (!isInitialised()) {
-      return false;
-    }
+    Utils.validate();
     return internal.getStorage().remove(keys);
   }
 
@@ -274,9 +260,7 @@ public final class Hawk {
    * @return true if it exists in the storage
    */
   public static boolean contains(String key) {
-    if (!isInitialised()) {
-      return false;
-    }
+    Utils.validate();
     return internal.getStorage().contains(key);
   }
 
@@ -286,9 +270,7 @@ public final class Hawk {
    * @return true if reset is successful
    */
   public static boolean resetCrypto() {
-    if (!isInitialised()) {
-      return false;
-    }
+    Utils.validate();
     return internal.getEncryption().reset();
   }
 
@@ -299,14 +281,13 @@ public final class Hawk {
     return internal.getLogLevel();
   }
 
-  public static boolean isInitialised() {
+  /**
+   * Use this method to verify if Hawk is ready to be used.
+   *
+   * @return true if correctly initialised and built. False otherwise.
+   */
+  public static boolean isBuilt() {
     return internal != null;
-  }
-
-  private static void validate() {
-    if (!isInitialised()) {
-      throw new IllegalStateException("Hawk is not");
-    }
   }
 
   /**
@@ -338,9 +319,7 @@ public final class Hawk {
       if (key == null) {
         throw new NullPointerException("Key cannot be null");
       }
-      if (!isInitialised()) {
-        throw new IllegalStateException("Hawk has not been built");
-      }
+      Utils.validate();
       String encodedText = zip(value);
       if (encodedText == null) {
         Log.d("HAWK", "Key : " + key + " is not added, encryption failed");

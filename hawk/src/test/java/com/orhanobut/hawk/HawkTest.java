@@ -57,7 +57,9 @@ public class HawkTest {
   }
 
   @After public void tearDown() {
-    Hawk.clear();
+    if (Hawk.isBuilt()) {
+      Hawk.clear();
+    }
   }
 
   @Test public void initWithInvalidValues() {
@@ -426,69 +428,94 @@ public class HawkTest {
     assertThat(latch.await(LATCH_TIMEOUT_IN_SECONDS, TimeUnit.SECONDS)).isTrue();
   }
 
-  @Test public void statusNotInitialisedBeforeBuild() {
+  @Test public void statusNotBuiltBeforeBuild() {
     Hawk.init(context);
-    assertFalse(Hawk.isInitialised());
+    assertFalse(Hawk.isBuilt());
   }
 
-  @Test public void statusInitialisedAfterBuild() {
+  @Test public void statusBuiltAfterBuild() {
     Hawk.init(context).build();
-    assertTrue(Hawk.isInitialised());
+    assertTrue(Hawk.isBuilt());
   }
 
-  @Test public void testGetReturnsNullWhenNotInitialised() {
+  @Test public void testGetThrowsExceptionWhenNotBuilt() {
     Hawk.init(context);
-    assertEquals(Hawk.get(KEY), null);
+    try {
+      Hawk.get(KEY);
+      fail("Did not throw an exception");
+    } catch (IllegalStateException ignored) {
+    }
   }
 
-  @Test public void testGetReturnsDefaultWhenNotInitialised() {
+  @Test public void testPutThrowsExceptionWhenNotBuilt() {
     Hawk.init(context);
-    String defaultValue = "default";
-    assertEquals(Hawk.get(KEY, defaultValue), defaultValue);
+    try {
+      Hawk.put(KEY, "value");
+      fail("Did not throw an exception");
+    } catch (IllegalStateException ignored) {
+    }
   }
 
-  @Test public void testPutReturnsFalseWhenNotInitialised() {
+  @Test public void testClearThrowsExceptionWhenNotBuilt() {
     Hawk.init(context);
-    assertFalse(Hawk.put(KEY, "value"));
+    try {
+      Hawk.clear();
+      fail("Did not throw an exception");
+    } catch (IllegalStateException ignored) {
+    }
   }
 
-  @Test public void testClearWhenNotInitialised() {
+  @Test public void testContainsThrowsExceptionWhenNotBuilt() {
     Hawk.init(context);
-    assertFalse(Hawk.clear());
+    try {
+      Hawk.contains(KEY);
+      fail("Did not throw an exception");
+    } catch (IllegalStateException ignored) {
+    }
   }
 
-  @Test public void testContainsReturnsFalseWhenNotInitialised() {
+  @Test public void testRemoveThrowsExceptionWhenNotBuilt() {
     Hawk.init(context);
-    assertFalse(Hawk.contains(KEY));
+    try {
+      Hawk.remove(KEY);
+      fail("Did not throw an exception");
+    } catch (IllegalStateException ignored) {
+    }
   }
 
-  @Test public void testRemoveReturnsFalseWhenNotInitialised() {
+  @Test public void testRemoveMultiKeysThrowsExceptionWhenNotBuilt() {
     Hawk.init(context);
-    assertFalse(Hawk.remove(KEY));
+    try {
+      Hawk.remove(KEY, KEY);
+      fail("Did not throw an exception");
+    } catch (IllegalStateException ignored) {
+    }
   }
 
-  @Test public void testRemoveMultiKeysReturnsFalseWhenNotInitialised() {
+  @Test public void testResetCryptoThrowsExceptionWhenNotBuilt() {
     Hawk.init(context);
-    assertFalse(Hawk.remove(KEY, KEY));
+    try {
+      Hawk.resetCrypto();
+      fail("Did not throw an exception");
+    } catch (IllegalStateException ignored) {
+    }
   }
 
-  @Test public void testResetCryptoReturnsFalseWhenNotInitialised() {
+  @Test public void testCountThrowsExceptionWhenNotBuilt() {
     Hawk.init(context);
-    assertFalse(Hawk.resetCrypto());
+    try {
+      Hawk.count();
+      fail("Did not throw an exception");
+    } catch (IllegalStateException ignored) {
+    }
   }
 
-  @Test public void testCountReturnsZeroWhenNotInitialised() {
-    Hawk.init(context);
-    assertEquals(Hawk.count(), 0);
-  }
-
-  @Test public void testPutInChainThrowsExceptionWhenNotInitialised() {
+  @Test public void testPutInChainThrowsExceptionWhenNotBuilt() {
     Hawk.init(context);
     try {
       Hawk.chain().put(KEY, "value");
       fail("Did not throw an exception");
-    } catch (IllegalStateException ise) {
-      assertThat(ise).hasMessage("Hawk has not been built");
+    } catch (IllegalStateException ignored) {
     }
   }
 }

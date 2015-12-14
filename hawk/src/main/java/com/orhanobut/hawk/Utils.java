@@ -22,4 +22,11 @@ final class Utils {
           "make sure that you have it in your dependencies");
     }
   }
+
+  public static void validate() {
+    if (!Hawk.isBuilt()) {
+      throw new IllegalStateException("Hawk is not built. " +
+          "Please call build() and wait the initialisation finishes.");
+    }
+  }
 }
