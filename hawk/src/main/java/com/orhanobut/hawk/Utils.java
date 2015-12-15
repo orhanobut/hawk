@@ -23,7 +23,7 @@ final class Utils {
     }
   }
 
-  public static void validate() {
+  static void validateBuild() {
     if (!Hawk.isBuilt()) {
       throw new IllegalStateException("Hawk is not built. " +
           "Please call build() and wait the initialisation finishes.");

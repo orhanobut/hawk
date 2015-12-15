@@ -26,9 +26,6 @@ import rx.Subscriber;
 import rx.functions.Func1;
 import rx.schedulers.Schedulers;
 
-import static junit.framework.Assert.assertEquals;
-import static junit.framework.Assert.assertFalse;
-import static junit.framework.Assert.assertTrue;
 import static junit.framework.Assert.fail;
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -93,7 +90,7 @@ public class HawkTest {
     assertThat(fooBar).isNotNull();
     assertThat(fooBar.name).isEqualTo("hawk");
 
-    assertTrue(Hawk.put("innerClass", new FooBar.InnerFoo()));
+    assertThat(Hawk.put("innerClass", new FooBar.InnerFoo())).isTrue();
     FooBar.InnerFoo innerFoo = Hawk.get("innerClass");
     assertThat(innerFoo).isNotNull();
     assertThat(innerFoo.name).isEqualTo("hawk");
@@ -354,12 +351,11 @@ public class HawkTest {
         .observeOn(Schedulers.io())
         .subscribe(new Subscriber<String>() {
           @Override public void onCompleted() {
-            assertTrue(true);
             latch.countDown();
           }
 
           @Override public void onError(Throwable e) {
-            assertTrue(false);
+            fail();
             latch.countDown();
           }
 
@@ -377,7 +373,6 @@ public class HawkTest {
         .observeOn(Schedulers.io())
         .subscribe(new Subscriber<String>() {
           @Override public void onCompleted() {
-            assertTrue(true);
             latch.countDown();
           }
 
@@ -411,17 +406,16 @@ public class HawkTest {
         })
         .subscribe(new Observer<String>() {
           @Override public void onCompleted() {
-            assertTrue(true);
             latch.countDown();
           }
 
           @Override public void onError(Throwable throwable) {
-            assertTrue(false);
+            fail();
             latch.countDown();
           }
 
           @Override public void onNext(String storedValue) {
-            assertEquals(storedValue, "hawk");
+            assertThat(storedValue).isEqualTo("hawk");
           }
         });
 
@@ -430,12 +424,12 @@ public class HawkTest {
 
   @Test public void statusNotBuiltBeforeBuild() {
     Hawk.init(context);
-    assertFalse(Hawk.isBuilt());
+    assertThat(Hawk.isBuilt()).isFalse();
   }
 
   @Test public void statusBuiltAfterBuild() {
     Hawk.init(context).build();
-    assertTrue(Hawk.isBuilt());
+    assertThat(Hawk.isBuilt()).isTrue();
   }
 
   @Test public void testGetThrowsExceptionWhenNotBuilt() {

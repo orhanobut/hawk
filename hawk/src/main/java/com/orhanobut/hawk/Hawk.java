@@ -47,7 +47,7 @@ public final class Hawk {
     if (key == null) {
       throw new NullPointerException("Key cannot be null");
     }
-    Utils.validate();
+    Utils.validateBuild();
 
     //if the value is null, simply remove it
     if (value == null) {
@@ -113,7 +113,7 @@ public final class Hawk {
     if (key == null) {
       throw new NullPointerException("Key cannot be null");
     }
-    Utils.validate();
+    Utils.validateBuild();
     String fullText = internal.getStorage().get(key);
     if (fullText == null) {
       return null;
@@ -216,7 +216,7 @@ public final class Hawk {
    * @return the size
    */
   public static long count() {
-    Utils.validate();
+    Utils.validateBuild();
     return internal.getStorage().count();
   }
 
@@ -227,7 +227,7 @@ public final class Hawk {
    * @return true if clear is successful
    */
   public static boolean clear() {
-    Utils.validate();
+    Utils.validateBuild();
     return internal.getStorage().clear();
   }
 
@@ -238,7 +238,7 @@ public final class Hawk {
    * @return true if remove is successful
    */
   public static boolean remove(String key) {
-    Utils.validate();
+    Utils.validateBuild();
     return internal.getStorage().remove(key);
   }
 
@@ -249,7 +249,7 @@ public final class Hawk {
    * @return true if all removals are successful
    */
   public static boolean remove(String... keys) {
-    Utils.validate();
+    Utils.validateBuild();
     return internal.getStorage().remove(keys);
   }
 
@@ -260,7 +260,7 @@ public final class Hawk {
    * @return true if it exists in the storage
    */
   public static boolean contains(String key) {
-    Utils.validate();
+    Utils.validateBuild();
     return internal.getStorage().contains(key);
   }
 
@@ -270,7 +270,7 @@ public final class Hawk {
    * @return true if reset is successful
    */
   public static boolean resetCrypto() {
-    Utils.validate();
+    Utils.validateBuild();
     return internal.getEncryption().reset();
   }
 
@@ -319,7 +319,7 @@ public final class Hawk {
       if (key == null) {
         throw new NullPointerException("Key cannot be null");
       }
-      Utils.validate();
+      Utils.validateBuild();
       String encodedText = zip(value);
       if (encodedText == null) {
         Log.d("HAWK", "Key : " + key + " is not added, encryption failed");
