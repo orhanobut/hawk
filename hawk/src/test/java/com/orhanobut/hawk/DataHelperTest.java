@@ -34,7 +34,7 @@ public class DataHelperTest {
   }
 
   @Test public void testOldVersionCheck() {
-    DataInfo info = DataHelper.getDataInfo("java.lang.String##00@asdfjasdf");
+    DataInfo info = DataHelper.getDataInfo("java.lang.String00@asdfjasdf");
     assertThat(info.isNewVersion()).isFalse();
   }
 
@@ -121,7 +121,7 @@ public class DataHelperTest {
     assertThat(dataInfo.isNewVersion()).isTrue();
     assertThat(dataInfo.getKeyClazz().getName()).isEqualTo(clazz);
     assertThat(dataInfo.getValueClazz().getName()).isEqualTo(clazz);
-    assertThat(dataInfo.getDataType()).isEqualTo(DataType.OBJECT);
+    assertThat(dataInfo.getDataType()).isEqualTo(DataHelper.DATATYPE_OBJECT);
   }
 
   @Test public void getDataInfoAsList() {
@@ -133,7 +133,33 @@ public class DataHelperTest {
     assertThat(dataInfo.isNewVersion()).isTrue();
     assertThat(dataInfo.getKeyClazz().getName()).isEqualTo(clazz);
     assertThat(dataInfo.getValueClazz()).isNull();
-    assertThat(dataInfo.getDataType()).isEqualTo(DataType.LIST);
+    assertThat(dataInfo.getDataType()).isEqualTo(DataHelper.DATATYPE_LIST);
+  }
+
+  @Test public void getOldDataInfoAsList() {
+    String clazz = "java.lang.String";
+    String info = "10";
+    String cipher = "cipher";
+    DataInfo dataInfo = DataHelper.getDataInfo(clazz + info + "@" + cipher);
+    assertThat(dataInfo).isNotNull();
+    assertThat(dataInfo.isNewVersion()).isFalse();
+    assertThat(dataInfo.getKeyClazz().getName()).isEqualTo(clazz);
+    assertThat(dataInfo.getValueClazz()).isNull();
+    assertThat(dataInfo.isSerializable()).isFalse();
+    assertThat(dataInfo.getDataType()).isEqualTo(DataHelper.DATATYPE_LIST);
+  }
+
+  @Test public void getOldDataInfoAsObject() {
+    String clazz = "com.orhanobut.hawk.FooBar";
+    String info = "01";
+    String cipher = "cipher";
+    DataInfo dataInfo = DataHelper.getDataInfo(clazz + info + "@" + cipher);
+    assertThat(dataInfo).isNotNull();
+    assertThat(dataInfo.isNewVersion()).isFalse();
+    assertThat(dataInfo.getKeyClazz().getName()).isEqualTo(clazz);
+    assertThat(dataInfo.getValueClazz()).isNull();
+    assertThat(dataInfo.isSerializable()).isTrue();
+    assertThat(dataInfo.getDataType()).isEqualTo(DataHelper.DATATYPE_OBJECT);
   }
 
   @Test public void getDataInfoAsMap() {
@@ -145,7 +171,7 @@ public class DataHelperTest {
     assertThat(dataInfo.isNewVersion()).isTrue();
     assertThat(dataInfo.getKeyClazz().getName()).isEqualTo(clazz);
     assertThat(dataInfo.getValueClazz().getName()).isEqualTo(clazz);
-    assertThat(dataInfo.getDataType()).isEqualTo(DataType.MAP);
+    assertThat(dataInfo.getDataType()).isEqualTo(DataHelper.DATATYPE_MAP);
   }
 
   @Test public void getDataInfoAsSet() {
@@ -157,7 +183,7 @@ public class DataHelperTest {
     assertThat(dataInfo.isNewVersion()).isTrue();
     assertThat(dataInfo.getKeyClazz().getName()).isEqualTo(clazz);
     assertThat(dataInfo.getValueClazz()).isNull();
-    assertThat(dataInfo.getDataType()).isEqualTo(DataType.SET);
+    assertThat(dataInfo.getDataType()).isEqualTo(DataHelper.DATATYPE_SET);
   }
 
   @Test public void getDataInfoAsInvalidValues() {
@@ -199,13 +225,13 @@ public class DataHelperTest {
 
   @Test public void getNewDataInfoWithInvalidValues() {
     try {
-      DataHelper.getNewDataInfo(null, null);
+      DataHelper.getNewDataInfo(null, 0);
       fail();
     } catch (Exception e) {
       assertTrue(true);
     }
     try {
-      DataHelper.getNewDataInfo("", null);
+      DataHelper.getNewDataInfo("", 0);
       fail();
     } catch (Exception e) {
       assertTrue(true);
@@ -214,13 +240,13 @@ public class DataHelperTest {
 
   @Test public void getOldDataInfo() {
     try {
-      DataHelper.getOldDataInfo(null, null);
+      DataHelper.getOldDataInfo(null);
       fail();
     } catch (Exception e) {
       assertTrue(true);
     }
     try {
-      DataHelper.getOldDataInfo("", null);
+      DataHelper.getOldDataInfo("");
       fail();
     } catch (Exception e) {
       assertTrue(true);

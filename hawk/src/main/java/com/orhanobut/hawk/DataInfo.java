@@ -2,14 +2,14 @@ package com.orhanobut.hawk;
 
 final class DataInfo {
 
-  private final DataType dataType;
+  private final char dataType;
   private final String cipherText;
   private final Class keyClazz;
   private final Class valueClazz;
   private final boolean serializable;
   private final boolean isNewVersion;
 
-  DataInfo(DataType dataType, boolean serializable, String cipherText, Class keyClazz) {
+  DataInfo(char dataType, boolean serializable, String cipherText, Class keyClazz) {
     this.cipherText = cipherText;
     this.keyClazz = keyClazz;
     this.valueClazz = null;
@@ -18,7 +18,7 @@ final class DataInfo {
     this.isNewVersion = false;
   }
 
-  DataInfo(DataType dataType, String cipherText, Class keyClazz, Class valueClazz) {
+  DataInfo(char dataType, String cipherText, Class keyClazz, Class valueClazz) {
     this.cipherText = cipherText;
     this.keyClazz = keyClazz;
     this.valueClazz = valueClazz;
@@ -27,7 +27,7 @@ final class DataInfo {
     this.isNewVersion = true;
   }
 
-  public DataType getDataType() {
+  public char getDataType() {
     return dataType;
   }
 
