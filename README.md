@@ -15,7 +15,7 @@ Hawk provides:
 - Save any type
 
 ###Add dependency
-https://jitpack.io/#orhanobut/hawk/1.20
+https://jitpack.io/#orhanobut/hawk/1.21
 ```groovy
 repositories {
   // ...
