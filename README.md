@@ -23,7 +23,7 @@ repositories {
 }
 
 dependencies {
-  compile 'com.github.orhanobut:hawk:1.20'
+  compile 'com.github.orhanobut:hawk:1.21'
 }
 ```
 
