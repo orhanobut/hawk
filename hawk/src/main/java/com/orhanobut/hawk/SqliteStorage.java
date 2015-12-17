@@ -139,7 +139,7 @@ class SqliteStorage implements Storage {
           if (key == null) {
             continue;
           }
-          int count = db.delete(TABLE_NAME, COL_KEY + "='" + key + "'", null);
+          db.delete(TABLE_NAME, COL_KEY + "='" + key + "'", null);
         }
         db.setTransactionSuccessful();
       } catch (Exception e) {
@@ -167,6 +167,7 @@ class SqliteStorage implements Storage {
         return null;
       }
       String value = cursor.getString(1);
+      cursor.close();
       db.close();
       return value;
     }

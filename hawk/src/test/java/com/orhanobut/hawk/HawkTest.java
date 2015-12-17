@@ -26,8 +26,6 @@ import rx.Subscriber;
 import rx.functions.Func1;
 import rx.schedulers.Schedulers;
 
-import static junit.framework.Assert.assertEquals;
-import static junit.framework.Assert.assertTrue;
 import static junit.framework.Assert.fail;
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -56,7 +54,9 @@ public class HawkTest {
   }
 
   @After public void tearDown() {
-    Hawk.clear();
+    if (Hawk.isBuilt()) {
+      Hawk.clear();
+    }
   }
 
   @Test public void initWithInvalidValues() {
@@ -90,7 +90,7 @@ public class HawkTest {
     assertThat(fooBar).isNotNull();
     assertThat(fooBar.name).isEqualTo("hawk");
 
-    assertTrue(Hawk.put("innerClass", new FooBar.InnerFoo()));
+    assertThat(Hawk.put("innerClass", new FooBar.InnerFoo())).isTrue();
     FooBar.InnerFoo innerFoo = Hawk.get("innerClass");
     assertThat(innerFoo).isNotNull();
     assertThat(innerFoo.name).isEqualTo("hawk");
@@ -351,12 +351,11 @@ public class HawkTest {
         .observeOn(Schedulers.io())
         .subscribe(new Subscriber<String>() {
           @Override public void onCompleted() {
-            assertTrue(true);
             latch.countDown();
           }
 
           @Override public void onError(Throwable e) {
-            assertTrue(false);
+            fail();
             latch.countDown();
           }
 
@@ -374,7 +373,6 @@ public class HawkTest {
         .observeOn(Schedulers.io())
         .subscribe(new Subscriber<String>() {
           @Override public void onCompleted() {
-            assertTrue(true);
             latch.countDown();
           }
 
@@ -408,21 +406,110 @@ public class HawkTest {
         })
         .subscribe(new Observer<String>() {
           @Override public void onCompleted() {
-            assertTrue(true);
             latch.countDown();
           }
 
           @Override public void onError(Throwable throwable) {
-            assertTrue(false);
+            fail();
             latch.countDown();
           }
 
           @Override public void onNext(String storedValue) {
-            assertEquals(storedValue, "hawk");
+            assertThat(storedValue).isEqualTo("hawk");
           }
         });
 
     assertThat(latch.await(LATCH_TIMEOUT_IN_SECONDS, TimeUnit.SECONDS)).isTrue();
   }
 
+  @Test public void statusNotBuiltBeforeBuild() {
+    Hawk.init(context);
+    assertThat(Hawk.isBuilt()).isFalse();
+  }
+
+  @Test public void statusBuiltAfterBuild() {
+    Hawk.init(context).build();
+    assertThat(Hawk.isBuilt()).isTrue();
+  }
+
+  @Test public void testGetThrowsExceptionWhenNotBuilt() {
+    Hawk.init(context);
+    try {
+      Hawk.get(KEY);
+      fail("Did not throw an exception");
+    } catch (IllegalStateException ignored) {
+    }
+  }
+
+  @Test public void testPutThrowsExceptionWhenNotBuilt() {
+    Hawk.init(context);
+    try {
+      Hawk.put(KEY, "value");
+      fail("Did not throw an exception");
+    } catch (IllegalStateException ignored) {
+    }
+  }
+
+  @Test public void testClearThrowsExceptionWhenNotBuilt() {
+    Hawk.init(context);
+    try {
+      Hawk.clear();
+      fail("Did not throw an exception");
+    } catch (IllegalStateException ignored) {
+    }
+  }
+
+  @Test public void testContainsThrowsExceptionWhenNotBuilt() {
+    Hawk.init(context);
+    try {
+      Hawk.contains(KEY);
+      fail("Did not throw an exception");
+    } catch (IllegalStateException ignored) {
+    }
+  }
+
+  @Test public void testRemoveThrowsExceptionWhenNotBuilt() {
+    Hawk.init(context);
+    try {
+      Hawk.remove(KEY);
+      fail("Did not throw an exception");
+    } catch (IllegalStateException ignored) {
+    }
+  }
+
+  @Test public void testRemoveMultiKeysThrowsExceptionWhenNotBuilt() {
+    Hawk.init(context);
+    try {
+      Hawk.remove(KEY, KEY);
+      fail("Did not throw an exception");
+    } catch (IllegalStateException ignored) {
+    }
+  }
+
+  @Test public void testResetCryptoThrowsExceptionWhenNotBuilt() {
+    Hawk.init(context);
+    try {
+      Hawk.resetCrypto();
+      fail("Did not throw an exception");
+    } catch (IllegalStateException ignored) {
+    }
+  }
+
+  @Test public void testCountThrowsExceptionWhenNotBuilt() {
+    Hawk.init(context);
+    try {
+      Hawk.count();
+      fail("Did not throw an exception");
+    } catch (IllegalStateException ignored) {
+    }
+  }
+
+  @Test public void testPutInChainThrowsExceptionWhenNotBuilt() {
+    Hawk.init(context);
+    try {
+      Hawk.chain().put(KEY, "value");
+      fail("Did not throw an exception");
+    } catch (IllegalStateException ignored) {
+    }
+  }
 }
