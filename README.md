@@ -112,8 +112,8 @@ Observable<Boolean> result = Hawk.putObservable(key, T); // Returns the result a
 example usage
 ```java
 Hawk.putObservable(KEY, new Foo())
-    .observeOn(Schedulers.io())
-    .subscribeOn(AndroidSchedulers.mainThread())
+    .subscribeOn(Schedulers.computation())
+    .observeOn(AndroidSchedulers.mainThread())
     .subscribe(new Subscriber<Boolean>() {
       @Override
       public void onCompleted() {
@@ -153,8 +153,8 @@ Observable<T> result = Hawk.getObservable(key, T);
 example usage
 ```java
 Hawk.<Foo>getObservable(KEY)
-    .observeOn(Schedulers.io())
-    .subscribeOn(AndroidSchedulers.mainThread())
+    .subscribeOn(Schedulers.computation())
+    .observeOn(AndroidSchedulers.mainThread())
     .subscribe(new Subscriber<Foo>() {
       @Override
       public void onCompleted() {
