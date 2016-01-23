@@ -1,41 +1,38 @@
 package com.orhanobut.hawk;
 
-import android.app.Activity;
 import android.content.Context;
 import android.text.TextUtils;
 
 import com.google.gson.Gson;
 import com.google.gson.JsonSyntaxException;
 
-import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.robolectric.Robolectric;
+import org.mockito.Spy;
 import org.robolectric.RobolectricGradleTestRunner;
+import org.robolectric.RuntimeEnvironment;
 import org.robolectric.annotation.Config;
 
 import java.lang.reflect.Type;
 import java.util.concurrent.CountDownLatch;
-import java.util.concurrent.TimeUnit;
 
-import static junit.framework.Assert.assertTrue;
+import rx.Observable;
+
+import static java.util.concurrent.TimeUnit.SECONDS;
 import static junit.framework.Assert.fail;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.Mockito.verify;
+import static org.mockito.MockitoAnnotations.initMocks;
 
 @RunWith(RobolectricGradleTestRunner.class)
 @Config(constants = BuildConfig.class, sdk = 21)
 public class HawkBuilderTest {
 
-  private static final long LATCH_TIMEOUT_IN_SECONDS = 5;
+  static final long LATCH_TIMEOUT_IN_SECONDS = 3;
 
-  private HawkBuilder builder;
-  private Context context;
-
-  public HawkBuilderTest() {
-    context = Robolectric.buildActivity(Activity.class).create().get();
-    builder = Hawk.init(context);
-  }
+  @Spy HawkBuilder builder;
+  Context context;
 
   static class CustomParser implements Parser {
     private final Gson gson;
@@ -58,35 +55,39 @@ public class HawkBuilderTest {
   }
 
   @Before public void setup() {
+    context = RuntimeEnvironment.application;
     builder = new HawkBuilder(context);
+
+    initMocks(this);
   }
 
-  @After public void tearDown() {
-    builder = null;
-  }
-
-  @Test public void createInstanceWithInvalidValues() {
+  @Test public void contextShouldNotBeNullOnInit() {
     try {
       new HawkBuilder(null);
-      fail();
+      fail("Context should not be null");
     } catch (Exception e) {
       assertThat(e).hasMessage("Context should not be null");
     }
   }
 
   @Test public void testDefaultEncryptionMode() {
-    assertThat(builder.getEncryptionMethod()).isEqualTo(HawkBuilder.EncryptionMethod.MEDIUM);
+    assertThat(builder.getEncryptionMethod())
+        .isEqualTo(HawkBuilder.EncryptionMethod.MEDIUM);
   }
 
-  @Test public void testNoEncrpytionMode() {
-    builder.setEncryptionMethod(HawkBuilder.EncryptionMethod.NO_ENCRYPTION).build();
+  @Test public void testNoEncryptionMode() {
+    builder.setEncryptionMethod(HawkBuilder.EncryptionMethod.NO_ENCRYPTION)
+        .build();
+
     assertThat(builder.getEncryptionMethod())
         .isEqualTo(HawkBuilder.EncryptionMethod.NO_ENCRYPTION);
   }
 
-  @Test public void testHighestEncryptionModeWithoutPassword() {
+  @Test public void highestEncryptionModeShouldHavePassword() {
     try {
-      builder.setEncryptionMethod(HawkBuilder.EncryptionMethod.HIGHEST).build();
+      builder.setEncryptionMethod(HawkBuilder.EncryptionMethod.HIGHEST)
+          .build();
+
       fail();
     } catch (Exception e) {
       assertThat(e).hasMessage("Password cannot be null " +
@@ -94,11 +95,13 @@ public class HawkBuilderTest {
     }
   }
 
-  @Test public void testHighestEncryptionMethodWithPasword() {
+  @Test public void testHighestEncryptionMethod() {
     builder.setEncryptionMethod(HawkBuilder.EncryptionMethod.HIGHEST)
-        .setPassword("test");
-    assertThat(builder.getEncryptionMethod()).isEqualTo(
-        HawkBuilder.EncryptionMethod.HIGHEST);
+        .setPassword("password")
+        .build();
+
+    assertThat(builder.getEncryptionMethod())
+        .isEqualTo(HawkBuilder.EncryptionMethod.HIGHEST);
   }
 
   @Test public void testPassword() {
@@ -116,31 +119,38 @@ public class HawkBuilderTest {
     }
 
     builder.setPassword("password");
+
     assertThat(builder.getPassword()).isEqualTo("password");
   }
 
   @Test public void testDefaultLogLevel() {
     builder.build();
+
     assertThat(builder.getLogLevel()).isEqualTo(LogLevel.NONE);
   }
 
   @Test public void testCustomLogLevel() {
     builder.setLogLevel(LogLevel.FULL).build();
+
     assertThat(builder.getLogLevel()).isEqualTo(LogLevel.FULL);
   }
 
   @Test public void testDefaultStorage() {
     builder.build();
+
     assertThat(builder.getStorage()).isInstanceOf(SharedPreferencesStorage.class);
   }
 
   @Test public void testCustomStorage() {
-    builder.setStorage(HawkBuilder.newSqliteStorage(context)).build();
+    builder.setStorage(HawkBuilder.newSqliteStorage(context))
+        .build();
+
     assertThat(builder.getStorage()).isInstanceOf(SqliteStorage.class);
   }
 
   @Test public void testDefaultParser() {
     builder.build();
+
     assertThat(builder.getParser()).isInstanceOf(GsonParser.class);
   }
 
@@ -148,40 +158,43 @@ public class HawkBuilderTest {
     CustomParser parser = new CustomParser(new Gson());
     builder.setParser(parser)
         .build();
+
     assertThat(builder.getParser()).isInstanceOf(CustomParser.class);
   }
 
   @Test public void testDefaultEncoded() {
     builder.build();
+
     assertThat(builder.getEncoder()).isInstanceOf(HawkEncoder.class);
   }
 
-  @Test public void testDefaultEncryption() {
+  @Test public void testBuild() {
     builder.build();
-    try {
-      assertThat(builder.getEncryption()).isInstanceOf(AesEncryption.class);
-    } catch (AssertionError e) {
-      assertThat(builder.getEncryptionMethod()).isEqualTo(HawkBuilder.EncryptionMethod.MEDIUM);
-      assertThat(builder.getEncryption()).isInstanceOf(Base64Encryption.class);
-    }
+
+    verify(builder).startBuild();
   }
 
-  @Test public void initWithCallback() throws InterruptedException {
+  @Test public void testBuildWithCallback() throws InterruptedException {
     final CountDownLatch latch = new CountDownLatch(1);
     HawkBuilder.Callback callback = new HawkBuilder.Callback() {
       @Override
       public void onSuccess() {
-        assertTrue(true);
         latch.countDown();
       }
 
       @Override
       public void onFail(Exception e) {
-        assertTrue(true);
         latch.countDown();
       }
     };
-    builder.setCallback(callback).build();
-    assertThat(latch.await(LATCH_TIMEOUT_IN_SECONDS, TimeUnit.SECONDS)).isTrue();
+    builder.build(callback);
+
+    assertThat(latch.await(LATCH_TIMEOUT_IN_SECONDS, SECONDS)).isTrue();
+  }
+
+  @Test public void testRxBuild() {
+    Observable<Boolean> observable = builder.buildRx();
+
+    assertThat(observable).isNotNull();
   }
 }

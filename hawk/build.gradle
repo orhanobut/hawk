@@ -16,7 +16,7 @@ task checkstyle(type: Checkstyle) {
 
 android {
   compileSdkVersion 23
-  buildToolsVersion "23.0.2"
+  buildToolsVersion "23.0.1"
 
   defaultConfig {
     minSdkVersion 9
@@ -35,7 +35,7 @@ task sourcesJar(type: Jar) {
 }
 
 task javadoc(type: Javadoc) {
-  failOnError  false
+  failOnError false
   source = android.sourceSets.main.java.sourceFiles
   classpath += project.files(android.getBootClasspath().join(File.pathSeparator))
 }

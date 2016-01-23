@@ -12,28 +12,34 @@ import rx.Subscriber;
 
 public final class Hawk {
 
-  private static HawkInternal internal;
+  static Hawk HAWK;
 
-  private Hawk() {
-    // no instance
+  private final Storage storage;
+  private final Encoder encoder;
+  private final Encryption encryption;
+  private final LogLevel logLevel;
+
+  private Hawk(HawkBuilder builder) {
+    storage = builder.getStorage();
+    encoder = builder.getEncoder();
+    encryption = builder.getEncryption();
+    logLevel = builder.getLogLevel();
   }
 
   /**
    * This will init the hawk without password protection.
    *
-   * @param context is used to instantiate context based objects. ApplicationContext will be used
+   * @param context is used to instantiate context based objects.
+   *                ApplicationContext will be used
    */
   public static HawkBuilder init(Context context) {
-    if (context == null) {
-      throw new NullPointerException("Context should not be null");
-    }
-
-    internal = null;
+    HawkUtils.checkNull("Context", context);
+    HAWK = null;
     return new HawkBuilder(context);
   }
 
-  static void onHawkBuilt(HawkBuilder builder) {
-    Hawk.internal = new HawkInternal(builder);
+  static void build(HawkBuilder hawkBuilder) {
+    HAWK = new Hawk(hawkBuilder);
   }
 
   /**
@@ -44,10 +50,8 @@ public final class Hawk {
    * @return true if put is successful
    */
   public static <T> boolean put(String key, T value) {
-    if (key == null) {
-      throw new NullPointerException("Key cannot be null");
-    }
-    Utils.validateBuild();
+    HawkUtils.checkNull("Key", key);
+    HawkUtils.validateBuild();
 
     //if the value is null, simply remove it
     if (value == null) {
@@ -56,7 +60,7 @@ public final class Hawk {
 
     String encodedText = zip(value);
     //if any exception occurs during encoding, encodedText will be null and thus operation is unsuccessful
-    return encodedText != null && internal.getStorage().put(key, encodedText);
+    return encodedText != null && HAWK.storage.put(key, encodedText);
   }
 
   /**
@@ -66,7 +70,7 @@ public final class Hawk {
    * @return Observable<Boolean>
    */
   public static <T> Observable<Boolean> putObservable(final String key, final T value) {
-    Utils.checkRx();
+    HawkUtils.checkRx();
     return Observable.create(new Observable.OnSubscribe<Boolean>() {
       @Override
       public void call(Subscriber<? super Boolean> subscriber) {
@@ -86,48 +90,27 @@ public final class Hawk {
   }
 
   /**
-   * Encodes the given value as full text (cipher + data info)
-   *
-   * @param value is the given value to encode
-   * @return full text as string
-   */
-  private static <T> String zip(T value) {
-    if (value == null) {
-      throw new NullPointerException("Value cannot be null");
-    }
-    byte[] encodedValue = internal.getEncoder().encode(value);
-
-    String cipherText = internal.getEncryption().encrypt(encodedValue);
-
-    if (cipherText == null) {
-      return null;
-    }
-    return DataHelper.addType(cipherText, value);
-  }
-
-  /**
    * @param key is used to get the saved data
    * @return the saved object
    */
   public static <T> T get(String key) {
-    if (key == null) {
-      throw new NullPointerException("Key cannot be null");
-    }
-    Utils.validateBuild();
-    String fullText = internal.getStorage().get(key);
+    HawkUtils.checkNull("Key", key);
+    HawkUtils.validateBuild();
+
+    String fullText = HAWK.storage.get(key);
     if (fullText == null) {
       return null;
     }
 
     DataInfo dataInfo = DataHelper.getDataInfo(fullText);
-    byte[] bytes = internal.getEncryption().decrypt(dataInfo.getCipherText());
+    byte[] bytes = HAWK.encryption.decrypt(dataInfo.cipherText);
 
     if (bytes == null) {
       return null;
     }
 
     try {
-      return internal.getEncoder().decode(bytes, dataInfo);
+      return HAWK.encoder.decode(bytes, dataInfo);
     } catch (Exception e) {
       Logger.d(e.getMessage());
     }
@@ -158,7 +141,7 @@ public final class Hawk {
    * @return Observable<T>
    */
   public static <T> Observable<T> getObservable(String key) {
-    Utils.checkRx();
+    HawkUtils.checkRx();
     return getObservable(key, null);
   }
 
@@ -172,7 +155,7 @@ public final class Hawk {
    * @return Observable<T>
    */
   public static <T> Observable<T> getObservable(final String key, final T defaultValue) {
-    Utils.checkRx();
+    HawkUtils.checkRx();
     return Observable.create(new Observable.OnSubscribe<T>() {
       @Override
       public void call(Subscriber<? super T> subscriber) {
@@ -216,8 +199,8 @@ public final class Hawk {
    * @return the size
    */
   public static long count() {
-    Utils.validateBuild();
-    return internal.getStorage().count();
+    HawkUtils.validateBuild();
+    return HAWK.storage.count();
   }
 
   /**
@@ -227,8 +210,8 @@ public final class Hawk {
    * @return true if clear is successful
    */
   public static boolean clear() {
-    Utils.validateBuild();
-    return internal.getStorage().clear();
+    HawkUtils.validateBuild();
+    return HAWK.storage.clear();
   }
 
   /**
@@ -238,8 +221,8 @@ public final class Hawk {
    * @return true if remove is successful
    */
   public static boolean remove(String key) {
-    Utils.validateBuild();
-    return internal.getStorage().remove(key);
+    HawkUtils.validateBuild();
+    return HAWK.storage.remove(key);
   }
 
   /**
@@ -249,8 +232,8 @@ public final class Hawk {
    * @return true if all removals are successful
    */
   public static boolean remove(String... keys) {
-    Utils.validateBuild();
-    return internal.getStorage().remove(keys);
+    HawkUtils.validateBuild();
+    return HAWK.storage.remove(keys);
   }
 
   /**
@@ -260,8 +243,8 @@ public final class Hawk {
    * @return true if it exists in the storage
    */
   public static boolean contains(String key) {
-    Utils.validateBuild();
-    return internal.getStorage().contains(key);
+    HawkUtils.validateBuild();
+    return HAWK.storage.contains(key);
   }
 
   /**
@@ -270,15 +253,15 @@ public final class Hawk {
    * @return true if reset is successful
    */
   public static boolean resetCrypto() {
-    Utils.validateBuild();
-    return internal.getEncryption().reset();
+    HawkUtils.validateBuild();
+    return HAWK.encryption.reset();
   }
 
   public static LogLevel getLogLevel() {
-    if (internal == null) {
+    if (HAWK == null) {
       return LogLevel.NONE;
     }
-    return internal.getLogLevel();
+    return HAWK.logLevel;
   }
 
   /**
@@ -287,7 +270,7 @@ public final class Hawk {
    * @return true if correctly initialised and built. False otherwise.
    */
   public static boolean isBuilt() {
-    return internal != null;
+    return HAWK != null;
   }
 
   /**
@@ -297,7 +280,34 @@ public final class Hawk {
    * <code>commit()</code> writes the chain values to persistent storage. Omitting it will
    * result in all chained data being lost.
    */
-  public static final class Chain {
+  /**
+   * Encodes the given value as full text (cipher + data info)
+   *
+   * @param value is the given value to encode
+   * @return full text as string
+   */
+  private static <T> String zip(T value) {
+    HawkUtils.checkNull("Value", value);
+
+    byte[] encodedValue = HAWK.encoder.encode(value);
+
+    if (encodedValue == null || encodedValue.length == 0) {
+      return null;
+    }
+
+    String cipherText = HAWK.encryption.encrypt(encodedValue);
+
+    if (cipherText == null) {
+      return null;
+    }
+    return DataHelper.addType(cipherText, value);
+  }
+
+  public static void destroy() {
+    HAWK = null;
+  }
+
+  public static class Chain {
 
     private final List<Pair<String, ?>> items;
 
@@ -316,10 +326,8 @@ public final class Hawk {
      * @param value is the data that is gonna be saved. Value can be object, list type, primitives
      */
     public <T> Chain put(String key, T value) {
-      if (key == null) {
-        throw new NullPointerException("Key cannot be null");
-      }
-      Utils.validateBuild();
+      HawkUtils.checkNullOrEmpty("Key", key);
+      HawkUtils.validateBuild();
       String encodedText = zip(value);
       if (encodedText == null) {
         Log.d("HAWK", "Key : " + key + " is not added, encryption failed");
@@ -335,7 +343,7 @@ public final class Hawk {
      * @return true if successfully saved, false otherwise.
      */
     public boolean commit() {
-      return internal.getStorage().put(items);
+      return HAWK.storage.put(items);
     }
 
   }

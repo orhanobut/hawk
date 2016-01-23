@@ -14,7 +14,12 @@ final class SharedPreferencesStorage implements Storage {
     preferences = context.getSharedPreferences(tag, Context.MODE_PRIVATE);
   }
 
+  SharedPreferencesStorage(SharedPreferences preferences) {
+    this.preferences = preferences;
+  }
+
   @Override public <T> boolean put(String key, T value) {
+    HawkUtils.checkNull("key", key);
     return getEditor().putString(key, String.valueOf(value)).commit();
   }
 

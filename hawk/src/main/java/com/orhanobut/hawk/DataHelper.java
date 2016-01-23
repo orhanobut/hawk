@@ -1,7 +1,6 @@
 package com.orhanobut.hawk;
 
 import android.text.TextUtils;
-import android.util.Base64;
 
 import java.util.HashMap;
 import java.util.Iterator;
@@ -11,11 +10,9 @@ import java.util.Set;
 
 final class DataHelper {
 
-  private static final String DELIMITER = "@";
+  private static final char DELIMITER = '@';
   private static final String INFO_DELIMITER = "#";
   private static final char NEW_VERSION = 'V';
-
-  @Deprecated private static final char FLAG_SERIALIZABLE = '1';
 
   private static final Map<Character, DataType> TYPE_MAP = new HashMap<>();
 
@@ -37,13 +34,13 @@ final class DataHelper {
    * @return the DataInfo object which contains all necessary information
    */
   static DataInfo getDataInfo(String storedText) {
-    if (TextUtils.isEmpty(storedText)) {
-      throw new NullPointerException("Text should not be null or empty");
-    }
+    HawkUtils.checkNullOrEmpty("Text", storedText);
+
     int index = storedText.indexOf(DELIMITER);
     if (index == -1) {
       throw new IllegalArgumentException("Text should contain delimiter");
     }
+
     String text = storedText.substring(0, index);
     String cipherText = storedText.substring(index + 1);
     if (TextUtils.isEmpty(text) || TextUtils.isEmpty(cipherText)) {
@@ -53,7 +50,8 @@ final class DataHelper {
     if (firstChar == NEW_VERSION) {
       return getNewDataInfo(text, cipherText);
     } else {
-      return getOldDataInfo(text, cipherText);
+      // old data is no longer supported
+      throw new IllegalStateException("storedText is not valid");
     }
   }
 
@@ -87,30 +85,11 @@ final class DataHelper {
     return new DataInfo(dataType, cipherText, keyClazz, valueClazz);
   }
 
-  @Deprecated static DataInfo getOldDataInfo(String text, String cipherText) {
-    boolean serializable = text.charAt(text.length() - 1) == FLAG_SERIALIZABLE;
-    char type = text.charAt(text.length() - 2);
-    DataType dataType = TYPE_MAP.get(type);
-
-    String className = text.substring(0, text.length() - 2);
-
-    Class<?> clazz = null;
-    try {
-      clazz = Class.forName(className);
-    } catch (ClassNotFoundException e) {
-      Logger.d(e.getMessage());
-    }
-
-    return new DataInfo(dataType, serializable, cipherText, clazz);
-  }
-
+  //TODO optimize
   static <T> String addType(String cipherText, T t) {
-    if (TextUtils.isEmpty(cipherText)) {
-      throw new NullPointerException("Cipher text should not be null or empty");
-    }
-    if (t == null) {
-      throw new NullPointerException("Value should not be null");
-    }
+    HawkUtils.checkNullOrEmpty("Cipher text", cipherText);
+    HawkUtils.checkNull("Value", t);
+
     String keyClassName = "";
     String valueClassName = "";
     DataType dataType;
@@ -148,24 +127,6 @@ final class DataHelper {
         valueClassName + INFO_DELIMITER +
         dataType.getType() + NEW_VERSION + DELIMITER +
         cipherText;
-  }
-
-  static String encodeBase64(byte[] bytes) {
-    try {
-      return Base64.encodeToString(bytes, Base64.DEFAULT);
-    } catch (Exception e) {
-      Logger.w(e.getMessage());
-      return null;
-    }
-  }
-
-  static byte[] decodeBase64(String value) {
-    try {
-      return Base64.decode(value, Base64.DEFAULT);
-    } catch (Exception e) {
-      Logger.w(e.getMessage());
-      return null;
-    }
   }
 
 }

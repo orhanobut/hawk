@@ -12,10 +12,6 @@ enum DataType {
     this.type = type;
   }
 
-  @Override public String toString() {
-    return super.toString();
-  }
-
   char getType() {
     return type;
   }
