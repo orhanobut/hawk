@@ -5,24 +5,28 @@ import android.database.Cursor;
 import android.database.DatabaseUtils;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
-import android.text.TextUtils;
 import android.util.Pair;
 
 import java.util.List;
 
 class SqliteStorage implements Storage {
 
+  private static final String DB_NAME = "Hawk";
+
   private final SqliteHelper helper;
 
   SqliteStorage(Context context) {
-    if (context == null) {
-      throw new NullPointerException("Context should not be null");
-    }
-    helper = new SqliteHelper(context);
+    HawkUtils.checkNull("Context", context);
+
+    helper = new SqliteHelper(context, DB_NAME);
+  }
+
+  SqliteStorage(SqliteHelper sqliteHelper) {
+    helper = sqliteHelper;
   }
 
   @Override public <T> boolean put(String key, T value) {
-    checkKey(key);
+    HawkUtils.checkNullOrEmpty("key", key);
     return helper.put(key, String.valueOf(value));
   }
 
@@ -32,13 +36,13 @@ class SqliteStorage implements Storage {
 
   @SuppressWarnings("unchecked")
   @Override public <T> T get(String key) {
-    checkKey(key);
+    HawkUtils.checkNullOrEmpty("key", key);
     return (T) helper.get(key);
   }
 
   @SuppressWarnings("SimplifiableIfStatement")
   @Override public boolean remove(String key) {
-    if (TextUtils.isEmpty(key)) {
+    if (HawkUtils.isEmpty(key)) {
       return true;
     }
     return helper.delete(key);
@@ -66,22 +70,15 @@ class SqliteStorage implements Storage {
     return helper.contains(key);
   }
 
-  private void checkKey(String key) {
-    if (TextUtils.isEmpty(key)) {
-      throw new NullPointerException("Key cannot be null or empty");
-    }
-  }
+  static class SqliteHelper extends SQLiteOpenHelper {
 
-  private static class SqliteHelper extends SQLiteOpenHelper {
-
-    private static final String DB_NAME = "Hawk";
     private static final String TABLE_NAME = "hawk";
     private static final String COL_KEY = "hawk_key";
     private static final String COL_VALUE = "hawk_value";
     private static final int VERSION = 1;
 
-    public SqliteHelper(Context context) {
-      super(context, DB_NAME, null, VERSION);
+    public SqliteHelper(Context context, String dbName) {
+      super(context, dbName, null, VERSION);
     }
 
     @Override public void onCreate(SQLiteDatabase db) {
@@ -93,7 +90,7 @@ class SqliteStorage implements Storage {
     @Override public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
     }
 
-    public boolean put(String key, String value) {
+    public synchronized boolean put(String key, String value) {
       SQLiteDatabase db = this.getWritableDatabase();
       db.execSQL("INSERT OR REPLACE INTO " + TABLE_NAME +
           " (" + COL_KEY + ", " + COL_VALUE + ") " +
@@ -102,7 +99,7 @@ class SqliteStorage implements Storage {
       return true;
     }
 
-    public boolean put(List<Pair<String, ?>> list) {
+    public synchronized boolean put(List<Pair<String, ?>> list) {
       SQLiteDatabase db = this.getWritableDatabase();
       boolean result = true;
       try {
@@ -123,14 +120,14 @@ class SqliteStorage implements Storage {
       return result;
     }
 
-    public boolean delete(String key) {
+    public synchronized boolean delete(String key) {
       SQLiteDatabase db = this.getWritableDatabase();
       int count = db.delete(TABLE_NAME, COL_KEY + "='" + key + "'", null);
       db.close();
       return count != -1;
     }
 
-    public boolean delete(String... keys) {
+    public synchronized boolean delete(String... keys) {
       SQLiteDatabase db = this.getWritableDatabase();
       boolean result = true;
       try {
@@ -151,11 +148,11 @@ class SqliteStorage implements Storage {
       return result;
     }
 
-    public boolean contains(String key) {
+    public synchronized boolean contains(String key) {
       return get(key) != null;
     }
 
-    public String get(String key) {
+    public synchronized String get(String key) {
       SQLiteDatabase db = this.getReadableDatabase();
       Cursor cursor = db.rawQuery("SELECT * FROM " + TABLE_NAME +
           " WHERE " + COL_KEY + " = '" + key + "'", null);
@@ -172,14 +169,14 @@ class SqliteStorage implements Storage {
       return value;
     }
 
-    public boolean clearAll() {
+    public synchronized boolean clearAll() {
       SQLiteDatabase db = this.getWritableDatabase();
       db.execSQL("DELETE FROM " + TABLE_NAME);
       db.close();
       return true;
     }
 
-    public long count() {
+    public synchronized long count() {
       SQLiteDatabase db = this.getWritableDatabase();
       long count = DatabaseUtils.queryNumEntries(db, TABLE_NAME);
       db.close();

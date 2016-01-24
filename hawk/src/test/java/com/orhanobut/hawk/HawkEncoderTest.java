@@ -2,6 +2,7 @@ package com.orhanobut.hawk;
 
 import com.google.gson.Gson;
 
+import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.robolectric.RobolectricGradleTestRunner;
@@ -21,16 +22,16 @@ import static org.assertj.core.api.Assertions.assertThat;
 @Config(constants = BuildConfig.class, sdk = 18)
 public class HawkEncoderTest {
 
-  private final Encoder encoder;
-  private final Parser parser;
-
-  public HawkEncoderTest() {
-    parser = new GsonParser(new Gson());
-    encoder = new HawkEncoder(parser);
-  }
+  Encoder encoder;
+  Parser parser;
 
   static class Foo {
     String name = "hawk";
+  }
+
+  @Before public void setup() {
+    parser = new GsonParser(new Gson());
+    encoder = new HawkEncoder(parser);
   }
 
   @Test public void createInstanceWithInvalidValues() {

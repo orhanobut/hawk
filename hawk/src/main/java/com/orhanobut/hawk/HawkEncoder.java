@@ -2,9 +2,6 @@ package com.orhanobut.hawk;
 
 import com.google.gson.reflect.TypeToken;
 
-import java.io.ByteArrayInputStream;
-import java.io.IOException;
-import java.io.ObjectInputStream;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -45,43 +42,15 @@ final class HawkEncoder implements Encoder {
     if (bytes == null) {
       return null;
     }
-    if (info == null) {
-      throw new NullPointerException("data info should not be null");
-    }
-    if (info.isNewVersion()) {
-      return decodeNew(bytes, info);
-    } else {
-      return decodeOld(bytes, info);
-    }
-  }
-
-  @Deprecated private <T> T decodeOld(byte[] bytes, DataInfo info) throws Exception {
-    boolean isList = info.getDataType() == DataType.LIST;
-
-    // if the value is not list and serializable, then use the normal deserialize
-    if (!isList && info.isSerializable()) {
-      return toSerializable(bytes);
-    }
+    HawkUtils.checkNull("data info", info);
 
     // convert to the string json
     String json = new String(bytes);
 
-    Class<?> type = info.getKeyClazz();
-    if (!isList) {
-      return parser.fromJson(json, type);
-    }
+    Class<?> keyType = info.keyClazz;
+    Class<?> valueType = info.valueClazz;
 
-    return toList(json, type);
-  }
-
-  private <T> T decodeNew(byte[] bytes, DataInfo info) throws Exception {
-    // convert to the string json
-    String json = new String(bytes);
-
-    Class<?> keyType = info.getKeyClazz();
-    Class<?> valueType = info.getValueClazz();
-
-    switch (info.getDataType()) {
+    switch (info.dataType) {
       case OBJECT:
         return toObject(json, keyType);
       case LIST:
@@ -152,35 +121,6 @@ final class HawkEncoder implements Encoder {
       resultMap.put(k, v);
     }
     return (T) resultMap;
-  }
-
-  /**
-   * Converts byte[] to a serializable object
-   *
-   * @param bytes the data
-   * @param <T>   object type
-   * @return the serializable object
-   */
-  @SuppressWarnings("unchecked")
-  @Deprecated private <T> T toSerializable(byte[] bytes) {
-    ObjectInputStream inputStream = null;
-    try {
-      inputStream = new ObjectInputStream(new ByteArrayInputStream(bytes));
-    } catch (IOException e) {
-      Logger.d(e.getMessage());
-    }
-
-    if (inputStream == null) {
-      return null;
-    }
-
-    T result = null;
-    try {
-      result = (T) inputStream.readObject();
-    } catch (ClassNotFoundException | IOException e) {
-      Logger.d(e.getMessage());
-    }
-    return result;
   }
 
 }

@@ -1,10 +1,12 @@
 package com.orhanobut.hawk;
 
 import android.content.Context;
-import android.os.Handler;
 import android.text.TextUtils;
 
 import com.google.gson.Gson;
+
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 import rx.Observable;
 import rx.Subscriber;
@@ -13,17 +15,16 @@ import rx.functions.Func0;
 public class HawkBuilder {
 
   /**
-   * never ever change this value since it will break backward compatibility in terms of keeping previous data
+   * NEVER ever change TAG and TAG_INFO.
+   * It will break backward compatibility in terms of keeping previous data
    */
   private static final String TAG = "HAWK";
-
-  /**
-   * never ever change this value since it will break backward compatibility in terms of keeping previous data
-   */
   private static final String TAG_INFO = "324909sdfsd98098";
 
   /**
-   * Key to store if the device does not support crypto
+   * Key to store if the device does not support crypto.
+   * This key has nothing to do with encryption key,
+   * This is merely used for the key tag for preferences value.
    */
   private static final String KEY_NO_CRYPTO = "dfsklj2342nasdfoasdfcrpknasdf";
 
@@ -35,16 +36,14 @@ public class HawkBuilder {
   private Encoder encoder;
   private Parser parser;
   private Encryption encryption;
-  private Callback callback;
 
   public enum EncryptionMethod {
     HIGHEST, MEDIUM, NO_ENCRYPTION
   }
 
   public HawkBuilder(Context context) {
-    if (context == null) {
-      throw new NullPointerException("Context should not be null");
-    }
+    HawkUtils.checkNull("Context", context);
+
     this.context = context.getApplicationContext();
   }
 
@@ -71,13 +70,18 @@ public class HawkBuilder {
     return this;
   }
 
-  public HawkBuilder setCallback(Callback callback) {
-    this.callback = callback;
+  public HawkBuilder setParser(Parser parser) {
+    this.parser = parser;
     return this;
   }
 
-  public HawkBuilder setParser(Parser parser) {
-    this.parser = parser;
+  HawkBuilder setEncoder(Encoder encoder) {
+    this.encoder = encoder;
+    return this;
+  }
+
+  HawkBuilder setEncryption(Encryption encryption) {
+    this.encryption = encryption;
     return this;
   }
 
@@ -138,26 +142,53 @@ public class HawkBuilder {
   }
 
   public void build() {
-    if (callback != null) {
-      new Handler().post(new Runnable() {
-        @Override public void run() {
-          try {
-            startBuild();
-            callback.onSuccess();
-          } catch (Exception e) {
-            callback.onFail(e);
-          }
-        }
-      });
-      return;
-    }
     startBuild();
   }
 
-  private void startBuild() {
+  public void build(final Callback callback) {
+    ExecutorService executor = Executors.newSingleThreadExecutor();
+    executor.execute(new Runnable() {
+      @Override public void run() {
+        try {
+          startBuild();
+          callback.onSuccess();
+        } catch (Exception e) {
+          callback.onFail(e);
+        }
+      }
+    });
+    executor.shutdown();
+  }
+
+  /**
+   * Callback interface to make actions on another place and execute code
+   * based on a result of action
+   * onSuccess function will be called when action is successful
+   * onFail function will be called when action fails due to a reason
+   */
+  public Observable<Boolean> buildRx() {
+    HawkUtils.checkRx();
+    return Observable.defer(new Func0<Observable<Boolean>>() {
+      @Override public Observable<Boolean> call() {
+        return Observable.create(new Observable.OnSubscribe<Boolean>() {
+          @Override public void call(Subscriber<? super Boolean> subscriber) {
+            try {
+              startBuild();
+              subscriber.onNext(true);
+              subscriber.onCompleted();
+            } catch (Exception e) {
+              subscriber.onError(e);
+            }
+          }
+        });
+      }
+    });
+  }
+
+  void startBuild() {
     validate();
     setEncryption();
-    Hawk.onHawkBuilt(this);
+    Hawk.build(this);
   }
 
   private void setEncryption() {
@@ -175,10 +206,13 @@ public class HawkBuilder {
       case MEDIUM:
         encryption = new AesEncryption(getStorage(), null);
         if (!getEncryption().init()) {
+          //fallback to no encryption
           getInfoStorage().put(KEY_NO_CRYPTO, true);
           encryption = new Base64Encryption();
         }
         break;
+      default:
+        throw new IllegalStateException("encryption mode should be valid");
     }
   }
 
@@ -190,35 +224,11 @@ public class HawkBuilder {
     return new SqliteStorage(context);
   }
 
-  /**
-   * Callback interface to make actions on another place and execute code
-   * based on a result of action
-   * onSuccess function will be called when action is successful
-   * onFail function will be called when action fails due to a reason
-   */
   public interface Callback {
 
     void onSuccess();
 
     void onFail(Exception e);
-  }
 
-  public Observable<Boolean> buildRx() {
-    Utils.checkRx();
-    return Observable.defer(new Func0<Observable<Boolean>>() {
-      @Override public Observable<Boolean> call() {
-        return Observable.create(new Observable.OnSubscribe<Boolean>() {
-          @Override public void call(Subscriber<? super Boolean> subscriber) {
-            try {
-              startBuild();
-              subscriber.onNext(true);
-              subscriber.onCompleted();
-            } catch (Exception e) {
-              subscriber.onError(e);
-            }
-          }
-        });
-      }
-    });
   }
 }
