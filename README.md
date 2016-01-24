@@ -43,6 +43,16 @@ or use buildRx to add init to your rx stream
 .buildRx().
 ```
 
+or use async option with callback
+```java
+.build(new HawkBuilder.Callback() {
+  @Override public void onSuccess() {
+  }
+  @Override public void onFail(Exception e) {
+  }
+});
+```
+
 You can use highest secure crypto approach, init might take 36-400ms. You also need to provide password
 ```java
 Hawk.init(this)
@@ -67,27 +77,6 @@ Select the storage, you can either use sharedpreferences or sqlite to store data
 or
 ```java
 .setStorage(HawkBuilder.newSharedPrefStorage(this))
-```
-
-You may want to use async solution for init. Add a callback to init and it will work asynchronous.
-```java
-Hawk.init(this)
-    .setEncryptionMethod(HawkBuilder.EncryptionMethod.HIGHEST)
-    .setPassword("password")
-    .setStorage(HawkBuilder.newSqliteStorage(this))
-    .setLogLevel(LogLevel.FULL)
-    .setCallback(new HawkBuilder.Callback() {
-      @Override
-      public void onSuccess() {
-
-      }
-
-      @Override
-      public void onFail(Exception e) {
-
-      }
-    })
-    .build();
 ```
 
 #### Save
