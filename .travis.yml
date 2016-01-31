@@ -20,7 +20,7 @@ script:
 notifications:
   email: false
 
-sudo: true
+sudo: false
 
 before_cache:
   - rm -f $HOME/.gradle/caches/modules-2/modules-2.lock
@@ -33,4 +33,3 @@ cache:
 
 after_failure:
   - pandoc app/build/outputs/lint-results.html -t plain
-  - pandoc app/build/reports/debug/index.html -t plain
