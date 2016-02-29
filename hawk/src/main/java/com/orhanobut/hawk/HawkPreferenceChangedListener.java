@@ -5,5 +5,5 @@ package com.orhanobut.hawk;
  */
 public interface HawkPreferenceChangedListener {
 
-	void onHawkPreferenceChanged(String key);
+  void onHawkPreferenceChanged(String key);
 }
