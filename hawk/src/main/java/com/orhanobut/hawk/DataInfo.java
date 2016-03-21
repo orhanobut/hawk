@@ -13,5 +13,4 @@ final class DataInfo {
     this.valueClazz = valueClazz;
     this.dataType = dataType;
   }
-  
 }

@@ -31,20 +31,14 @@ final class DataHelper {
   static DataInfo getDataInfo(String storedText) {
     HawkUtils.checkNullOrEmpty("Text", storedText);
 
-    int index = storedText.indexOf(DELIMITER);
-    if (index == -1) {
+    int start = storedText.indexOf(INFO_DELIMITER);
+    if (start == -1) {
       throw new IllegalArgumentException("storedText is not valid");
     }
 
-    return getNewDataInfo(storedText, index);
-  }
+    String keyClass = storedText.substring(0, start);
 
-  static DataInfo getNewDataInfo(String storedText, int indexFirstDelimiter) {
-    String keyClass = storedText.substring(0, indexFirstDelimiter);
-
-    int start = indexFirstDelimiter + 1;
-    int index = storedText.indexOf(INFO_DELIMITER, start);
-
+    int index = storedText.indexOf(INFO_DELIMITER, ++start);
     if (index == -1) {
       throw new IllegalArgumentException("Text should contain delimiter");
     }
@@ -53,8 +47,14 @@ final class DataHelper {
 
     char dataType = storedText.charAt(++index);
 
-    //skip NEW_VERSION + DELIMITER
-    index += 3;
+    char newVersion = storedText.charAt(++index);
+    if (newVersion != NEW_VERSION) {
+      // old data is no longer supported
+      throw new IllegalStateException("storedText is not valid");
+    }
+
+    //skip DELIMITER
+    index += 2;
 
     String cipherText = storedText.substring(index);
     HawkUtils.checkNullOrEmpty("Cipher text", cipherText);
