@@ -46,7 +46,11 @@ final class Logger {
     if (logLevel == LogLevel.NONE) {
       return;
     }
-    int length = message.length();
+    int length = message != null ? message.length() : 0;
+    if (length == 0 && throwable == null) {
+      return;
+    }
+
     if (length <= CHUNK_SIZE) {
       logChunk(logType, message, throwable);
       return;

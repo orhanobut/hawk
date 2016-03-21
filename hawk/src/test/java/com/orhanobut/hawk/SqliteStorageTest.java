@@ -1,160 +1,89 @@
 package com.orhanobut.hawk;
 
-import android.app.Activity;
-import android.content.Context;
 import android.util.Pair;
 
-import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.robolectric.Robolectric;
-import org.robolectric.RobolectricGradleTestRunner;
-import org.robolectric.annotation.Config;
+import org.mockito.Mock;
 
 import java.util.ArrayList;
 import java.util.List;
 
-import static junit.framework.Assert.fail;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Fail.fail;
+import static org.mockito.Mockito.verify;
+import static org.mockito.MockitoAnnotations.initMocks;
 
-@RunWith(RobolectricGradleTestRunner.class)
-@Config(constants = BuildConfig.class, sdk = 18)
 public class SqliteStorageTest {
 
-  private final Context context;
+  @Mock SqliteStorage.SqliteHelper helper;
 
-  private Storage storage;
-
-  public SqliteStorageTest() {
-    context = Robolectric.buildActivity(Activity.class).create().get();
-  }
+  SqliteStorage storage;
 
   @Before public void setUp() throws Exception {
-    storage = new SqliteStorage(context);
+    initMocks(this);
+
+    storage = new SqliteStorage(helper);
   }
 
-  @Test public void init() {
-    assertThat(context).isNotNull();
-    assertThat(storage).isNotNull();
+  @Test public void putObject() throws Exception {
+    storage.put("key", "value");
+
+    verify(helper).put("key", "value");
   }
 
-  @Test public void createInstanceWithInvalidValues() {
+  @Test public void throwExceptionOnNullKeysPassedOnPut() {
     try {
-      new SqliteStorage(null);
-      fail();
+      storage.put(null, "value");
+      fail("key should not be null");
     } catch (Exception e) {
-      assertThat(e).hasMessage("Context should not be null");
+      assertThat(e).hasMessage("key should not be null or empty");
     }
   }
 
-  @After public void tearDown() {
-    storage = null;
-  }
-
-  @Test public void clearAll() {
-    storage.put("a1", "String");
-    storage.put("a2", "String");
-
-    assertThat(storage.get("a1")).isNotNull();
-    assertThat(storage.get("a2")).isNotNull();
-
-    storage.clear();
-    assertThat(storage.get("a1")).isNull();
-    assertThat(storage.get("a2")).isNull();
-  }
-
-  @Test public void put() {
-    storage.put("string", "String");
-    assertThat(storage.get("string")).isEqualTo("String");
-  }
-
-  @Test public void putInvalidValues() {
-    try {
-      storage.put(null, "test");
-      fail();
-    } catch (Exception e) {
-      assertThat(e).hasMessage("Key cannot be null or empty");
-    }
-    try {
-      storage.put("", "test");
-      fail();
-    } catch (Exception e) {
-      assertThat(e).hasMessage("Key cannot be null or empty");
-    }
-  }
-
-  @Test public void putBulk() {
+  @Test public void putList() throws Exception {
     List<Pair<String, ?>> list = new ArrayList<>();
-    Pair<String, String> pair = new Pair<>("a1", "b1");
-    Pair<String, String> pair2 = new Pair<>("a2", "b2");
-    list.add(pair);
-    list.add(pair2);
+    list.add(new Pair<String, Object>("f1", "s1"));
+    list.add(new Pair<String, Object>("f2", "s2"));
 
     storage.put(list);
-    assertThat(storage.get("a1")).isEqualTo("b1");
-    assertThat(storage.get("a2")).isEqualTo("b2");
+
+    verify(helper).put(list);
   }
 
-  @Test public void getInvalidValues() {
-    try {
-      storage.get(null);
-      fail();
-    } catch (Exception e) {
-      assertThat(e).hasMessage("Key cannot be null or empty");
-    }
-    try {
-      storage.get("");
-      fail();
-    } catch (Exception e) {
-      assertThat(e).hasMessage("Key cannot be null or empty");
-    }
+  @Test public void get() throws Exception {
+    storage.get("key");
+
+    verify(helper).get("key");
   }
 
-  @Test public void contains() {
-    storage.put("string", "String");
-    assertThat(storage.contains("string")).isTrue();
-    assertThat(storage.contains(null)).isFalse();
+  @Test public void remove() throws Exception {
+    storage.remove("key");
+
+    verify(helper).delete("key");
   }
 
-  @Test public void remove() {
-    storage.put("string", "string");
-    assertThat(storage.get("string")).isNotNull();
+  @Test public void removeMultiple() throws Exception {
+    storage.remove("k1", "k2");
 
-    storage.remove("string");
-    assertThat(storage.get("string")).isNull();
+    verify(helper).delete("k1", "k2");
   }
 
-  @Test public void removeInvalid() {
-    assertThat(storage.remove(null, null)).isTrue();
-    assertThat(storage.remove("")).isTrue();
+  @Test public void contains() throws Exception {
+    storage.contains("key");
+
+    verify(helper).contains("key");
   }
 
-  @Test public void bulkRemove() {
-    storage.put("a1", "string");
-    storage.put("a2", "string");
-    assertThat(storage.get("a1")).isNotNull();
-    assertThat(storage.get("a2")).isNotNull();
+  @Test public void clear() throws Exception {
+    storage.clear();
 
-    storage.remove("a1", "a2");
-    assertThat(storage.get("a1")).isNull();
-    assertThat(storage.get("a2")).isNull();
+    verify(helper).clearAll();
   }
 
-  @Test public void count() {
-    storage.put("a1", "string");
-    storage.put("a2", "string");
-    assertThat(storage.get("a1")).isNotNull();
-    assertThat(storage.get("a2")).isNotNull();
+  @Test public void count() throws Exception {
+    storage.count();
 
-    assertThat(storage.count()).isEqualTo(2);
-  }
-
-  @Test public void update() {
-    storage.put("a1", "b1");
-    assertThat(storage.get("a1")).isEqualTo("b1");
-
-    storage.put("a1", "b2");
-    assertThat(storage.get("a1")).isEqualTo("b2");
+    verify(helper).count();
   }
 }

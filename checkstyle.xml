@@ -49,7 +49,7 @@
     </module>
     <module name="PackageName"/>
     <module name="ParameterName"/>
-    <module name="StaticVariableName"/>
+    <!--<module name="StaticVariableName"/>-->
     <module name="TypeName">
       <property name="format" value="^[A-Z][a-zA-Z0-9_]*$"/>
     </module>
@@ -105,10 +105,10 @@
     <!-- Checks for blocks. You know, those {}'s         -->
     <!-- See http://checkstyle.sf.net/config_blocks.html -->
     <module name="AvoidNestedBlocks"/>
-    <module name="EmptyBlock"/>
+    <!--<module name="EmptyBlock"/>-->
     <module name="LeftCurly"/>
     <module name="NeedBraces">
-        <property name="tokens" value="LITERAL_DO, LITERAL_ELSE, LITERAL_FOR, LITERAL_WHILE"/>
+      <property name="tokens" value="LITERAL_DO, LITERAL_ELSE, LITERAL_FOR, LITERAL_WHILE"/>
     </module>
     <module name="RightCurly"/>
 

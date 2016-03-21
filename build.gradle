@@ -19,3 +19,13 @@ allprojects {
     jcenter()
   }
 }
+
+subprojects {
+  task ciCheck {
+    group 'verification'
+  }
+}
+
+// Added specific declaration here because :sdk doesn't have testDebugUnitTest
+project(':hawk').ciCheck.dependsOn(['checkstyle'])
+project(':hawk').ciCheck.dependsOn(['testDebugUnitTest'])

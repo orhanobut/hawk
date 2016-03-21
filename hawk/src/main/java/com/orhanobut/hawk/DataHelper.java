@@ -1,9 +1,6 @@
 package com.orhanobut.hawk;
 
 import android.text.TextUtils;
-import android.util.Base64;
-
-import com.google.gson.Gson;
 
 import java.util.Iterator;
 import java.util.List;
@@ -15,8 +12,6 @@ final class DataHelper {
   private static final char DELIMITER = '@';
   private static final char INFO_DELIMITER = '#';
   private static final char NEW_VERSION = 'V';
-
-  @Deprecated private static final char FLAG_SERIALIZABLE = '1';
 
   static final char DATATYPE_OBJECT = '0';
   static final char DATATYPE_LIST = '1';
@@ -34,14 +29,13 @@ final class DataHelper {
    * @return the DataInfo object which contains all necessary information
    */
   static DataInfo getDataInfo(String storedText) {
-    if (TextUtils.isEmpty(storedText)) {
-      throw new NullPointerException("Text should not be null or empty");
+    HawkUtils.checkNullOrEmpty("Text", storedText);
+
+    int index = storedText.indexOf(DELIMITER);
+    if (index == -1) {
+      throw new IllegalArgumentException("storedText is not valid");
     }
 
-    int index = storedText.indexOf(INFO_DELIMITER, 0);
-    if (index == -1) {
-      return getOldDataInfo(storedText);
-    }
     return getNewDataInfo(storedText, index);
   }
 
@@ -63,10 +57,7 @@ final class DataHelper {
     index += 3;
 
     String cipherText = storedText.substring(index);
-
-    if (TextUtils.isEmpty(cipherText)) {
-      throw new IllegalArgumentException("Invalid stored cipher text");
-    }
+    HawkUtils.checkNullOrEmpty("Cipher text", cipherText);
 
     Class<?> keyClazz = null;
     Class<?> valueClazz = null;
@@ -89,42 +80,10 @@ final class DataHelper {
     return new DataInfo(dataType, cipherText, keyClazz, valueClazz);
   }
 
-  @Deprecated static DataInfo getOldDataInfo(String storedText) {
-    int index = storedText.indexOf(DELIMITER);
-
-    if (index == -1) {
-      throw new IllegalArgumentException("Text should contain delimiter");
-    }
-
-    String text = storedText.substring(0, index);
-    String cipherText = storedText.substring(index + 1);
-
-    if (TextUtils.isEmpty(text) || TextUtils.isEmpty(cipherText)) {
-      throw new IllegalArgumentException("Invalid stored text");
-    }
-
-    boolean serializable = text.charAt(text.length() - 1) == FLAG_SERIALIZABLE;
-    char dataType = text.charAt(text.length() - 2);
-
-    String className = text.substring(0, text.length() - 2);
-
-    Class<?> clazz = null;
-    try {
-      clazz = Class.forName(className);
-    } catch (ClassNotFoundException e) {
-      Logger.d(e.getMessage());
-    }
-
-    return new DataInfo(dataType, serializable, cipherText, clazz);
-  }
-
+  //TODO optimize
   static <T> String addType(String cipherText, T t) {
-    if (TextUtils.isEmpty(cipherText)) {
-      throw new NullPointerException("Cipher text should not be null or empty");
-    }
-    if (t == null) {
-      throw new NullPointerException("Value should not be null");
-    }
+    HawkUtils.checkNullOrEmpty("Cipher text", cipherText);
+    HawkUtils.checkNull("Value", t);
 
     if (List.class.isAssignableFrom(t.getClass())) {
       return addListType(cipherText, (List) t);
@@ -177,24 +136,6 @@ final class DataHelper {
         valueClassName + INFO_DELIMITER +
         dataType + NEW_VERSION + DELIMITER +
         cipherText;
-  }
-
-  static String encodeBase64(byte[] bytes) {
-    try {
-      return Base64.encodeToString(bytes, Base64.DEFAULT);
-    } catch (Exception e) {
-      Logger.w(e.getMessage());
-      return null;
-    }
-  }
-
-  static byte[] decodeBase64(String value) {
-    try {
-      return Base64.decode(value, Base64.DEFAULT);
-    } catch (Exception e) {
-      Logger.w(e.getMessage());
-      return null;
-    }
   }
 
 }

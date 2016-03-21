@@ -1,515 +1,373 @@
 package com.orhanobut.hawk;
 
-import android.app.Activity;
 import android.content.Context;
 
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.robolectric.Robolectric;
+import org.mockito.InOrder;
+import org.mockito.Mock;
 import org.robolectric.RobolectricGradleTestRunner;
+import org.robolectric.RuntimeEnvironment;
 import org.robolectric.annotation.Config;
-
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.concurrent.CountDownLatch;
-import java.util.concurrent.TimeUnit;
-
-import rx.Observable;
-import rx.Observer;
-import rx.Subscriber;
-import rx.functions.Func1;
-import rx.schedulers.Schedulers;
 
 import static junit.framework.Assert.fail;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.Matchers.any;
+import static org.mockito.Matchers.anyList;
+import static org.mockito.Matchers.eq;
+import static org.mockito.Mockito.inOrder;
+import static org.mockito.Mockito.spy;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyZeroInteractions;
+import static org.mockito.Mockito.when;
+import static org.mockito.MockitoAnnotations.initMocks;
 
-/**
- * @author Orhan Obut
- */
 @RunWith(RobolectricGradleTestRunner.class)
 @Config(constants = BuildConfig.class, sdk = 21)
 public class HawkTest {
 
-  private static final String KEY = "TAG";
-  private static final long LATCH_TIMEOUT_IN_SECONDS = 5;
+  final String key = "key";
+  final String value = "foo";
+  final String cipherText = "123345";
+  final String withType = "java.lang.String##0V@123345";
 
-  protected final Context context;
+  Context context;
 
-  public HawkTest() {
-    context = Robolectric.buildActivity(Activity.class).create().get();
-  }
+  @Mock Encoder encoder;
+  @Mock Storage storage;
+  @Mock Encryption encryption;
 
   @Before public void setUp() {
-    init();
-  }
+    context = RuntimeEnvironment.application;
 
-  public void init() {
-    Hawk.init(context).build();
+    initMocks(this);
+
+    Hawk.build(
+        new HawkBuilder(context)
+            .setEncoder(encoder)
+            .setStorage(storage)
+            .setEncryption(encryption)
+    );
   }
 
   @After public void tearDown() {
-    if (Hawk.isBuilt()) {
-      Hawk.clear();
-    }
+    Hawk.destroy();
   }
 
-  @Test public void initWithInvalidValues() {
+  //region INIT
+  @Test public void initRequiresContext() {
     try {
       Hawk.init(null);
-      fail();
+      fail("context should not be null");
     } catch (Exception e) {
       assertThat(e).hasMessage("Context should not be null");
     }
   }
 
-  @Test public void testSingleItem() {
-    Hawk.put("boolean", true);
-    assertThat(Hawk.get("boolean")).isEqualTo(true);
+  @Test public void returnHawkBuilderOnInitAndDestroyHawkInternal() {
+    HawkBuilder builder = Hawk.init(context);
 
-    Hawk.put("string", "string");
-    assertThat(Hawk.get("string")).isEqualTo("string");
-
-    Hawk.put("float", 1.5f);
-    assertThat(Hawk.get("float")).isEqualTo(1.5f);
-
-    Hawk.put("integer", 10);
-    assertThat(Hawk.get("integer")).isEqualTo(10);
-
-    Hawk.put("char", 'A');
-    assertThat(Hawk.get("char")).isEqualTo('A');
-
-    Hawk.put("object", new FooBar());
-    FooBar fooBar = Hawk.get("object");
-
-    assertThat(fooBar).isNotNull();
-    assertThat(fooBar.name).isEqualTo("hawk");
-
-    assertThat(Hawk.put("innerClass", new FooBar.InnerFoo())).isTrue();
-    FooBar.InnerFoo innerFoo = Hawk.get("innerClass");
-    assertThat(innerFoo).isNotNull();
-    assertThat(innerFoo.name).isEqualTo("hawk");
+    assertThat(builder).isNotNull();
+    assertThat(Hawk.HAWK).isNull();
   }
 
-  @Test public void testSingleItemDefault() {
-    boolean result = Hawk.get("tag", true);
-    assertThat(result).isEqualTo(true);
+  @Test public void testIsBuilt() {
+    assertThat(Hawk.isBuilt()).isTrue();
+  }
+  //endregion
+
+  //region OTHERS
+  @Test public void testDestroy() {
+    Hawk.destroy();
+
+    assertThat(Hawk.HAWK).isNull();
   }
 
-  @Test public void testList() {
-    List<String> list = new ArrayList<>();
-    list.add("foo");
-    list.add("bar");
+  @Test public void testResetCrypto() {
+    when(encryption.reset()).thenReturn(true);
 
-    Hawk.put("tag", list);
+    assertThat(Hawk.resetCrypto()).isTrue();
 
-    List<String> list1 = Hawk.get("tag");
+    verify(encryption).reset();
+    verifyZeroInteractions(storage, encoder);
+  }
+  //endregion
 
-    assertThat(list1).isNotNull();
-    assertThat(list1.get(0)).isEqualTo("foo");
-    assertThat(list1.get(1)).isEqualTo("bar");
+  //region PUT
+  @Test public void testPut() {
+    when(encoder.encode(value)).thenReturn(value.getBytes());
+    when(encryption.encrypt(value.getBytes())).thenReturn(cipherText);
+    when(storage.put(key, withType)).thenReturn(true);
+
+    assertThat(Hawk.put(key, value)).isTrue();
+
+    InOrder inOrder = inOrder(storage, encoder, encryption);
+    inOrder.verify(encoder).encode(value);
+    inOrder.verify(encryption).encrypt(any(byte[].class));
+    inOrder.verify(storage).put(key, withType);
   }
 
-  @Test public void testEmptyList() {
-    List<FooBar> list = new ArrayList<>();
-    Hawk.put("tag", list);
-
-    List<FooBar> list1 = Hawk.get("tag");
-
-    assertThat(list1).isNotNull();
-  }
-
-  @Test public void testMap() {
-    Map<String, String> map = new HashMap<>();
-    map.put("key", "value");
-    Hawk.put("map", map);
-
-    Map<String, String> map1 = Hawk.get("map");
-
-    assertThat(map1).isNotNull();
-    assertThat(map1.get("key")).isEqualTo("value");
-  }
-
-  @Test public void testEmptyMap() {
-    Map<String, FooBar> map = new HashMap<>();
-    Hawk.put("tag", map);
-
-    Map<String, FooBar> map1 = Hawk.get("tag");
-
-    assertThat(map1).isNotNull();
-  }
-
-  @Test public void testSet() {
-    Set<String> set = new HashSet<>();
-    set.add("foo");
-    Hawk.put("set", set);
-
-    Set<String> set1 = Hawk.get("set");
-
-    assertThat(set1).isNotNull();
-    assertThat(set1.contains("foo")).isTrue();
-  }
-
-  @Test public void testEmptySet() {
-    Set<FooBar> set = new HashSet<>();
-    Hawk.put("tag", set);
-
-    Set<FooBar> set1 = Hawk.get("tag");
-
-    assertThat(set1).isNotNull();
-  }
-
-  @Test public void testNullKeyPut() {
+  @Test public void testNullKeyOnPut() {
     try {
-      Hawk.put(null, "test");
-      fail();
+      Hawk.put(null, "foo");
+      fail("Key should not be null");
     } catch (Exception e) {
-      assertThat(e).hasMessage("Key cannot be null");
+      assertThat(e).hasMessage("Key should not be null");
     }
   }
 
-  @Test public void testNullKeyGet() {
+  @Test public void validateBuildOnPut() {
+    try {
+      Hawk.destroy();
+      Hawk.init(context);
+      Hawk.put(key, value);
+      fail("build is not complete");
+    } catch (Exception e) {
+    }
+  }
+
+  @Test public void removeWhenValueIsNullOnPut() {
+    when(storage.remove(key)).thenReturn(true);
+
+    assertThat(Hawk.put(key, null)).isTrue();
+
+    verify(storage).remove(key);
+  }
+
+  @Test public void returnFalseAndNotAddToStorageWhenEncryptionFailsOnPut() {
+    when(encoder.encode(value)).thenReturn(value.getBytes());
+    when(encryption.encrypt(value.getBytes())).thenReturn(null);
+
+    assertThat(Hawk.put(key, value)).isFalse();
+
+    InOrder inOrder = inOrder(storage, encoder, encryption);
+    inOrder.verify(encoder).encode(value);
+    inOrder.verify(encryption).encrypt(any(byte[].class));
+    verifyZeroInteractions(storage);
+  }
+
+  @Test public void returnFalseAndNotAddToStorageWhenEncodingFailsOnPut() {
+    when(encoder.encode(value)).thenReturn(null);
+
+    assertThat(Hawk.put(key, value)).isFalse();
+
+    verify(encoder).encode(value);
+    verifyZeroInteractions(storage, encryption);
+  }
+
+  @Test public void testObservablePut() {
+    assertThat(Hawk.putObservable(key, value)).isNotNull();
+  }
+  //endregion
+
+  //region GET
+
+  @Test public void returnValueOnGet() throws Exception {
+    when(storage.get(key)).thenReturn(withType);
+    when(encryption.decrypt(cipherText)).thenReturn(value.getBytes());
+
+    Hawk.get(key);
+
+    InOrder inOrder = inOrder(storage, encoder, encryption);
+    inOrder.verify(storage).get(key);
+    inOrder.verify(encryption).decrypt(cipherText);
+    inOrder.verify(encoder).decode(eq(value.getBytes()), any(DataInfo.class));
+  }
+
+  @Test public void returnDefaultValueOnGetWithDefault() throws Exception {
+    assertThat(Hawk.get(key, "default")).isEqualTo("default");
+
+    verify(storage).get(key);
+    verifyZeroInteractions(encoder, encryption);
+  }
+
+  @Test public void returnValueOnGetWithDefault() throws Exception {
+    when(storage.get(key)).thenReturn(withType);
+    when(encryption.decrypt(cipherText)).thenReturn(value.getBytes());
+    when(encoder.decode(eq(value.getBytes()), any(DataInfo.class))).thenReturn(value);
+
+    assertThat(Hawk.get(key, "default")).isEqualTo(value);
+
+    verify(storage).get(key);
+    verify(encoder).decode(any(byte[].class), any(DataInfo.class));
+    verify(encryption).decrypt(cipherText);
+  }
+
+  @Test public void keyShouldBeValidOnGet() {
     try {
       Hawk.get(null);
-      fail();
+      fail("Key should not be null");
     } catch (Exception e) {
-      assertThat(e).hasMessage("Key cannot be null");
+      assertThat(e).hasMessage("Key should not be null");
     }
   }
 
-  @Test public void testNullValuePut() {
+  @Test public void validateBuildOnGet() {
     try {
-      Hawk.put("tag", "something");
-      assertThat(Hawk.get("tag")).isNotNull();
+      Hawk.destroy();
 
-      assertThat(Hawk.put("tag", null)).isTrue();
-      assertThat(Hawk.get("tag")).isNull();
+      Hawk.init(context);
+      Hawk.get(key);
+      fail("should throw exception");
     } catch (Exception e) {
-      fail();
     }
   }
 
-  @Test public void testCount() {
-    Hawk.clear();
-    String value = "test";
-    Hawk.put("tag", value);
-    Hawk.put("tag1", value);
-    Hawk.put("tag2", value);
-    Hawk.put("tag3", value);
-    Hawk.put("tag4", value);
+  @Test public void returnNullIfKeyIsNotInStorageOnGet() {
+    when(storage.get(key)).thenReturn(null);
 
-    assertThat(Hawk.count()).isEqualTo(5);
+    assertThat(Hawk.get(key)).isNull();
+
+    verify(storage).get(key);
+    verifyZeroInteractions(encoder, encryption);
   }
 
-  @Test public void testClear() {
-    String value = "test";
-    Hawk.put("tag", value);
-    Hawk.put("tag1", value);
-    Hawk.put("tag2", value);
+  @Test public void throwExceptionIfDataIsCorruptedOnGet() {
+    when(storage.get(key)).thenReturn("234234");
 
-    Hawk.clear();
+    try {
+      Hawk.get(key);
+      fail("Text should contain delimiter");
+    } catch (Exception e) {
+    }
 
-    assertThat(Hawk.count()).isEqualTo(0);
+    verify(storage).get(key);
+    verifyZeroInteractions(encoder, encryption);
   }
 
+  @Test public void returnNullIfEncryptionFailsOnGet() {
+    when(storage.get(key)).thenReturn(withType);
+
+    assertThat(Hawk.get(key)).isNull();
+
+    verify(storage).get(key);
+    verify(encryption).decrypt(cipherText);
+
+    verifyZeroInteractions(encoder);
+  }
+
+  @Test public void returnNullIfEncodingFailsOnGet() throws Exception {
+    when(storage.get(key)).thenReturn(withType);
+    when(encryption.decrypt(cipherText)).thenReturn(value.getBytes());
+
+    assertThat(Hawk.get(key)).isNull();
+
+    verify(storage).get(key);
+    verify(encryption).decrypt(cipherText);
+    verify(encoder).decode(eq(value.getBytes()), any(DataInfo.class));
+  }
+
+  @Test public void testGetObservable() {
+    assertThat(Hawk.getObservable(key)).isNotNull();
+  }
+
+  //endregion
+
+  //region REMOVE
   @Test public void testRemove() {
-    Hawk.clear();
-    String value = "test";
-    Hawk.put("tag", value);
-    Hawk.put("tag1", value);
-    Hawk.put("tag2", value);
+    when(storage.remove(key)).thenReturn(true);
 
-    Hawk.remove("tag");
+    assertThat(Hawk.remove(key)).isTrue();
 
-    String result = Hawk.get("tag");
-
-    assertThat(result).isNull();
-    assertThat(Hawk.count()).isEqualTo(2);
+    verify(storage).remove(key);
+    verifyZeroInteractions(encoder, encryption);
   }
 
-  @Test public void testBulkRemoval() {
-    Hawk.clear();
-    Hawk.put("tag", "test");
-    Hawk.put("tag1", 1);
-    Hawk.put("tag2", Boolean.FALSE);
-
-    Hawk.remove("tag", "tag1");
-
-    String result = Hawk.get("tag");
-
-    assertThat(result).isNull();
-    assertThat(Hawk.count()).isEqualTo(1);
+  @Test public void testRemoveMultiple() {
+    //TODO
   }
 
+  @Test public void validateBuildOnRemove() {
+    try {
+      Hawk.destroy();
+      Hawk.init(context);
+      Hawk.remove(key);
+      fail("");
+    } catch (Exception e) {
+    }
+  }
+  //endregion
+
+  //region COUNT
+  @Test public void testCount() {
+    when(storage.count()).thenReturn(10L);
+
+    assertThat(Hawk.count()).isEqualTo(10);
+
+    verify(storage).count();
+    verifyZeroInteractions(encoder, encryption);
+  }
+
+  @Test public void validateBuildOnCount() {
+    try {
+      Hawk.destroy();
+      Hawk.init(context);
+      Hawk.count();
+      fail("");
+    } catch (Exception e) {
+    }
+  }
+  //endregion
+
+  //region CLEAR
+  @Test public void testClear() {
+    when(storage.clear()).thenReturn(true);
+
+    assertThat(Hawk.clear()).isTrue();
+
+    verify(storage).clear();
+    verifyZeroInteractions(encoder, encryption);
+  }
+
+  @Test public void validateBuildOnClear() {
+    try {
+      Hawk.destroy();
+      Hawk.init(context);
+      Hawk.clear();
+      fail("");
+    } catch (Exception e) {
+    }
+  }
+  //endregion
+
+  //region CONTAINS
   @Test public void testContains() {
-    String value = "test";
-    String key = "tag";
-    Hawk.put(key, value);
+    when(storage.contains(key)).thenReturn(true);
 
     assertThat(Hawk.contains(key)).isTrue();
 
-    Hawk.remove(key);
-
-    assertThat(Hawk.contains(key)).isFalse();
+    verify(storage).contains(key);
+    verifyZeroInteractions(encoder, encryption);
   }
 
+  @Test public void validateBuildOnContains() {
+    try {
+      Hawk.destroy();
+      Hawk.init(context);
+      Hawk.contains(key);
+      fail("");
+    } catch (Exception e) {
+    }
+  }
+  //endregion
+
+  //region CHAIN
   @Test public void testChain() {
-    Hawk.chain()
-        .put("tag", 1)
-        .put("tag1", "yes")
-        .put("tag2", Boolean.FALSE)
-        .commit();
+    when(encoder.encode(value)).thenReturn(value.getBytes());
+    when(encryption.encrypt(value.getBytes())).thenReturn(cipherText);
+    when(storage.put(anyList())).thenReturn(true);
 
-    assertThat(Hawk.get("tag")).isEqualTo(1);
-    assertThat(Hawk.get("tag1")).isEqualTo("yes");
-    assertThat(Hawk.get("tag2")).isEqualTo(false);
+    Hawk.Chain chain = spy(Hawk.chain());
+
+    assertThat(chain.put(key, value).commit()).isTrue();
+
+    InOrder inOrder = inOrder(storage, encoder, encryption, chain);
+    inOrder.verify(encoder).encode(value);
+    inOrder.verify(encryption).encrypt(any(byte[].class));
+    inOrder.verify(chain).commit();
+    inOrder.verify(storage).put(anyList());
   }
-
-  @Test public void testChainWithCapacity() {
-    Hawk.chain(10)
-        .put("tag", 1)
-        .put("tag1", "yes")
-        .put("tag2", Boolean.FALSE)
-        .commit();
-
-    assertThat(Hawk.get("tag")).isEqualTo(1);
-    assertThat(Hawk.get("tag1")).isEqualTo("yes");
-    assertThat(Hawk.get("tag2")).isEqualTo(false);
-  }
-
-  @Test public void testChainWithLists() {
-    List<String> items = new ArrayList<>();
-    items.add("fst");
-    items.add("snd");
-    items.add("trd");
-
-    Hawk.chain()
-        .put("tag", 1)
-        .put("tag1", "yes")
-        .put("tag2", Boolean.FALSE)
-        .put("lst", items)
-        .commit();
-
-    assertThat(Hawk.get("tag")).isEqualTo(1);
-    assertThat(Hawk.get("tag1")).isEqualTo("yes");
-    assertThat(Hawk.get("tag2")).isEqualTo(false);
-
-    List<String> stored = Hawk.get("lst");
-
-    assertThat(stored).isNotNull();
-    assertThat(stored.isEmpty()).isFalse();
-
-    for (int i = 0, s = stored.size(); i < s; i++) {
-      assertThat(stored.get(i)).isEqualTo(items.get(i));
-    }
-  }
-
-  @Test public void testHugeData() {
-    for (int i = 0; i < 100; i++) {
-      Hawk.put("" + i, "" + i);
-    }
-    assertThat(true).isTrue();
-  }
-
-  @Test public void testHugeDataWithBulk() {
-    Hawk.Chain chain = Hawk.chain();
-    for (int i = 0; i < 10000; i++) {
-      chain.put("" + i, "" + i);
-    }
-    chain.commit();
-    assertThat(true).isTrue();
-  }
-
-  @Test public void testLogLevel() {
-    Hawk.init(context)
-        .setLogLevel(LogLevel.NONE)
-        .build();
-
-    assertThat(Hawk.getLogLevel()).isEqualTo(LogLevel.NONE);
-
-    Hawk.init(context)
-        .setLogLevel(LogLevel.FULL)
-        .build();
-
-    assertThat(Hawk.getLogLevel()).isEqualTo(LogLevel.FULL);
-  }
-
-  @Test public void resetCrypto() {
-    assertThat(Hawk.resetCrypto()).isTrue();
-  }
-
-  @Test public void getRxString() throws Exception {
-    Hawk.put(KEY, "hawk");
-
-    final CountDownLatch latch = new CountDownLatch(1);
-    Hawk.<String>getObservable(KEY)
-        .observeOn(Schedulers.io())
-        .subscribe(new Subscriber<String>() {
-          @Override public void onCompleted() {
-            latch.countDown();
-          }
-
-          @Override public void onError(Throwable e) {
-            fail();
-            latch.countDown();
-          }
-
-          @Override public void onNext(String s) {
-            assertThat(s).isEqualTo("hawk");
-          }
-        });
-
-    assertThat(latch.await(LATCH_TIMEOUT_IN_SECONDS, TimeUnit.SECONDS)).isTrue();
-  }
-
-  @Test public void getRxStringDefaultValue() throws Exception {
-    final CountDownLatch latch = new CountDownLatch(1);
-    Hawk.<String>getObservable(KEY, "test")
-        .observeOn(Schedulers.io())
-        .subscribe(new Subscriber<String>() {
-          @Override public void onCompleted() {
-            latch.countDown();
-          }
-
-          @Override public void onError(Throwable e) {
-            fail();
-            latch.countDown();
-          }
-
-          @Override public void onNext(String s) {
-            assertThat(s).isEqualTo("test");
-          }
-        });
-
-    assertThat(latch.await(LATCH_TIMEOUT_IN_SECONDS, TimeUnit.SECONDS)).isTrue();
-  }
-
-  @Test public void testBuildRx() throws InterruptedException {
-    final CountDownLatch latch = new CountDownLatch(1);
-    Hawk.init(context)
-        .buildRx()
-        .observeOn(Schedulers.io())
-        .concatMap(new Func1<Boolean, Observable<Boolean>>() {
-          @Override public Observable<Boolean> call(Boolean aBoolean) {
-            return Hawk.putObservable(KEY, "hawk");
-          }
-        })
-        .concatMap(new Func1<Boolean, Observable<String>>() {
-          @Override public Observable<String> call(Boolean aBoolean) {
-            return Hawk.getObservable(KEY);
-          }
-        })
-        .subscribe(new Observer<String>() {
-          @Override public void onCompleted() {
-            latch.countDown();
-          }
-
-          @Override public void onError(Throwable throwable) {
-            fail();
-            latch.countDown();
-          }
-
-          @Override public void onNext(String storedValue) {
-            assertThat(storedValue).isEqualTo("hawk");
-          }
-        });
-
-    assertThat(latch.await(LATCH_TIMEOUT_IN_SECONDS, TimeUnit.SECONDS)).isTrue();
-  }
-
-  @Test public void statusNotBuiltBeforeBuild() {
-    Hawk.init(context);
-    assertThat(Hawk.isBuilt()).isFalse();
-  }
-
-  @Test public void statusBuiltAfterBuild() {
-    Hawk.init(context).build();
-    assertThat(Hawk.isBuilt()).isTrue();
-  }
-
-  @Test public void testGetThrowsExceptionWhenNotBuilt() {
-    Hawk.init(context);
-    try {
-      Hawk.get(KEY);
-      fail("Did not throw an exception");
-    } catch (IllegalStateException ignored) {
-    }
-  }
-
-  @Test public void testPutThrowsExceptionWhenNotBuilt() {
-    Hawk.init(context);
-    try {
-      Hawk.put(KEY, "value");
-      fail("Did not throw an exception");
-    } catch (IllegalStateException ignored) {
-    }
-  }
-
-  @Test public void testClearThrowsExceptionWhenNotBuilt() {
-    Hawk.init(context);
-    try {
-      Hawk.clear();
-      fail("Did not throw an exception");
-    } catch (IllegalStateException ignored) {
-    }
-  }
-
-  @Test public void testContainsThrowsExceptionWhenNotBuilt() {
-    Hawk.init(context);
-    try {
-      Hawk.contains(KEY);
-      fail("Did not throw an exception");
-    } catch (IllegalStateException ignored) {
-    }
-  }
-
-  @Test public void testRemoveThrowsExceptionWhenNotBuilt() {
-    Hawk.init(context);
-    try {
-      Hawk.remove(KEY);
-      fail("Did not throw an exception");
-    } catch (IllegalStateException ignored) {
-    }
-  }
-
-  @Test public void testRemoveMultiKeysThrowsExceptionWhenNotBuilt() {
-    Hawk.init(context);
-    try {
-      Hawk.remove(KEY, KEY);
-      fail("Did not throw an exception");
-    } catch (IllegalStateException ignored) {
-    }
-  }
-
-  @Test public void testResetCryptoThrowsExceptionWhenNotBuilt() {
-    Hawk.init(context);
-    try {
-      Hawk.resetCrypto();
-      fail("Did not throw an exception");
-    } catch (IllegalStateException ignored) {
-    }
-  }
-
-  @Test public void testCountThrowsExceptionWhenNotBuilt() {
-    Hawk.init(context);
-    try {
-      Hawk.count();
-      fail("Did not throw an exception");
-    } catch (IllegalStateException ignored) {
-    }
-  }
-
-  @Test public void testPutInChainThrowsExceptionWhenNotBuilt() {
-    Hawk.init(context);
-    try {
-      Hawk.chain().put(KEY, "value");
-      fail("Did not throw an exception");
-    } catch (IllegalStateException ignored) {
-    }
-  }
+  //endregion
 }

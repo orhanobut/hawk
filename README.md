@@ -15,7 +15,7 @@ Hawk provides:
 - Save any type
 
 ###Add dependency
-https://jitpack.io/#orhanobut/hawk/1.21
+https://jitpack.io/#orhanobut/hawk/1.22
 ```groovy
 repositories {
   // ...
@@ -41,6 +41,16 @@ Hawk.init(this)
 or use buildRx to add init to your rx stream
 ```java
 .buildRx().
+```
+
+or use async option with callback
+```java
+.build(new HawkBuilder.Callback() {
+  @Override public void onSuccess() {
+  }
+  @Override public void onFail(Exception e) {
+  }
+});
 ```
 
 You can use highest secure crypto approach, init might take 36-400ms. You also need to provide password
@@ -69,27 +79,6 @@ or
 .setStorage(HawkBuilder.newSharedPrefStorage(this))
 ```
 
-You may want to use async solution for init. Add a callback to init and it will work asynchronous.
-```java
-Hawk.init(this)
-    .setEncryptionMethod(HawkBuilder.EncryptionMethod.HIGHEST)
-    .setPassword("password")
-    .setStorage(HawkBuilder.newSqliteStorage(this))
-    .setLogLevel(LogLevel.FULL)
-    .setCallback(new HawkBuilder.Callback() {
-      @Override
-      public void onSuccess() {
-
-      }
-
-      @Override
-      public void onFail(Exception e) {
-
-      }
-    })
-    .build();
-```
-
 #### Save
 put method accept any type such as list, map, primitive...
 ```java
@@ -112,8 +101,8 @@ Observable<Boolean> result = Hawk.putObservable(key, T); // Returns the result a
 example usage
 ```java
 Hawk.putObservable(KEY, new Foo())
-    .observeOn(Schedulers.io())
-    .subscribeOn(AndroidSchedulers.mainThread())
+    .subscribeOn(Schedulers.computation())
+    .observeOn(AndroidSchedulers.mainThread())
     .subscribe(new Subscriber<Boolean>() {
       @Override
       public void onCompleted() {
@@ -153,8 +142,8 @@ Observable<T> result = Hawk.getObservable(key, T);
 example usage
 ```java
 Hawk.<Foo>getObservable(KEY)
-    .observeOn(Schedulers.io())
-    .subscribeOn(AndroidSchedulers.mainThread())
+    .subscribeOn(Schedulers.computation())
+    .observeOn(AndroidSchedulers.mainThread())
     .subscribe(new Subscriber<Foo>() {
       @Override
       public void onCompleted() {
