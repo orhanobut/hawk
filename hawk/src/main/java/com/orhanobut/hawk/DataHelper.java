@@ -124,9 +124,9 @@ final class DataHelper {
     }
 
     return keyClassName + INFO_DELIMITER +
-        valueClassName + INFO_DELIMITER +
-        dataType.getType() + NEW_VERSION + DELIMITER +
-        cipherText;
+            valueClassName + INFO_DELIMITER +
+            dataType.getType() + NEW_VERSION + DELIMITER +
+            cipherText;
   }
 
 }

@@ -37,19 +37,34 @@ public class HawkBuilder {
   private Parser parser;
   private Encryption encryption;
 
-  public enum EncryptionMethod {
-    HIGHEST, MEDIUM, NO_ENCRYPTION
-  }
-
   public HawkBuilder(Context context) {
     HawkUtils.checkNull("Context", context);
 
     this.context = context.getApplicationContext();
   }
 
+  public static Storage newSharedPrefStorage(Context context) {
+    return new SharedPreferencesStorage(context, TAG);
+  }
+
+  public static Storage newSqliteStorage(Context context) {
+    return new SqliteStorage(context);
+  }
+
+  EncryptionMethod getEncryptionMethod() {
+    if (encryptionMethod == null) {
+      encryptionMethod = EncryptionMethod.MEDIUM;
+    }
+    return encryptionMethod;
+  }
+
   public HawkBuilder setEncryptionMethod(EncryptionMethod encryptionMethod) {
     this.encryptionMethod = encryptionMethod;
     return this;
+  }
+
+  String getPassword() {
+    return password;
   }
 
   public HawkBuilder setPassword(String password) {
@@ -60,47 +75,16 @@ public class HawkBuilder {
     return this;
   }
 
-  public HawkBuilder setLogLevel(LogLevel logLevel) {
-    this.logLevel = logLevel;
-    return this;
-  }
-
-  public HawkBuilder setStorage(Storage storage) {
-    this.cryptoStorage = storage;
-    return this;
-  }
-
-  public HawkBuilder setParser(Parser parser) {
-    this.parser = parser;
-    return this;
-  }
-
-  HawkBuilder setEncoder(Encoder encoder) {
-    this.encoder = encoder;
-    return this;
-  }
-
-  HawkBuilder setEncryption(Encryption encryption) {
-    this.encryption = encryption;
-    return this;
-  }
-
-  EncryptionMethod getEncryptionMethod() {
-    if (encryptionMethod == null) {
-      encryptionMethod = EncryptionMethod.MEDIUM;
-    }
-    return encryptionMethod;
-  }
-
-  String getPassword() {
-    return password;
-  }
-
   LogLevel getLogLevel() {
     if (logLevel == null) {
       logLevel = LogLevel.NONE;
     }
     return logLevel;
+  }
+
+  public HawkBuilder setLogLevel(LogLevel logLevel) {
+    this.logLevel = logLevel;
+    return this;
   }
 
   Storage getStorage() {
@@ -110,11 +94,21 @@ public class HawkBuilder {
     return cryptoStorage;
   }
 
+  public HawkBuilder setStorage(Storage storage) {
+    this.cryptoStorage = storage;
+    return this;
+  }
+
   Encoder getEncoder() {
     if (encoder == null) {
       encoder = new HawkEncoder(getParser());
     }
     return encoder;
+  }
+
+  HawkBuilder setEncoder(Encoder encoder) {
+    this.encoder = encoder;
+    return this;
   }
 
   Storage getInfoStorage() {
@@ -128,8 +122,18 @@ public class HawkBuilder {
     return parser;
   }
 
+  public HawkBuilder setParser(Parser parser) {
+    this.parser = parser;
+    return this;
+  }
+
   Encryption getEncryption() {
     return encryption;
+  }
+
+  HawkBuilder setEncryption(Encryption encryption) {
+    this.encryption = encryption;
+    return this;
   }
 
   private void validate() {
@@ -196,35 +200,31 @@ public class HawkBuilder {
 
   private void setEncryption() {
     switch (getEncryptionMethod()) {
-      case NO_ENCRYPTION:
+    case NO_ENCRYPTION:
+      encryption = new Base64Encryption();
+      break;
+    case HIGHEST:
+      encryption = new AesEncryption(getStorage(), getPassword());
+      if (!getEncryption().init()) {
+        getInfoStorage().put(KEY_NO_CRYPTO, true);
         encryption = new Base64Encryption();
-        break;
-      case HIGHEST:
-        encryption = new AesEncryption(getStorage(), getPassword());
-        if (!getEncryption().init()) {
-          getInfoStorage().put(KEY_NO_CRYPTO, true);
-          encryption = new Base64Encryption();
-        }
-        break;
-      case MEDIUM:
-        encryption = new AesEncryption(getStorage(), null);
-        if (!getEncryption().init()) {
-          //fallback to no encryption
-          getInfoStorage().put(KEY_NO_CRYPTO, true);
-          encryption = new Base64Encryption();
-        }
-        break;
-      default:
-        throw new IllegalStateException("encryption mode should be valid");
+      }
+      break;
+    case MEDIUM:
+      encryption = new AesEncryption(getStorage(), null);
+      if (!getEncryption().init()) {
+        //fallback to no encryption
+        getInfoStorage().put(KEY_NO_CRYPTO, true);
+        encryption = new Base64Encryption();
+      }
+      break;
+    default:
+      throw new IllegalStateException("encryption mode should be valid");
     }
   }
 
-  public static Storage newSharedPrefStorage(Context context) {
-    return new SharedPreferencesStorage(context, TAG);
-  }
-
-  public static Storage newSqliteStorage(Context context) {
-    return new SqliteStorage(context);
+  public enum EncryptionMethod {
+    HIGHEST, MEDIUM, NO_ENCRYPTION
   }
 
   public interface Callback {

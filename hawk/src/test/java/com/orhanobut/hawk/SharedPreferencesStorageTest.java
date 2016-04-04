@@ -155,6 +155,12 @@ public class SharedPreferencesStorageTest {
     verify(preferences).getString("key", null);
   }
 
+  @Test public void getAll() throws Exception {
+    storage.getAll();
+
+    verify(preferences).getAll();
+  }
+
   @Test public void remove() throws Exception {
     storage.remove("key");
 

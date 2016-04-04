@@ -7,6 +7,7 @@ import android.util.Base64;
  * This doesn't provide any encryption
  */
 class Base64Encryption implements Encryption {
+
   @Override public boolean init() {
     return true;
   }

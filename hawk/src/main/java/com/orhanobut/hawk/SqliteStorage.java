@@ -7,9 +7,11 @@ import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.util.Pair;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
-class SqliteStorage implements Storage {
+class SqliteStorage extends Storage {
 
   private static final String DB_NAME = "Hawk";
 
@@ -40,6 +42,10 @@ class SqliteStorage implements Storage {
     return (T) helper.get(key);
   }
 
+  @Override public synchronized Map<String, ?> getAll() {
+    return helper.getAll();
+  }
+
   @SuppressWarnings("SimplifiableIfStatement")
   @Override public boolean remove(String key) {
     if (HawkUtils.isEmpty(key)) {
@@ -52,13 +58,11 @@ class SqliteStorage implements Storage {
     return helper.delete(keys);
   }
 
-  @Override
-  public boolean clear() {
+  @Override public boolean clear() {
     return helper.clearAll();
   }
 
-  @Override
-  public long count() {
+  @Override public long count() {
     return helper.count();
   }
 
@@ -83,8 +87,8 @@ class SqliteStorage implements Storage {
 
     @Override public void onCreate(SQLiteDatabase db) {
       db.execSQL("CREATE TABLE " + TABLE_NAME +
-          " ( " + COL_KEY + " text primary key not null, " +
-          COL_VALUE + " text null);");
+              " ( " + COL_KEY + " text primary key not null, " +
+              COL_VALUE + " text null);");
     }
 
     @Override public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
@@ -93,8 +97,8 @@ class SqliteStorage implements Storage {
     public synchronized boolean put(String key, String value) {
       SQLiteDatabase db = this.getWritableDatabase();
       db.execSQL("INSERT OR REPLACE INTO " + TABLE_NAME +
-          " (" + COL_KEY + ", " + COL_VALUE + ") " +
-          " VALUES('" + key + "', '" + value + "')");
+              " (" + COL_KEY + ", " + COL_VALUE + ") " +
+              " VALUES('" + key + "', '" + value + "')");
       db.close();
       return true;
     }
@@ -106,8 +110,8 @@ class SqliteStorage implements Storage {
         db.beginTransaction();
         for (Pair<String, ?> pair : list) {
           db.execSQL("INSERT OR REPLACE INTO " + TABLE_NAME +
-              " (" + COL_KEY + ", " + COL_VALUE + ") " +
-              " VALUES('" + pair.first + "', '" + String.valueOf(pair.second) + "')");
+                  " (" + COL_KEY + ", " + COL_VALUE + ") " +
+                  " VALUES('" + pair.first + "', '" + String.valueOf(pair.second) + "')");
         }
         db.setTransactionSuccessful();
       } catch (Exception e) {
@@ -155,7 +159,7 @@ class SqliteStorage implements Storage {
     public synchronized String get(String key) {
       SQLiteDatabase db = this.getReadableDatabase();
       Cursor cursor = db.rawQuery("SELECT * FROM " + TABLE_NAME +
-          " WHERE " + COL_KEY + " = '" + key + "'", null);
+              " WHERE " + COL_KEY + " = '" + key + "'", null);
       if (cursor == null) {
         return null;
       }
@@ -167,6 +171,28 @@ class SqliteStorage implements Storage {
       cursor.close();
       db.close();
       return value;
+    }
+
+    public synchronized Map<String, String> getAll() {
+      SQLiteDatabase db = this.getReadableDatabase();
+      Cursor cursor = db.rawQuery("SELECT * FROM " + TABLE_NAME, null);
+      if (cursor == null) {
+        return null;
+      }
+      cursor.moveToFirst();
+      if (cursor.getCount() == 0) {
+        return null;
+      }
+
+      final Map<String, String> results = new HashMap();
+
+      do {
+        results.put(cursor.getString(0), cursor.getString(1));
+      } while (cursor.moveToNext());
+
+      cursor.close();
+      db.close();
+      return results;
     }
 
     public synchronized boolean clearAll() {

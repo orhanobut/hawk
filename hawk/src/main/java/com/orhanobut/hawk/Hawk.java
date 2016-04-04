@@ -310,6 +310,25 @@ public final class Hawk {
     HAWK = null;
   }
 
+  public static Map<String, ?> getAll() {
+    if (HAWK.storage != null) {
+      return HAWK.storage.getAll();
+    }
+    return null;
+  }
+
+  public static void registerOnDataChangedListener(OnDataChangedListener listener) {
+    if (listener != null) {
+      HAWK.storage.registerOnDataChangedListener(listener);
+    }
+  }
+
+  public static void unregisterOnDataChangedListener(OnDataChangedListener listener) {
+    if (listener != null) {
+      HAWK.storage.unregisterOnDataChangedListener(listener);
+    }
+  }
+
   public static class Chain {
 
     private final List<Pair<String, ?>> items;
@@ -347,29 +366,6 @@ public final class Hawk {
      */
     public boolean commit() {
       return HAWK.storage.put(items);
-    }
-  }
-
-  public static Map<String, ?> getAllSharedPrefs() {
-    if (HAWK.storage != null && HAWK.storage instanceof SharedPreferencesStorage) {
-      return (((SharedPreferencesStorage) HAWK.storage).getAll());
-    }
-    return null;
-  }
-
-  public static void registerHawkPrefsChangedListener(HawkPreferenceChangedListener listener) {
-    if (listener != null) {
-      if (HAWK.storage instanceof SharedPreferencesStorage) {
-        ((SharedPreferencesStorage) HAWK.storage).registerHawkPrefsChangedListener(listener);
-      }
-    }
-  }
-
-  public static void unregisterHawkPrefsChangedListener(HawkPreferenceChangedListener listener) {
-    if (listener != null) {
-      if (HAWK.storage instanceof SharedPreferencesStorage) {
-        ((SharedPreferencesStorage) HAWK.storage).unregisterHawkPrefsChangedListener(listener);
-      }
     }
   }
 
