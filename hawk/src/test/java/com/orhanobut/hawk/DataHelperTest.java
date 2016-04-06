@@ -27,7 +27,7 @@ public class DataHelperTest {
   }
 
   @Test public void testNewVersionCheck() {
-    DataInfo info = DataHelper.getDataInfo("java.lang.String##00V@asdfjasdf");
+    DataInfo info = DataHelper.getDataInfo("java.lang.String##0V@asdfjasdf");
 
     assertThat(info).isNotNull();
   }
@@ -125,14 +125,14 @@ public class DataHelperTest {
 
   @Test public void getDataInfoAsObject() {
     String clazz = "java.lang.String";
-    String info = "00V";
+    String info = "0V";
     String cipher = "cipher";
     DataInfo dataInfo = DataHelper.getDataInfo(clazz + "#" + clazz + "#" + info + "@" + cipher);
 
     assertThat(dataInfo).isNotNull();
     assertThat(dataInfo.keyClazz.getName()).isEqualTo(clazz);
     assertThat(dataInfo.valueClazz.getName()).isEqualTo(clazz);
-    assertThat(dataInfo.dataType).isEqualTo(DataType.OBJECT);
+    assertThat(dataInfo.dataType).isEqualTo(DataHelper.DATATYPE_OBJECT);
   }
 
   @Test public void getDataInfoAsList() {
@@ -144,7 +144,7 @@ public class DataHelperTest {
     assertThat(dataInfo).isNotNull();
     assertThat(dataInfo.keyClazz.getName()).isEqualTo(clazz);
     assertThat(dataInfo.valueClazz).isNull();
-    assertThat(dataInfo.dataType).isEqualTo(DataType.LIST);
+    assertThat(dataInfo.dataType).isEqualTo(DataHelper.DATATYPE_LIST);
   }
 
   @Test public void getDataInfoAsMap() {
@@ -156,7 +156,7 @@ public class DataHelperTest {
     assertThat(dataInfo).isNotNull();
     assertThat(dataInfo.keyClazz.getName()).isEqualTo(clazz);
     assertThat(dataInfo.valueClazz.getName()).isEqualTo(clazz);
-    assertThat(dataInfo.dataType).isEqualTo(DataType.MAP);
+    assertThat(dataInfo.dataType).isEqualTo(DataHelper.DATATYPE_MAP);
   }
 
   @Test public void getDataInfoAsSet() {
@@ -168,7 +168,7 @@ public class DataHelperTest {
     assertThat(dataInfo).isNotNull();
     assertThat(dataInfo.keyClazz.getName()).isEqualTo(clazz);
     assertThat(dataInfo.valueClazz).isNull();
-    assertThat(dataInfo.dataType).isEqualTo(DataType.SET);
+    assertThat(dataInfo.dataType).isEqualTo(DataHelper.DATATYPE_SET);
   }
 
   @Test public void getDataInfoAsInvalidValues() {
@@ -190,33 +190,33 @@ public class DataHelperTest {
       DataHelper.getDataInfo("asdfasdf");
       fail();
     } catch (Exception e) {
-      assertThat(e).hasMessage("Text should contain delimiter");
+      assertThat(e).hasMessage("storedText is not valid");
     }
 
     try {
       DataHelper.getDataInfo("@234234");
       fail();
     } catch (Exception e) {
-      assertThat(e).hasMessage("Invalid stored text");
+      assertThat(e).hasMessage("storedText is not valid");
     }
 
     try {
       DataHelper.getDataInfo("2342423@");
       fail();
     } catch (Exception e) {
-      assertThat(e).hasMessage("Invalid stored text");
+      assertThat(e).hasMessage("storedText is not valid");
     }
   }
 
-  @Test public void getNewDataInfoWithInvalidValues() {
+  @Test public void getDataInfoWithInvalidValues() {
     try {
-      DataHelper.getNewDataInfo(null, null);
+      DataHelper.getDataInfo(null);
       fail();
     } catch (Exception e) {
       assertTrue(true);
     }
     try {
-      DataHelper.getNewDataInfo("", null);
+      DataHelper.getDataInfo("");
       fail();
     } catch (Exception e) {
       assertTrue(true);

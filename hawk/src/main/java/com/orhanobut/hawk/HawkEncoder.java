@@ -51,13 +51,13 @@ final class HawkEncoder implements Encoder {
     Class<?> valueType = info.valueClazz;
 
     switch (info.dataType) {
-      case OBJECT:
+      case DataHelper.DATATYPE_OBJECT:
         return toObject(json, keyType);
-      case LIST:
+      case DataHelper.DATATYPE_LIST:
         return toList(json, keyType);
-      case MAP:
+      case DataHelper.DATATYPE_MAP:
         return toMap(json, keyType, valueType);
-      case SET:
+      case DataHelper.DATATYPE_SET:
         return toSet(json, keyType);
       default:
         return null;
@@ -74,9 +74,9 @@ final class HawkEncoder implements Encoder {
       return (T) new ArrayList<>();
     }
     List<T> list = parser.fromJson(
-        json,
-        new TypeToken<List<T>>() {
-        }.getType()
+      json,
+      new TypeToken<List<T>>() {
+      }.getType()
     );
 
     int size = list.size();

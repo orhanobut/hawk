@@ -102,7 +102,7 @@ public class HawkEncoderTest {
 
   @Test public void decodeObject() throws Exception {
     String clazz = "java.lang.String";
-    String info = "00V";
+    String info = "0V";
     String cipher = "cipher";
     DataInfo dataInfo = DataHelper.getDataInfo(clazz + "##" + info + "@" + cipher);
     String actual = encoder.decode(cipher.getBytes(), dataInfo);
