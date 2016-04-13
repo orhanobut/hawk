@@ -12,7 +12,7 @@ import rx.Subscriber;
 
 public final class Hawk {
 
-  static Hawk HAWK;
+  static volatile Hawk HAWK;
 
   private final Storage storage;
   private final Encoder encoder;
