@@ -96,10 +96,16 @@ class SqliteStorage extends Storage {
 
     public synchronized boolean put(String key, String value) {
       SQLiteDatabase db = this.getWritableDatabase();
-      db.execSQL("INSERT OR REPLACE INTO " + TABLE_NAME +
-              " (" + COL_KEY + ", " + COL_VALUE + ") " +
-              " VALUES('" + key + "', '" + value + "')");
-      db.close();
+
+      try {
+        db.execSQL("INSERT OR REPLACE INTO " + TABLE_NAME +
+                " (" + COL_KEY + ", " + COL_VALUE + ") " +
+                " VALUES('" + key + "', '" + value + "')");
+      } catch (Exception ignored) {
+        return false;
+      } finally {
+        db.close();
+      }
       return true;
     }
 
@@ -126,9 +132,13 @@ class SqliteStorage extends Storage {
 
     public synchronized boolean delete(String key) {
       SQLiteDatabase db = this.getWritableDatabase();
-      int count = db.delete(TABLE_NAME, COL_KEY + "='" + key + "'", null);
-      db.close();
-      return count != -1;
+      int count = 0;
+      try {
+        count = db.delete(TABLE_NAME, COL_KEY + "='" + key + "'", null);
+      } finally {
+        db.close();
+      }
+      return count != 0;
     }
 
     public synchronized boolean delete(String... keys) {
@@ -158,18 +168,25 @@ class SqliteStorage extends Storage {
 
     public synchronized String get(String key) {
       SQLiteDatabase db = this.getReadableDatabase();
-      Cursor cursor = db.rawQuery("SELECT * FROM " + TABLE_NAME +
-              " WHERE " + COL_KEY + " = '" + key + "'", null);
-      if (cursor == null) {
-        return null;
+
+      Cursor cursor = null;
+      String value = null;
+      try {
+        cursor = db.rawQuery("SELECT * FROM " + TABLE_NAME +
+                " WHERE " + COL_KEY + " = '" + key + "'", null);
+        if (cursor == null) {
+          return null;
+        }
+        if (!cursor.moveToFirst()) {
+          return null;
+        }
+        value = cursor.getString(1);
+      } finally {
+        if (cursor != null) {
+          cursor.close();
+        }
+        db.close();
       }
-      cursor.moveToFirst();
-      if (cursor.getCount() == 0) {
-        return null;
-      }
-      String value = cursor.getString(1);
-      cursor.close();
-      db.close();
       return value;
     }
 
@@ -197,15 +214,24 @@ class SqliteStorage extends Storage {
 
     public synchronized boolean clearAll() {
       SQLiteDatabase db = this.getWritableDatabase();
-      db.execSQL("DELETE FROM " + TABLE_NAME);
-      db.close();
+      try {
+        db.execSQL("DELETE FROM " + TABLE_NAME);
+      } catch (Exception ignored) {
+        return false;
+      } finally {
+        db.close();
+      }
       return true;
     }
 
     public synchronized long count() {
       SQLiteDatabase db = this.getWritableDatabase();
-      long count = DatabaseUtils.queryNumEntries(db, TABLE_NAME);
-      db.close();
+      long count = 0;
+      try {
+        count = DatabaseUtils.queryNumEntries(db, TABLE_NAME);
+      } finally {
+        db.close();
+      }
       return count;
     }
   }
