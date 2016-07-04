@@ -2,12 +2,15 @@ package com.orhanobut.hawk;
 
 import android.util.Log;
 
-@SuppressWarnings("unused")
-final class Logger {
+@SuppressWarnings("unused") final class Logger {
 
   private static final int CHUNK_SIZE = 4000;
 
   private static final String TAG = "Hawk";
+
+  private Logger() {
+    // no instance
+  }
 
   static void d(String message) {
     log(Log.DEBUG, message, null);
@@ -37,10 +40,6 @@ final class Logger {
     log(Log.ASSERT, message, null);
   }
 
-  private Logger() {
-    // no instance
-  }
-
   private static void log(int logType, String message, Throwable throwable) {
     LogLevel logLevel = Hawk.getLogLevel();
     if (logLevel == LogLevel.NONE) {
@@ -64,26 +63,26 @@ final class Logger {
 
   private static void logChunk(int logType, String chunk, Throwable throwable) {
     switch (logType) {
-      case Log.ERROR:
-        Log.e(TAG, chunk, throwable);
-        break;
-      case Log.INFO:
-        Log.i(TAG, chunk);
-        break;
-      case Log.VERBOSE:
-        Log.v(TAG, chunk);
-        break;
-      case Log.WARN:
-        Log.w(TAG, chunk);
-        break;
-      case Log.ASSERT:
-        Log.wtf(TAG, chunk);
-        break;
-      case Log.DEBUG:
-        // Fall through, log debug by default
-      default:
-        Log.d(TAG, chunk);
-        break;
+    case Log.ERROR:
+      Log.e(TAG, chunk, throwable);
+      break;
+    case Log.INFO:
+      Log.i(TAG, chunk);
+      break;
+    case Log.VERBOSE:
+      Log.v(TAG, chunk);
+      break;
+    case Log.WARN:
+      Log.w(TAG, chunk);
+      break;
+    case Log.ASSERT:
+      Log.wtf(TAG, chunk);
+      break;
+    case Log.DEBUG:
+      // Fall through, log debug by default
+    default:
+      Log.d(TAG, chunk);
+      break;
     }
   }
 }

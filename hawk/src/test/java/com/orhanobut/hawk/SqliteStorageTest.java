@@ -57,6 +57,12 @@ public class SqliteStorageTest {
     verify(helper).get("key");
   }
 
+  @Test public void getAll() throws Exception {
+    storage.getAll();
+
+    verify(helper).getAll();
+  }
+
   @Test public void remove() throws Exception {
     storage.remove("key");
 

@@ -37,19 +37,34 @@ public class HawkBuilder {
   private Parser parser;
   private Encryption encryption;
 
-  public enum EncryptionMethod {
-    HIGHEST, MEDIUM, NO_ENCRYPTION
-  }
-
   public HawkBuilder(Context context) {
     HawkUtils.checkNull("Context", context);
 
     this.context = context.getApplicationContext();
   }
 
+  public static Storage newSharedPrefStorage(Context context) {
+    return new SharedPreferencesStorage(context, TAG);
+  }
+
+  public static Storage newSqliteStorage(Context context) {
+    return new SqliteStorage(context);
+  }
+
+  EncryptionMethod getEncryptionMethod() {
+    if (encryptionMethod == null) {
+      encryptionMethod = EncryptionMethod.MEDIUM;
+    }
+    return encryptionMethod;
+  }
+
   public HawkBuilder setEncryptionMethod(EncryptionMethod encryptionMethod) {
     this.encryptionMethod = encryptionMethod;
     return this;
+  }
+
+  String getPassword() {
+    return password;
   }
 
   public HawkBuilder setPassword(String password) {
@@ -60,47 +75,16 @@ public class HawkBuilder {
     return this;
   }
 
-  public HawkBuilder setLogLevel(LogLevel logLevel) {
-    this.logLevel = logLevel;
-    return this;
-  }
-
-  public HawkBuilder setStorage(Storage storage) {
-    this.cryptoStorage = storage;
-    return this;
-  }
-
-  public HawkBuilder setParser(Parser parser) {
-    this.parser = parser;
-    return this;
-  }
-
-  HawkBuilder setEncoder(Encoder encoder) {
-    this.encoder = encoder;
-    return this;
-  }
-
-  HawkBuilder setEncryption(Encryption encryption) {
-    this.encryption = encryption;
-    return this;
-  }
-
-  EncryptionMethod getEncryptionMethod() {
-    if (encryptionMethod == null) {
-      encryptionMethod = EncryptionMethod.MEDIUM;
-    }
-    return encryptionMethod;
-  }
-
-  String getPassword() {
-    return password;
-  }
-
   LogLevel getLogLevel() {
     if (logLevel == null) {
       logLevel = LogLevel.NONE;
     }
     return logLevel;
+  }
+
+  public HawkBuilder setLogLevel(LogLevel logLevel) {
+    this.logLevel = logLevel;
+    return this;
   }
 
   Storage getStorage() {
@@ -110,11 +94,21 @@ public class HawkBuilder {
     return cryptoStorage;
   }
 
+  public HawkBuilder setStorage(Storage storage) {
+    this.cryptoStorage = storage;
+    return this;
+  }
+
   Encoder getEncoder() {
     if (encoder == null) {
       encoder = new HawkEncoder(getParser());
     }
     return encoder;
+  }
+
+  HawkBuilder setEncoder(Encoder encoder) {
+    this.encoder = encoder;
+    return this;
   }
 
   Storage getInfoStorage() {
@@ -128,15 +122,25 @@ public class HawkBuilder {
     return parser;
   }
 
+  public HawkBuilder setParser(Parser parser) {
+    this.parser = parser;
+    return this;
+  }
+
   Encryption getEncryption() {
     return encryption;
+  }
+
+  HawkBuilder setEncryption(Encryption encryption) {
+    this.encryption = encryption;
+    return this;
   }
 
   private void validate() {
     if (getEncryptionMethod() == EncryptionMethod.HIGHEST) {
       if (TextUtils.isEmpty(getPassword())) {
         throw new IllegalStateException("Password cannot be null " +
-            "if encryption mode is highest");
+                "if encryption mode is highest");
       }
     }
   }
@@ -148,7 +152,8 @@ public class HawkBuilder {
   public void build(final Callback callback) {
     ExecutorService executor = Executors.newSingleThreadExecutor();
     executor.execute(new Runnable() {
-      @Override public void run() {
+      @Override
+      public void run() {
         try {
           startBuild();
           callback.onSuccess();
@@ -169,9 +174,11 @@ public class HawkBuilder {
   public Observable<Boolean> buildRx() {
     HawkUtils.checkRx();
     return Observable.defer(new Func0<Observable<Boolean>>() {
-      @Override public Observable<Boolean> call() {
+      @Override
+      public Observable<Boolean> call() {
         return Observable.create(new Observable.OnSubscribe<Boolean>() {
-          @Override public void call(Subscriber<? super Boolean> subscriber) {
+          @Override
+          public void call(Subscriber<? super Boolean> subscriber) {
             try {
               startBuild();
               subscriber.onNext(true);
@@ -193,35 +200,31 @@ public class HawkBuilder {
 
   private void setEncryption() {
     switch (getEncryptionMethod()) {
-      case NO_ENCRYPTION:
+    case NO_ENCRYPTION:
+      encryption = new Base64Encryption();
+      break;
+    case HIGHEST:
+      encryption = new AesEncryption(getStorage(), getPassword());
+      if (!getEncryption().init()) {
+        getInfoStorage().put(KEY_NO_CRYPTO, true);
         encryption = new Base64Encryption();
-        break;
-      case HIGHEST:
-        encryption = new AesEncryption(getStorage(), getPassword());
-        if (!getEncryption().init()) {
-          getInfoStorage().put(KEY_NO_CRYPTO, true);
-          encryption = new Base64Encryption();
-        }
-        break;
-      case MEDIUM:
-        encryption = new AesEncryption(getStorage(), null);
-        if (!getEncryption().init()) {
-          //fallback to no encryption
-          getInfoStorage().put(KEY_NO_CRYPTO, true);
-          encryption = new Base64Encryption();
-        }
-        break;
-      default:
-        throw new IllegalStateException("encryption mode should be valid");
+      }
+      break;
+    case MEDIUM:
+      encryption = new AesEncryption(getStorage(), null);
+      if (!getEncryption().init()) {
+        //fallback to no encryption
+        getInfoStorage().put(KEY_NO_CRYPTO, true);
+        encryption = new Base64Encryption();
+      }
+      break;
+    default:
+      throw new IllegalStateException("encryption mode should be valid");
     }
   }
 
-  public static Storage newSharedPrefStorage(Context context) {
-    return new SharedPreferencesStorage(context, TAG);
-  }
-
-  public static Storage newSqliteStorage(Context context) {
-    return new SqliteStorage(context);
+  public enum EncryptionMethod {
+    HIGHEST, MEDIUM, NO_ENCRYPTION
   }
 
   public interface Callback {

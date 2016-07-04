@@ -13,6 +13,7 @@ import org.robolectric.annotation.Config;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 import static junit.framework.Assert.fail;
 import static org.assertj.core.api.Assertions.assertThat;
@@ -98,6 +99,24 @@ public class SqliteStorageIntegrationTest {
     } catch (Exception e) {
       assertThat(e).hasMessage("key should not be null or empty");
     }
+  }
+
+  @Test public void getAllValues() {
+    storage.put("a1", "b1");
+    storage.put("a2", "b2");
+    storage.put("a3", "b3");
+
+    Map<String, ?> result = storage.getAll();
+
+    assertThat(result).hasSize(3);
+
+    assertThat(result).containsKey("a1");
+    assertThat(result).containsKey("a2");
+    assertThat(result).containsKey("a3");
+
+    assertThat(result.get("a1")).isEqualToComparingFieldByField("b1");
+    assertThat(result.get("a2")).isEqualToComparingFieldByField("b2");
+    assertThat(result.get("a3")).isEqualToComparingFieldByField("b3");
   }
 
   @Test public void contains() {
