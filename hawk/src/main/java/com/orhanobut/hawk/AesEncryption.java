@@ -4,7 +4,6 @@ import android.text.TextUtils;
 
 import java.security.GeneralSecurityException;
 
-
 /**
  * Provides AES algorithm
  */

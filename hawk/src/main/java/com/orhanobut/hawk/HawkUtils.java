@@ -2,6 +2,10 @@ package com.orhanobut.hawk;
 
 final class HawkUtils {
 
+  private HawkUtils() {
+    //no instance
+  }
+
   static boolean hasRxJavaOnClasspath() {
     try {
       Class.forName("rx.Observable");
@@ -12,21 +16,17 @@ final class HawkUtils {
     return false;
   }
 
-  private HawkUtils() {
-    //no instance
-  }
-
   public static void checkRx() {
     if (!hasRxJavaOnClasspath()) {
       throw new NoClassDefFoundError("RxJava is not on classpath, " +
-          "make sure that you have it in your dependencies");
+              "make sure that you have it in your dependencies");
     }
   }
 
   static void validateBuild() {
     if (!Hawk.isBuilt()) {
       throw new IllegalStateException("Hawk is not built. " +
-          "Please call build() and wait the initialisation finishes.");
+              "Please call build() and wait the initialisation finishes.");
     }
   }
 

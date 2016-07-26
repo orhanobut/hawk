@@ -31,5 +31,4 @@ interface Encryption {
    */
   boolean reset();
 
-
 }

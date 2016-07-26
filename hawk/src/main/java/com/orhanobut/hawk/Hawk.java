@@ -6,6 +6,7 @@ import android.util.Pair;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 import rx.Observable;
 import rx.Subscriber;
@@ -222,6 +223,7 @@ public final class Hawk {
    */
   public static boolean remove(String key) {
     HawkUtils.validateBuild();
+
     return HAWK.storage.remove(key);
   }
 
@@ -233,6 +235,7 @@ public final class Hawk {
    */
   public static boolean remove(String... keys) {
     HawkUtils.validateBuild();
+
     return HAWK.storage.remove(keys);
   }
 
@@ -307,6 +310,25 @@ public final class Hawk {
     HAWK = null;
   }
 
+  public static Map<String, ?> getAll() {
+    if (HAWK.storage != null) {
+      return HAWK.storage.getAll();
+    }
+    return null;
+  }
+
+  public static void registerOnDataChangedListener(OnDataChangedListener listener) {
+    if (listener != null) {
+      HAWK.storage.registerOnDataChangedListener(listener);
+    }
+  }
+
+  public static void unregisterOnDataChangedListener(OnDataChangedListener listener) {
+    if (listener != null) {
+      HAWK.storage.unregisterOnDataChangedListener(listener);
+    }
+  }
+
   public static class Chain {
 
     private final List<Pair<String, ?>> items;
@@ -345,8 +367,6 @@ public final class Hawk {
     public boolean commit() {
       return HAWK.storage.put(items);
     }
-
   }
-
 
 }

@@ -49,16 +49,16 @@ final class HawkEncoder implements Encoder {
     Class<?> valueType = info.valueClazz;
 
     switch (info.dataType) {
-      case OBJECT:
-        return toObject(json, keyType);
-      case LIST:
-        return toList(json, keyType);
-      case MAP:
-        return toMap(json, keyType, valueType);
-      case SET:
-        return toSet(json, keyType);
-      default:
-        return null;
+    case OBJECT:
+      return toObject(json, keyType);
+    case LIST:
+      return toList(json, keyType);
+    case MAP:
+      return toMap(json, keyType, valueType);
+    case SET:
+      return toSet(json, keyType);
+    default:
+      return null;
     }
   }
 
@@ -66,8 +66,7 @@ final class HawkEncoder implements Encoder {
     return parser.fromJson(json, type);
   }
 
-  @SuppressWarnings("unchecked")
-  private <T> T toList(String json, Class<?> type) throws Exception {
+  @SuppressWarnings("unchecked") private <T> T toList(String json, Class<?> type) throws Exception {
     if (type == null) {
       return (T) new ArrayList<>();
     }
@@ -80,8 +79,7 @@ final class HawkEncoder implements Encoder {
     return (T) list;
   }
 
-  @SuppressWarnings("unchecked")
-  private <T> T toSet(String json, Class<?> type) throws Exception {
+  @SuppressWarnings("unchecked") private <T> T toSet(String json, Class<?> type) throws Exception {
     Set<T> resultSet = new HashSet<>();
     if (type == null) {
       return (T) resultSet;
@@ -96,8 +94,7 @@ final class HawkEncoder implements Encoder {
     return (T) resultSet;
   }
 
-  @SuppressWarnings("unchecked")
-  private <K, V, T> T toMap(String json, Class<?> keyType, Class<?> valueType) throws Exception {
+  @SuppressWarnings("unchecked") private <K, V, T> T toMap(String json, Class<?> keyType, Class<?> valueType) throws Exception {
     Map<K, V> resultMap = new HashMap<>();
     if (keyType == null || valueType == null) {
       return (T) resultMap;
