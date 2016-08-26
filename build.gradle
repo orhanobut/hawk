@@ -46,6 +46,7 @@ ext {
 
 ext.deps = [
     gson       : 'com.google.code.gson:gson:2.4',
+    conceal    : 'com.facebook.conceal:conceal:1.1.2@aar',
 
     // Test dependencies
     junit      : 'junit:junit:4.12',

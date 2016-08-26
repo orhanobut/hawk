@@ -6,6 +6,7 @@ android {
 
   defaultConfig {
     minSdkVersion rootProject.ext.minSdkVersion
+    testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
   }
 
   lintOptions {
@@ -16,11 +17,19 @@ android {
 
 dependencies {
   compile deps.gson
+  compile deps.conceal
 
   testCompile deps.junit
   testCompile deps.truth
   testCompile deps.robolectric
   testCompile deps.mockito
+
+  androidTestCompile deps.junit
+  androidTestCompile deps.truth
+
+  androidTestCompile 'com.android.support.test:runner:0.5'
+  androidTestCompile 'com.android.support.test:rules:0.5'
+
 }
 
 apply from: rootProject.file('gradle/maven_push.gradle')
