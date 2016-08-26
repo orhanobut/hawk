@@ -191,10 +191,6 @@ public class HawkBuilder {
     return new SharedPreferencesStorage(context, TAG);
   }
 
-  public static Storage newSqliteStorage(Context context) {
-    return new SqliteStorage(context);
-  }
-
   public interface Callback {
 
     void onSuccess();

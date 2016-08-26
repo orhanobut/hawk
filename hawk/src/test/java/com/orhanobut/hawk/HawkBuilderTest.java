@@ -139,13 +139,6 @@ public class HawkBuilderTest {
     assertThat(builder.getStorage()).isInstanceOf(SharedPreferencesStorage.class);
   }
 
-  @Test public void testCustomStorage() {
-    builder.setStorage(HawkBuilder.newSqliteStorage(context))
-        .build();
-
-    assertThat(builder.getStorage()).isInstanceOf(SqliteStorage.class);
-  }
-
   @Test public void testDefaultParser() {
     builder.build();
 
