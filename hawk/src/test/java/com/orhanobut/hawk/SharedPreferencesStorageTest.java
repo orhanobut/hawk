@@ -1,7 +1,6 @@
 package com.orhanobut.hawk;
 
 import android.content.SharedPreferences;
-import android.util.Pair;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -9,9 +8,7 @@ import org.junit.runner.RunWith;
 import org.robolectric.RobolectricTestRunner;
 import org.robolectric.annotation.Config;
 
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -136,19 +133,6 @@ public class SharedPreferencesStorageTest {
     }
   }
 
-  @Test public void putList() throws Exception {
-    List<Pair<String, ?>> list = new ArrayList<>();
-    list.add(new Pair<String, Object>("f1", "s1"));
-    list.add(new Pair<String, Object>("f2", "s2"));
-
-    storage.put(list);
-
-    verify(preferences).edit();
-    verify(editor).putString("f1", "s1");
-    verify(editor).putString("f2", "s2");
-    verify(editor).commit();
-  }
-
   @Test public void get() throws Exception {
     storage.get("key");
 
@@ -160,15 +144,6 @@ public class SharedPreferencesStorageTest {
 
     verify(preferences).edit();
     verify(editor).remove("key");
-    verify(editor).commit();
-  }
-
-  @Test public void removeMultiple() throws Exception {
-    storage.delete("k1", "k2");
-
-    verify(preferences).edit();
-    verify(editor).remove("k1");
-    verify(editor).remove("k2");
     verify(editor).commit();
   }
 

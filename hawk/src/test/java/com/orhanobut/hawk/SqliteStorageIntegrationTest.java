@@ -1,7 +1,6 @@
 package com.orhanobut.hawk;
 
 import android.content.Context;
-import android.util.Pair;
 
 import org.junit.After;
 import org.junit.Before;
@@ -10,9 +9,6 @@ import org.junit.runner.RunWith;
 import org.robolectric.RobolectricTestRunner;
 import org.robolectric.RuntimeEnvironment;
 import org.robolectric.annotation.Config;
-
-import java.util.ArrayList;
-import java.util.List;
 
 import static com.google.common.truth.Truth.assertThat;
 import static junit.framework.Assert.fail;
@@ -73,18 +69,6 @@ public class SqliteStorageIntegrationTest {
     }
   }
 
-  @Test public void putBulk() {
-    List<Pair<String, ?>> list = new ArrayList<>();
-    Pair<String, String> pair = new Pair<>("a1", "b1");
-    Pair<String, String> pair2 = new Pair<>("a2", "b2");
-    list.add(pair);
-    list.add(pair2);
-
-    storage.put(list);
-    assertThat(storage.get("a1")).isEqualTo("b1");
-    assertThat(storage.get("a2")).isEqualTo("b2");
-  }
-
   @Test public void getInvalidValues() {
     try {
       storage.get(null);
@@ -117,19 +101,7 @@ public class SqliteStorageIntegrationTest {
   }
 
   @Test public void removeInvalid() {
-    assertThat(storage.delete(null, null)).isTrue();
     assertThat(storage.delete("")).isTrue();
-  }
-
-  @Test public void bulkRemove() {
-    storage.put("a1", "string");
-    storage.put("a2", "string");
-    assertThat(storage.get("a1")).isNotNull();
-    assertThat(storage.get("a2")).isNotNull();
-
-    storage.delete("a1", "a2");
-    assertThat(storage.get("a1")).isNull();
-    assertThat(storage.get("a2")).isNull();
   }
 
   @Test public void count() {

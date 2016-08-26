@@ -30,10 +30,6 @@ class SqliteStorage implements Storage {
     return helper.put(key, String.valueOf(value));
   }
 
-  @Override public boolean put(List<Pair<String, ?>> items) {
-    return helper.put(items);
-  }
-
   @SuppressWarnings("unchecked")
   @Override public <T> T get(String key) {
     HawkUtils.checkNullOrEmpty("key", key);
@@ -46,10 +42,6 @@ class SqliteStorage implements Storage {
       return true;
     }
     return helper.delete(key);
-  }
-
-  @Override public boolean delete(String... keys) {
-    return helper.delete(keys);
   }
 
   @Override
@@ -94,8 +86,8 @@ class SqliteStorage implements Storage {
       SQLiteDatabase db = this.getWritableDatabase();
       try {
         db.execSQL("INSERT OR REPLACE INTO " + TABLE_NAME +
-                " (" + COL_KEY + ", " + COL_VALUE + ") " +
-                " VALUES('" + key + "', '" + value + "')");
+            " (" + COL_KEY + ", " + COL_VALUE + ") " +
+            " VALUES('" + key + "', '" + value + "')");
       } catch (Exception ignored) {
         return false;
       } finally {
@@ -167,7 +159,7 @@ class SqliteStorage implements Storage {
       String value = null;
       try {
         cursor = db.rawQuery("SELECT * FROM " + TABLE_NAME +
-                " WHERE " + COL_KEY + " = '" + key + "'", null);
+            " WHERE " + COL_KEY + " = '" + key + "'", null);
         if (cursor == null) {
           return null;
         }

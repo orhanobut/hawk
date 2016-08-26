@@ -1,13 +1,8 @@
 package com.orhanobut.hawk;
 
-import android.util.Pair;
-
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mock;
-
-import java.util.ArrayList;
-import java.util.List;
 
 import static com.google.common.truth.Truth.assertThat;
 import static junit.framework.Assert.fail;
@@ -41,16 +36,6 @@ public class SqliteStorageTest {
     }
   }
 
-  @Test public void putList() throws Exception {
-    List<Pair<String, ?>> list = new ArrayList<>();
-    list.add(new Pair<String, Object>("f1", "s1"));
-    list.add(new Pair<String, Object>("f2", "s2"));
-
-    storage.put(list);
-
-    verify(helper).put(list);
-  }
-
   @Test public void get() throws Exception {
     storage.get("key");
 
@@ -61,12 +46,6 @@ public class SqliteStorageTest {
     storage.delete("key");
 
     verify(helper).delete("key");
-  }
-
-  @Test public void removeMultiple() throws Exception {
-    storage.delete("k1", "k2");
-
-    verify(helper).delete("k1", "k2");
   }
 
   @Test public void contains() throws Exception {

@@ -2,9 +2,6 @@ package com.orhanobut.hawk;
 
 import android.content.Context;
 import android.content.SharedPreferences;
-import android.util.Pair;
-
-import java.util.List;
 
 final class SharedPreferencesStorage implements Storage {
 
@@ -23,14 +20,6 @@ final class SharedPreferencesStorage implements Storage {
     return getEditor().putString(key, String.valueOf(value)).commit();
   }
 
-  @Override public boolean put(List<Pair<String, ?>> items) {
-    SharedPreferences.Editor editor = getEditor();
-    for (Pair<String, ?> item : items) {
-      editor.putString(item.first, String.valueOf(item.second));
-    }
-    return editor.commit();
-  }
-
   @SuppressWarnings("unchecked")
   @Override public <T> T get(String key) {
     return (T) preferences.getString(key, null);
@@ -38,14 +27,6 @@ final class SharedPreferencesStorage implements Storage {
 
   @Override public boolean delete(String key) {
     return getEditor().remove(key).commit();
-  }
-
-  @Override public boolean delete(String... keys) {
-    SharedPreferences.Editor editor = getEditor();
-    for (String key : keys) {
-      editor.remove(key);
-    }
-    return editor.commit();
   }
 
   @Override public boolean contains(String key) {
