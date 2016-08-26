@@ -211,13 +211,6 @@ public final class Hawk {
   }
 
   /**
-   * Provides the ability to chain put invocations:
-   * <code>Hawk.chain().put("foo", 0).put("bar", false).commit()</code>
-   * <p/>
-   * <code>commit()</code> writes the chain values to persistent storage. Omitting it will
-   * result in all chained data being lost.
-   */
-  /**
    * Encodes the given value as full text (cipher + data info)
    *
    * @param value is the given value to encode
