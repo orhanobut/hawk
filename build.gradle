@@ -45,6 +45,8 @@ ext {
 }
 
 ext.deps = [
+    gson       : 'com.google.code.gson:gson:2.4',
+
     // Test dependencies
     junit      : 'junit:junit:4.12',
     truth      : 'com.google.truth:truth:0.28',
