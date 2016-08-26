@@ -52,9 +52,9 @@ public final class Hawk {
     HawkUtils.checkNull("Key", key);
     HawkUtils.validateBuild();
 
-    //if the value is null, simply remove it
+    //if the value is null, simply delete it
     if (value == null) {
-      return remove(key);
+      return delete(key);
     }
 
     String encodedText = zip(value);
@@ -153,11 +153,11 @@ public final class Hawk {
    *
    * @param key is used for removing related data from storage
    *
-   * @return true if remove is successful
+   * @return true if delete is successful
    */
-  public static boolean remove(String key) {
+  public static boolean delete(String key) {
     HawkUtils.validateBuild();
-    return HAWK.storage.remove(key);
+    return HAWK.storage.delete(key);
   }
 
   /**
@@ -167,9 +167,9 @@ public final class Hawk {
    *
    * @return true if all removals are successful
    */
-  public static boolean remove(String... keys) {
+  public static boolean delete(String... keys) {
     HawkUtils.validateBuild();
-    return HAWK.storage.remove(keys);
+    return HAWK.storage.delete(keys);
   }
 
   /**

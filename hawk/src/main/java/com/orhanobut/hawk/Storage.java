@@ -36,18 +36,18 @@ public interface Storage {
   /**
    * Remove single entry from storage
    *
-   * @param key the name of entry to remove
+   * @param key the name of entry to delete
    * @return true if removal is successful, otherwise false
    */
-  boolean remove(String key);
+  boolean delete(String key);
 
   /**
    * Remove set of entries from storage
    *
-   * @param keys the names of entries to remove
+   * @param keys the names of entries to delete
    * @return true if all removals are successful, otherwise false
    */
-  boolean remove(String... keys);
+  boolean delete(String... keys);
 
   /**
    * Remove all entries in the storage

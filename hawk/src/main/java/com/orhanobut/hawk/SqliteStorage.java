@@ -41,14 +41,14 @@ class SqliteStorage implements Storage {
   }
 
   @SuppressWarnings("SimplifiableIfStatement")
-  @Override public boolean remove(String key) {
+  @Override public boolean delete(String key) {
     if (HawkUtils.isEmpty(key)) {
       return true;
     }
     return helper.delete(key);
   }
 
-  @Override public boolean remove(String... keys) {
+  @Override public boolean delete(String... keys) {
     return helper.delete(keys);
   }
 

@@ -156,7 +156,7 @@ public class SharedPreferencesStorageTest {
   }
 
   @Test public void remove() throws Exception {
-    storage.remove("key");
+    storage.delete("key");
 
     verify(preferences).edit();
     verify(editor).remove("key");
@@ -164,7 +164,7 @@ public class SharedPreferencesStorageTest {
   }
 
   @Test public void removeMultiple() throws Exception {
-    storage.remove("k1", "k2");
+    storage.delete("k1", "k2");
 
     verify(preferences).edit();
     verify(editor).remove("k1");

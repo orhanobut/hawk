@@ -129,11 +129,11 @@ public class HawkTest {
   }
 
   @Test public void removeWhenValueIsNullOnPut() {
-    when(storage.remove(key)).thenReturn(true);
+    when(storage.delete(key)).thenReturn(true);
 
     assertThat(Hawk.put(key, null)).isTrue();
 
-    verify(storage).remove(key);
+    verify(storage).delete(key);
   }
 
   @Test public void returnFalseAndNotAddToStorageWhenEncryptionFailsOnPut() {
@@ -260,11 +260,11 @@ public class HawkTest {
 
   //region REMOVE
   @Test public void testRemove() {
-    when(storage.remove(key)).thenReturn(true);
+    when(storage.delete(key)).thenReturn(true);
 
-    assertThat(Hawk.remove(key)).isTrue();
+    assertThat(Hawk.delete(key)).isTrue();
 
-    verify(storage).remove(key);
+    verify(storage).delete(key);
     verifyZeroInteractions(encoder, encryption);
   }
 
@@ -276,7 +276,7 @@ public class HawkTest {
     try {
       Hawk.destroy();
       Hawk.init(context);
-      Hawk.remove(key);
+      Hawk.delete(key);
       fail("");
     } catch (Exception e) {
     }

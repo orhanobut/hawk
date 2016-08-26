@@ -58,13 +58,13 @@ public class SqliteStorageTest {
   }
 
   @Test public void remove() throws Exception {
-    storage.remove("key");
+    storage.delete("key");
 
     verify(helper).delete("key");
   }
 
   @Test public void removeMultiple() throws Exception {
-    storage.remove("k1", "k2");
+    storage.delete("k1", "k2");
 
     verify(helper).delete("k1", "k2");
   }

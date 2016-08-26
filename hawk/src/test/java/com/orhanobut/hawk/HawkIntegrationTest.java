@@ -166,7 +166,7 @@ public class HawkIntegrationTest {
     Hawk.put("tag1", value);
     Hawk.put("tag2", value);
 
-    Hawk.remove("tag");
+    Hawk.delete("tag");
 
     String result = Hawk.get("tag");
 
@@ -180,7 +180,7 @@ public class HawkIntegrationTest {
     Hawk.put("tag1", 1);
     Hawk.put("tag2", Boolean.FALSE);
 
-    Hawk.remove("tag", "tag1");
+    Hawk.delete("tag", "tag1");
 
     String result = Hawk.get("tag");
 
@@ -195,7 +195,7 @@ public class HawkIntegrationTest {
 
     assertThat(Hawk.contains(key)).isTrue();
 
-    Hawk.remove(key);
+    Hawk.delete(key);
 
     assertThat(Hawk.contains(key)).isFalse();
   }

@@ -112,13 +112,13 @@ public class SqliteStorageIntegrationTest {
 
     assertThat(storage.get("string")).isNotNull();
 
-    storage.remove("string");
+    storage.delete("string");
     assertThat(storage.get("string")).isNull();
   }
 
   @Test public void removeInvalid() {
-    assertThat(storage.remove(null, null)).isTrue();
-    assertThat(storage.remove("")).isTrue();
+    assertThat(storage.delete(null, null)).isTrue();
+    assertThat(storage.delete("")).isTrue();
   }
 
   @Test public void bulkRemove() {
@@ -127,7 +127,7 @@ public class SqliteStorageIntegrationTest {
     assertThat(storage.get("a1")).isNotNull();
     assertThat(storage.get("a2")).isNotNull();
 
-    storage.remove("a1", "a2");
+    storage.delete("a1", "a2");
     assertThat(storage.get("a1")).isNull();
     assertThat(storage.get("a2")).isNull();
   }
