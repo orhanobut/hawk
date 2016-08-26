@@ -15,10 +15,8 @@ import org.robolectric.annotation.Config;
 import static com.google.common.truth.Truth.assertThat;
 import static junit.framework.Assert.fail;
 import static org.mockito.Matchers.any;
-import static org.mockito.Matchers.anyList;
 import static org.mockito.Matchers.eq;
 import static org.mockito.Mockito.inOrder;
-import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyZeroInteractions;
 import static org.mockito.Mockito.when;
@@ -346,21 +344,4 @@ public class HawkTest {
   }
   //endregion
 
-  //region CHAIN
-  @Test public void testChain() {
-    when(encoder.encode(value)).thenReturn(value.getBytes());
-    when(encryption.encrypt(value.getBytes())).thenReturn(cipherText);
-    when(storage.put(anyList())).thenReturn(true);
-
-    Hawk.Chain chain = spy(Hawk.chain());
-
-    assertThat(chain.put(key, value).commit()).isTrue();
-
-    InOrder inOrder = inOrder(storage, encoder, encryption, chain);
-    inOrder.verify(encoder).encode(value);
-    inOrder.verify(encryption).encrypt(any(byte[].class));
-    inOrder.verify(chain).commit();
-    inOrder.verify(storage).put(anyList());
-  }
-  //endregion
 }

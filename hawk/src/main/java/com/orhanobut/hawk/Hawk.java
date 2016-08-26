@@ -1,11 +1,6 @@
 package com.orhanobut.hawk;
 
 import android.content.Context;
-import android.util.Log;
-import android.util.Pair;
-
-import java.util.ArrayList;
-import java.util.List;
 
 
 public final class Hawk {
@@ -108,26 +103,6 @@ public final class Hawk {
   }
 
   /**
-   * Enables chaining of multiple put invocations.
-   *
-   * @return a simple chaining object
-   */
-  public static Chain chain() {
-    return new Chain();
-  }
-
-  /**
-   * Enables chaining of multiple put invocations.
-   *
-   * @param capacity the amount of put invocations you're about to do
-   *
-   * @return a simple chaining object
-   */
-  public static Chain chain(int capacity) {
-    return new Chain(capacity);
-  }
-
-  /**
    * Size of the saved data. Each key will be counted as 1
    *
    * @return the size
@@ -158,18 +133,6 @@ public final class Hawk {
   public static boolean delete(String key) {
     HawkUtils.validateBuild();
     return HAWK.storage.delete(key);
-  }
-
-  /**
-   * Removes values associated with the given keys from the storage
-   *
-   * @param keys are used for removing related data from storage
-   *
-   * @return true if all removals are successful
-   */
-  public static boolean delete(String... keys) {
-    HawkUtils.validateBuild();
-    return HAWK.storage.delete(keys);
   }
 
   /**
@@ -237,47 +200,5 @@ public final class Hawk {
   public static void destroy() {
     HAWK = null;
   }
-
-  public static class Chain {
-
-    private final List<Pair<String, ?>> items;
-
-    public Chain() {
-      this(10);
-    }
-
-    public Chain(int capacity) {
-      items = new ArrayList<>(capacity);
-    }
-
-    /**
-     * Saves every type of Objects. List, List<T>, primitives
-     *
-     * @param key   is used to save the data
-     * @param value is the data that is gonna be saved. Value can be object, list type, primitives
-     */
-    public <T> Chain put(String key, T value) {
-      HawkUtils.checkNullOrEmpty("Key", key);
-      HawkUtils.validateBuild();
-      String encodedText = zip(value);
-      if (encodedText == null) {
-        Log.d("HAWK", "Key : " + key + " is not added, encryption failed");
-        return this;
-      }
-      items.add(new Pair<>(key, encodedText));
-      return this;
-    }
-
-    /**
-     * Commits the chained values to storage.
-     *
-     * @return true if successfully saved, false otherwise.
-     */
-    public boolean commit() {
-      return HAWK.storage.put(items);
-    }
-
-  }
-
 
 }

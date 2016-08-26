@@ -23,9 +23,6 @@ import static com.google.common.truth.Truth.assertThat;
 @Config(constants = BuildConfig.class, sdk = 21)
 public class HawkIntegrationTest {
 
-  static final String KEY = "TAG";
-  static final long LATCH_TIMEOUT_IN_SECONDS = 3;
-
   Context context;
 
   @Before public void setUp() {
@@ -174,20 +171,6 @@ public class HawkIntegrationTest {
     assertThat(Hawk.count()).isEqualTo(2);
   }
 
-  @Test public void testBulkRemoval() {
-    Hawk.clear();
-    Hawk.put("tag", "test");
-    Hawk.put("tag1", 1);
-    Hawk.put("tag2", Boolean.FALSE);
-
-    Hawk.delete("tag", "tag1");
-
-    String result = Hawk.get("tag");
-
-    assertThat(result).isNull();
-    assertThat(Hawk.count()).isEqualTo(1);
-  }
-
   @Test public void testContains() {
     String value = "test";
     String key = "tag";
@@ -200,70 +183,11 @@ public class HawkIntegrationTest {
     assertThat(Hawk.contains(key)).isFalse();
   }
 
-  @Test public void testChain() {
-    Hawk.chain()
-        .put("tag", 1)
-        .put("tag1", "yes")
-        .put("tag2", Boolean.FALSE)
-        .commit();
-
-    assertThat(Hawk.get("tag")).isEqualTo(1);
-    assertThat(Hawk.get("tag1")).isEqualTo("yes");
-    assertThat(Hawk.get("tag2")).isEqualTo(false);
-  }
-
-  @Test public void testChainWithCapacity() {
-    Hawk.chain(10)
-        .put("tag", 1)
-        .put("tag1", "yes")
-        .put("tag2", Boolean.FALSE)
-        .commit();
-
-    assertThat(Hawk.get("tag")).isEqualTo(1);
-    assertThat(Hawk.get("tag1")).isEqualTo("yes");
-    assertThat(Hawk.get("tag2")).isEqualTo(false);
-  }
-
-  @Test public void testChainWithLists() {
-    List<String> items = new ArrayList<>();
-    items.add("fst");
-    items.add("snd");
-    items.add("trd");
-
-    Hawk.chain()
-        .put("tag", 1)
-        .put("tag1", "yes")
-        .put("tag2", Boolean.FALSE)
-        .put("lst", items)
-        .commit();
-
-    assertThat(Hawk.get("tag")).isEqualTo(1);
-    assertThat(Hawk.get("tag1")).isEqualTo("yes");
-    assertThat(Hawk.get("tag2")).isEqualTo(false);
-
-    List<String> stored = Hawk.get("lst");
-
-    assertThat(stored).isNotNull();
-    assertThat(stored.isEmpty()).isFalse();
-
-    for (int i = 0, s = stored.size(); i < s; i++) {
-      assertThat(stored.get(i)).isEqualTo(items.get(i));
-    }
-  }
 
   @Test public void testHugeData() {
     for (int i = 0; i < 100; i++) {
       Hawk.put("" + i, "" + i);
     }
-    assertThat(true).isTrue();
-  }
-
-  @Test public void testHugeDataWithBulk() {
-    Hawk.Chain chain = Hawk.chain();
-    for (int i = 0; i < 10000; i++) {
-      chain.put("" + i, "" + i);
-    }
-    chain.commit();
     assertThat(true).isTrue();
   }
 
