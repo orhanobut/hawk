@@ -1,62 +1,27 @@
 apply plugin: 'com.android.library'
-apply plugin: 'com.github.dcendents.android-maven'
-
-apply plugin: 'checkstyle'
-
-check.dependsOn('checkstyle')
-
-task checkstyle(type: Checkstyle) {
-  configFile = rootProject.file('checkstyle.xml')
-  source 'src'
-  include '**/*.java'
-  exclude '**/gen/**'
-
-  classpath = files()
-}
 
 android {
-  compileSdkVersion 23
-  buildToolsVersion "23.0.1"
+  compileSdkVersion rootProject.ext.compileSdkVersion
+  buildToolsVersion rootProject.ext.buildToolsVersion
 
   defaultConfig {
-    minSdkVersion 9
-    targetSdkVersion 23
+    minSdkVersion rootProject.ext.minSdkVersion
   }
 
   lintOptions {
-    abortOnError false
+    textReport true
+    textOutput 'stdout'
   }
-}
-
-// build a jar with source files
-task sourcesJar(type: Jar) {
-  from android.sourceSets.main.java.srcDirs
-  classifier = 'sources'
-}
-
-task javadoc(type: Javadoc) {
-  failOnError false
-  source = android.sourceSets.main.java.sourceFiles
-  classpath += project.files(android.getBootClasspath().join(File.pathSeparator))
-}
-
-// build a jar with javadoc
-task javadocJar(type: Jar, dependsOn: javadoc) {
-  classifier = 'javadoc'
-  from javadoc.destinationDir
-}
-
-configurations {
-  optional
-  compile.extendsFrom optional
 }
 
 dependencies {
   compile 'com.google.code.gson:gson:2.4'
-  optional 'io.reactivex:rxandroid:1.0.1'
+  compile 'io.reactivex:rxandroid:1.0.1'
 
-  testCompile 'junit:junit:4.12'
-  testCompile "org.mockito:mockito-core:1.9.5"
-  testCompile "org.robolectric:robolectric:3.0"
-  testCompile 'org.assertj:assertj-core:1.7.0'
+  testCompile deps.junit
+  testCompile deps.truth
+  testCompile deps.robolectric
+  testCompile deps.mockito
 }
+
+apply from: rootProject.file('gradle/maven_push.gradle')
