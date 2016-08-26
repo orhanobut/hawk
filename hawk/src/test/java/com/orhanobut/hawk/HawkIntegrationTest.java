@@ -25,8 +25,8 @@ import rx.Subscriber;
 import rx.functions.Func1;
 import rx.schedulers.Schedulers;
 
+import static com.google.common.truth.Truth.assertThat;
 import static junit.framework.Assert.fail;
-import static org.assertj.core.api.Assertions.assertThat;
 
 @RunWith(RobolectricGradleTestRunner.class)
 @Config(constants = BuildConfig.class, sdk = 21)

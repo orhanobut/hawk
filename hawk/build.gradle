@@ -22,8 +22,6 @@ dependencies {
   testCompile deps.truth
   testCompile deps.robolectric
   testCompile deps.mockito
-
-  testCompile 'org.assertj:assertj-core:1.7.0'
 }
 
 apply from: rootProject.file('gradle/maven_push.gradle')

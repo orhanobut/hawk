@@ -19,9 +19,9 @@ import java.util.concurrent.CountDownLatch;
 
 import rx.Observable;
 
+import static com.google.common.truth.Truth.assertThat;
 import static java.util.concurrent.TimeUnit.SECONDS;
 import static junit.framework.Assert.fail;
-import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.verify;
 import static org.mockito.MockitoAnnotations.initMocks;
 
