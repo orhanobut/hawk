@@ -16,17 +16,8 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.concurrent.CountDownLatch;
-import java.util.concurrent.TimeUnit;
-
-import rx.Observable;
-import rx.Observer;
-import rx.Subscriber;
-import rx.functions.Func1;
-import rx.schedulers.Schedulers;
 
 import static com.google.common.truth.Truth.assertThat;
-import static junit.framework.Assert.fail;
 
 @RunWith(RobolectricGradleTestRunner.class)
 @Config(constants = BuildConfig.class, sdk = 21)
@@ -280,81 +271,4 @@ public class HawkIntegrationTest {
     assertThat(Hawk.resetCrypto()).isTrue();
   }
 
-  @Test public void getRxString() throws Exception {
-    Hawk.put(KEY, "hawk");
-
-    final CountDownLatch latch = new CountDownLatch(1);
-    Hawk.<String>getObservable(KEY)
-        .observeOn(Schedulers.io())
-        .subscribe(new Subscriber<String>() {
-          @Override public void onCompleted() {
-            latch.countDown();
-          }
-
-          @Override public void onError(Throwable e) {
-            fail();
-            latch.countDown();
-          }
-
-          @Override public void onNext(String s) {
-            assertThat(s).isEqualTo("hawk");
-          }
-        });
-
-    assertThat(latch.await(LATCH_TIMEOUT_IN_SECONDS, TimeUnit.SECONDS)).isTrue();
-  }
-
-  @Test public void getRxStringDefaultValue() throws Exception {
-    final CountDownLatch latch = new CountDownLatch(1);
-    Hawk.<String>getObservable(KEY, "test")
-        .observeOn(Schedulers.io())
-        .subscribe(new Subscriber<String>() {
-          @Override public void onCompleted() {
-            latch.countDown();
-          }
-
-          @Override public void onError(Throwable e) {
-            fail();
-            latch.countDown();
-          }
-
-          @Override public void onNext(String s) {
-            assertThat(s).isEqualTo("test");
-          }
-        });
-
-    assertThat(latch.await(LATCH_TIMEOUT_IN_SECONDS, TimeUnit.SECONDS)).isTrue();
-  }
-
-  @Test public void testBuildRx() throws InterruptedException {
-    final CountDownLatch latch = new CountDownLatch(1);
-    Hawk.init(context)
-        .buildRx()
-        .concatMap(new Func1<Boolean, Observable<Boolean>>() {
-          @Override public Observable<Boolean> call(Boolean aBoolean) {
-            return Hawk.putObservable(KEY, "hawk");
-          }
-        })
-        .concatMap(new Func1<Boolean, Observable<String>>() {
-          @Override public Observable<String> call(Boolean aBoolean) {
-            return Hawk.getObservable(KEY);
-          }
-        })
-        .subscribe(new Observer<String>() {
-          @Override public void onCompleted() {
-            latch.countDown();
-          }
-
-          @Override public void onError(Throwable throwable) {
-            fail();
-            latch.countDown();
-          }
-
-          @Override public void onNext(String storedValue) {
-            assertThat(storedValue).isEqualTo("hawk");
-          }
-        });
-
-    assertThat(latch.await(LATCH_TIMEOUT_IN_SECONDS, TimeUnit.SECONDS)).isTrue();
-  }
 }

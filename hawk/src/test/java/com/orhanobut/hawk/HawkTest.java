@@ -157,9 +157,6 @@ public class HawkTest {
     verifyZeroInteractions(storage, encryption);
   }
 
-  @Test public void testObservablePut() {
-    assertThat(Hawk.putObservable(key, value)).isNotNull();
-  }
   //endregion
 
   //region GET
@@ -257,10 +254,6 @@ public class HawkTest {
     verify(storage).get(key);
     verify(encryption).decrypt(cipherText);
     verify(encoder).decode(eq(value.getBytes()), any(DataInfo.class));
-  }
-
-  @Test public void testGetObservable() {
-    assertThat(Hawk.getObservable(key)).isNotNull();
   }
 
   //endregion

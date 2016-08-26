@@ -8,10 +8,6 @@ import com.google.gson.Gson;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
-import rx.Observable;
-import rx.Subscriber;
-import rx.functions.Func0;
-
 public class HawkBuilder {
 
   /**
@@ -158,31 +154,6 @@ public class HawkBuilder {
       }
     });
     executor.shutdown();
-  }
-
-  /**
-   * Callback interface to make actions on another place and execute code
-   * based on a result of action
-   * onSuccess function will be called when action is successful
-   * onFail function will be called when action fails due to a reason
-   */
-  public Observable<Boolean> buildRx() {
-    HawkUtils.checkRx();
-    return Observable.defer(new Func0<Observable<Boolean>>() {
-      @Override public Observable<Boolean> call() {
-        return Observable.create(new Observable.OnSubscribe<Boolean>() {
-          @Override public void call(Subscriber<? super Boolean> subscriber) {
-            try {
-              startBuild();
-              subscriber.onNext(true);
-              subscriber.onCompleted();
-            } catch (Exception e) {
-              subscriber.onError(e);
-            }
-          }
-        });
-      }
-    });
   }
 
   void startBuild() {

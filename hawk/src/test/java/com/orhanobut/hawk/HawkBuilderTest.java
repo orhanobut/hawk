@@ -17,8 +17,6 @@ import org.robolectric.annotation.Config;
 import java.lang.reflect.Type;
 import java.util.concurrent.CountDownLatch;
 
-import rx.Observable;
-
 import static com.google.common.truth.Truth.assertThat;
 import static java.util.concurrent.TimeUnit.SECONDS;
 import static junit.framework.Assert.fail;
@@ -192,9 +190,4 @@ public class HawkBuilderTest {
     assertThat(latch.await(LATCH_TIMEOUT_IN_SECONDS, SECONDS)).isTrue();
   }
 
-  @Test public void testRxBuild() {
-    Observable<Boolean> observable = builder.buildRx();
-
-    assertThat(observable).isNotNull();
-  }
 }

@@ -7,8 +7,6 @@ import android.util.Pair;
 import java.util.ArrayList;
 import java.util.List;
 
-import rx.Observable;
-import rx.Subscriber;
 
 public final class Hawk {
 
@@ -47,6 +45,7 @@ public final class Hawk {
    *
    * @param key   is used to save the data
    * @param value is the data that is gonna be saved. Value can be object, list type, primitives
+   *
    * @return true if put is successful
    */
   public static <T> boolean put(String key, T value) {
@@ -64,33 +63,8 @@ public final class Hawk {
   }
 
   /**
-   * Creates a stream to put data, RxJava dependency is required
-   *
-   * @param <T> value type
-   * @return Observable<Boolean>
-   */
-  public static <T> Observable<Boolean> putObservable(final String key, final T value) {
-    HawkUtils.checkRx();
-    return Observable.create(new Observable.OnSubscribe<Boolean>() {
-      @Override
-      public void call(Subscriber<? super Boolean> subscriber) {
-        try {
-          boolean result = put(key, value);
-          if (!subscriber.isUnsubscribed()) {
-            subscriber.onNext(result);
-            subscriber.onCompleted();
-          }
-        } catch (Exception e) {
-          if (!subscriber.isUnsubscribed()) {
-            subscriber.onError(e);
-          }
-        }
-      }
-    });
-  }
-
-  /**
    * @param key is used to get the saved data
+   *
    * @return the saved object
    */
   public static <T> T get(String key) {
@@ -122,6 +96,7 @@ public final class Hawk {
    *
    * @param key          is used to get the saved data
    * @param defaultValue will be return if the response is null
+   *
    * @return the saved object
    */
   public static <T> T get(String key, T defaultValue) {
@@ -130,48 +105,6 @@ public final class Hawk {
       return defaultValue;
     }
     return t;
-  }
-
-  /**
-   * Creates a stream of data
-   * RxJava dependency is required
-   *
-   * @param key of the data
-   * @param <T> type of the data
-   * @return Observable<T>
-   */
-  public static <T> Observable<T> getObservable(String key) {
-    HawkUtils.checkRx();
-    return getObservable(key, null);
-  }
-
-  /**
-   * Creates a stream of data
-   * RxJava dependency is required
-   *
-   * @param key          of the data
-   * @param defaultValue of the default value if the value doesn't exists
-   * @param <T>          type of the data
-   * @return Observable<T>
-   */
-  public static <T> Observable<T> getObservable(final String key, final T defaultValue) {
-    HawkUtils.checkRx();
-    return Observable.create(new Observable.OnSubscribe<T>() {
-      @Override
-      public void call(Subscriber<? super T> subscriber) {
-        try {
-          T t = get(key, defaultValue);
-          if (!subscriber.isUnsubscribed()) {
-            subscriber.onNext(t);
-            subscriber.onCompleted();
-          }
-        } catch (Exception e) {
-          if (!subscriber.isUnsubscribed()) {
-            subscriber.onError(e);
-          }
-        }
-      }
-    });
   }
 
   /**
@@ -187,6 +120,7 @@ public final class Hawk {
    * Enables chaining of multiple put invocations.
    *
    * @param capacity the amount of put invocations you're about to do
+   *
    * @return a simple chaining object
    */
   public static Chain chain(int capacity) {
@@ -218,6 +152,7 @@ public final class Hawk {
    * Removes the given key/value from the storage
    *
    * @param key is used for removing related data from storage
+   *
    * @return true if remove is successful
    */
   public static boolean remove(String key) {
@@ -229,6 +164,7 @@ public final class Hawk {
    * Removes values associated with the given keys from the storage
    *
    * @param keys are used for removing related data from storage
+   *
    * @return true if all removals are successful
    */
   public static boolean remove(String... keys) {
@@ -240,6 +176,7 @@ public final class Hawk {
    * Checks the given key whether it exists or not
    *
    * @param key is the key to check
+   *
    * @return true if it exists in the storage
    */
   public static boolean contains(String key) {
@@ -284,6 +221,7 @@ public final class Hawk {
    * Encodes the given value as full text (cipher + data info)
    *
    * @param value is the given value to encode
+   *
    * @return full text as string
    */
   private static <T> String zip(T value) {

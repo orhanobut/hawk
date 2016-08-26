@@ -16,7 +16,6 @@ android {
 
 dependencies {
   compile 'com.google.code.gson:gson:2.4'
-  compile 'io.reactivex:rxandroid:1.0.1'
 
   testCompile deps.junit
   testCompile deps.truth
