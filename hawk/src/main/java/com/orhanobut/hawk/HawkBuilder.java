@@ -27,6 +27,7 @@ public class HawkBuilder {
   private Converter converter;
   private Parser parser;
   private Encryption encryption;
+  private Serializer serializer;
 
   public HawkBuilder(Context context) {
     HawkUtils.checkNull("Context", context);
@@ -49,6 +50,11 @@ public class HawkBuilder {
 
   public HawkBuilder setParser(Parser parser) {
     this.parser = parser;
+    return this;
+  }
+
+  public HawkBuilder setSerializer(Serializer serializer) {
+    this.serializer = serializer;
     return this;
   }
 
@@ -93,6 +99,13 @@ public class HawkBuilder {
 
   Encryption getEncryption() {
     return encryption;
+  }
+
+  Serializer getSerializer() {
+    if (serializer == null) {
+      serializer = new HawkSerializer();
+    }
+    return serializer;
   }
 
   public void build() {

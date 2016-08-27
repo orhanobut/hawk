@@ -16,7 +16,7 @@ public final class Hawk {
     storage = builder.getStorage();
     converter = builder.getConverter();
     encryption = builder.getEncryption();
-    serializer = new HawkSerializer();
+    serializer = builder.getSerializer();
   }
 
   /**

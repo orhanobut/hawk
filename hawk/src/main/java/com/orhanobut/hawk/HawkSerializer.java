@@ -5,7 +5,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-public class HawkSerializer implements Serializer {
+class HawkSerializer implements Serializer {
 
   private static final char DELIMITER = '@';
   private static final String INFO_DELIMITER = "#";
