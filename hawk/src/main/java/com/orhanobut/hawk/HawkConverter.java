@@ -26,7 +26,7 @@ final class HawkConverter implements Converter {
     this.parser = parser;
   }
 
-  @Override public <T> String encode(T value) {
+  @Override public <T> String toString(T value) {
     if (value == null) {
       return null;
     }

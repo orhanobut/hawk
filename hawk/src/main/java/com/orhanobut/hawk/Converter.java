@@ -9,7 +9,7 @@ interface Converter {
    *
    * @return the encoded string
    */
-  <T> String encode(T value);
+  <T> String toString(T value);
 
   /**
    * Decodes

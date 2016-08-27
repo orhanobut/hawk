@@ -181,14 +181,14 @@ public final class Hawk {
   /**
    * Encodes the given value as full text (cipher + data info)
    *
-   * @param value is the given value to encode
+   * @param value is the given value to toString
    *
    * @return full text as string
    */
   private static <T> String zip(String key, T value) {
     HawkUtils.checkNull("Value", value);
 
-    String encodedValue = HAWK.converter.encode(value);
+    String encodedValue = HAWK.converter.toString(value);
 
     if (encodedValue == null) {
       return null;

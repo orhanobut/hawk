@@ -44,13 +44,13 @@ public class HawkConverterTest {
   }
 
   @Test public void encodeInvalidValues() {
-    assertThat(converter.encode(null)).isNull();
+    assertThat(converter.toString(null)).isNull();
   }
 
   @Test public void encodeString() {
     String text = "text";
     String expected = parser.toJson(text);
-    String actual = converter.encode(text);
+    String actual = converter.toString(text);
 
     assertThat(actual).isEqualTo(expected);
   }
@@ -58,7 +58,7 @@ public class HawkConverterTest {
   @Test public void encodeCustomObject() {
     Foo data = new Foo();
     String expected = parser.toJson(data);
-    String actual = converter.encode(data);
+    String actual = converter.toString(data);
 
     assertThat(actual).isEqualTo(expected);
   }
@@ -67,7 +67,7 @@ public class HawkConverterTest {
     List<String> data = new ArrayList<>();
     data.add("test");
     String expected = parser.toJson(data);
-    String actual = converter.encode(data);
+    String actual = converter.toString(data);
 
     assertThat(actual).isEqualTo(expected);
   }
@@ -76,7 +76,7 @@ public class HawkConverterTest {
     Map<String, String> data = new HashMap<>();
     data.put("key", "value");
     String expected = parser.toJson(data);
-    String actual = converter.encode(data);
+    String actual = converter.toString(data);
 
     assertThat(actual).isEqualTo(expected);
   }
@@ -85,7 +85,7 @@ public class HawkConverterTest {
     Set<String> data = new HashSet<>();
     data.add("key");
     String expected = parser.toJson(data);
-    String actual = converter.encode(data);
+    String actual = converter.toString(data);
 
     assertThat(actual).isEqualTo(expected);
   }

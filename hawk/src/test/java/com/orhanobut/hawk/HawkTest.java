@@ -95,14 +95,14 @@ public class HawkTest {
 
   //region PUT
   @Test public void testPut() throws Exception {
-    when(converter.encode(value)).thenReturn(value);
+    when(converter.toString(value)).thenReturn(value);
     when(encryption.encrypt("key", value)).thenReturn(cipherText);
     when(storage.put(key, withType)).thenReturn(true);
 
     assertThat(Hawk.put(key, value)).isTrue();
 
     InOrder inOrder = inOrder(storage, converter, encryption);
-    inOrder.verify(converter).encode(value);
+    inOrder.verify(converter).toString(value);
     inOrder.verify(encryption).encrypt("key", value);
     inOrder.verify(storage).put(key, withType);
   }
@@ -135,23 +135,23 @@ public class HawkTest {
   }
 
   @Test public void returnFalseAndNotAddToStorageWhenEncryptionFailsOnPut() throws Exception {
-    when(converter.encode(value)).thenReturn(value);
+    when(converter.toString(value)).thenReturn(value);
     when(encryption.encrypt("key", value)).thenReturn(null);
 
     assertThat(Hawk.put(key, value)).isFalse();
 
     InOrder inOrder = inOrder(storage, converter, encryption);
-    inOrder.verify(converter).encode(value);
+    inOrder.verify(converter).toString(value);
     inOrder.verify(encryption).encrypt("key", value);
     verifyZeroInteractions(storage);
   }
 
   @Test public void returnFalseAndNotAddToStorageWhenEncodingFailsOnPut() {
-    when(converter.encode(value)).thenReturn(null);
+    when(converter.toString(value)).thenReturn(null);
 
     assertThat(Hawk.put(key, value)).isFalse();
 
-    verify(converter).encode(value);
+    verify(converter).toString(value);
     verifyZeroInteractions(storage, encryption);
   }
 
