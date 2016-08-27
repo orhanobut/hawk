@@ -125,4 +125,30 @@ public class HawkBuilderTest {
     assertThat(builder.getSerializer()).isInstanceOf(MySerializer.class);
   }
 
+  @Test public void testEncryption() {
+    builder.build();
+    assertThat(builder.getEncryption()).isInstanceOf(Base64Encryption.class);
+
+    class MyEncryption implements Encryption {
+
+      @Override public boolean init() {
+        return false;
+      }
+
+      @Override public String encrypt(String key, String value) throws Exception {
+        return null;
+      }
+
+      @Override public String decrypt(String key, String value) throws Exception {
+        return null;
+      }
+
+      @Override public boolean reset() {
+        return false;
+      }
+    }
+    builder.setEncryption(new MyEncryption()).build();
+    assertThat(builder.getEncryption()).isInstanceOf(MyEncryption.class);
+  }
+
 }
