@@ -10,13 +10,11 @@ public final class Hawk {
   private final Storage storage;
   private final Converter converter;
   private final Encryption encryption;
-  private final LogLevel logLevel;
 
   private Hawk(HawkBuilder builder) {
     storage = builder.getStorage();
     converter = builder.getConverter();
     encryption = builder.getEncryption();
-    logLevel = builder.getLogLevel();
   }
 
   /**
@@ -86,7 +84,7 @@ public final class Hawk {
     try {
       return HAWK.converter.fromString(plainText, dataInfo);
     } catch (Exception e) {
-      Logger.d(e.getMessage());
+      e.printStackTrace();
     }
     return null;
   }
@@ -160,13 +158,6 @@ public final class Hawk {
   public static boolean resetCrypto() {
     HawkUtils.validateBuild();
     return HAWK.encryption.reset();
-  }
-
-  public static LogLevel getLogLevel() {
-    if (HAWK == null) {
-      return LogLevel.NONE;
-    }
-    return HAWK.logLevel;
   }
 
   /**

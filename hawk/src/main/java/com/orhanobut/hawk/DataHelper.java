@@ -31,6 +31,7 @@ final class DataHelper {
    * Saved data contains more info than cipher text, this method will demarshall the data
    *
    * @param storedText is the saved data
+   *
    * @return the DataInfo object which contains all necessary information
    */
   static DataInfo getDataInfo(String storedText) {
@@ -69,7 +70,7 @@ final class DataHelper {
       try {
         keyClazz = Class.forName(infos[0]);
       } catch (ClassNotFoundException e) {
-        Logger.d(e.getMessage());
+        // TODO: 27/08/16 log
       }
     }
 
@@ -78,7 +79,7 @@ final class DataHelper {
       try {
         valueClazz = Class.forName(infos[1]);
       } catch (ClassNotFoundException e) {
-        Logger.d(e.getMessage());
+        // TODO: 27/08/16 log
       }
     }
 

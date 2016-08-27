@@ -7,7 +7,8 @@ final class HawkUtils {
       Class.forName("rx.Observable");
       return true;
     } catch (ClassNotFoundException ignored) {
-      Logger.e("something happened", ignored);
+//      Logger.e("something happened", ignored);
+      // TODO: 27/08/16 log
     }
     return false;
   }

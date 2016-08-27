@@ -27,7 +27,7 @@ class Base64Encryption implements Encryption {
     try {
       return Base64.encodeToString(bytes, Base64.DEFAULT);
     } catch (Exception e) {
-      Logger.w(e.getMessage());
+//      Log.w(e.getMessage());
       return null;
     }
   }
@@ -36,7 +36,7 @@ class Base64Encryption implements Encryption {
     try {
       return Base64.decode(value, Base64.DEFAULT);
     } catch (Exception e) {
-      Logger.w(e.getMessage());
+//      Logger.w(e.getMessage());
       return null;
     }
   }

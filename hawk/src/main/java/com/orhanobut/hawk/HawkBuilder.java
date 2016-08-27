@@ -27,7 +27,6 @@ public class HawkBuilder {
   private Context context;
   private EncryptionMethod encryptionMethod;
   private String password;
-  private LogLevel logLevel;
   private Storage cryptoStorage;
   private Converter converter;
   private Parser parser;
@@ -53,11 +52,6 @@ public class HawkBuilder {
       throw new NullPointerException("Password should not be null or empty");
     }
     this.password = password;
-    return this;
-  }
-
-  public HawkBuilder setLogLevel(LogLevel logLevel) {
-    this.logLevel = logLevel;
     return this;
   }
 
@@ -90,13 +84,6 @@ public class HawkBuilder {
 
   String getPassword() {
     return password;
-  }
-
-  LogLevel getLogLevel() {
-    if (logLevel == null) {
-      logLevel = LogLevel.NONE;
-    }
-    return logLevel;
   }
 
   Storage getStorage() {

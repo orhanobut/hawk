@@ -121,18 +121,6 @@ public class HawkBuilderTest {
     assertThat(builder.getPassword()).isEqualTo("password");
   }
 
-  @Test public void testDefaultLogLevel() {
-    builder.build();
-
-    assertThat(builder.getLogLevel()).isEqualTo(LogLevel.NONE);
-  }
-
-  @Test public void testCustomLogLevel() {
-    builder.setLogLevel(LogLevel.FULL).build();
-
-    assertThat(builder.getLogLevel()).isEqualTo(LogLevel.FULL);
-  }
-
   @Test public void testDefaultStorage() {
     builder.build();
 
