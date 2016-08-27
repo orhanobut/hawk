@@ -20,20 +20,10 @@ class Base64Encryption implements Encryption {
   }
 
   String encodeBase64(byte[] bytes) {
-    try {
-      return Base64.encodeToString(bytes, Base64.DEFAULT);
-    } catch (Exception e) {
-//      Log.w(e.getMessage());
-      return null;
-    }
+    return Base64.encodeToString(bytes, Base64.DEFAULT);
   }
 
   byte[] decodeBase64(String value) {
-    try {
-      return Base64.decode(value, Base64.DEFAULT);
-    } catch (Exception e) {
-//      Logger.w(e.getMessage());
-      return null;
-    }
+    return Base64.decode(value, Base64.DEFAULT);
   }
 }

@@ -49,7 +49,6 @@ public class Base64EncryptionTest {
 
     assertThat(actual).isNotNull();
     assertThat(actual).isEqualTo(expected);
-    assertThat(encryption.encodeBase64(null)).isNull();
   }
 
   @Test public void decodeBase64() {
@@ -59,6 +58,5 @@ public class Base64EncryptionTest {
 
     assertThat(actual).isNotNull();
     assertThat(actual).isEqualTo(expected);
-    assertThat(encryption.decodeBase64(null)).isNull();
   }
 }
