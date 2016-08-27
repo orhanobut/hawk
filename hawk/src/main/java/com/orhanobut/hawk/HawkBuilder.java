@@ -8,10 +8,10 @@ import com.google.gson.Gson;
 public class HawkBuilder {
 
   /**
-   * NEVER ever change TAG and TAG_INFO.
+   * NEVER ever change STORAGE_TAG_DO_NOT_CHANGE and TAG_INFO.
    * It will break backward compatibility in terms of keeping previous data
    */
-  private static final String TAG = "HAWK";
+  private static final String STORAGE_TAG_DO_NOT_CHANGE = "Hawk2";
 
   private Context context;
   private String password;
@@ -66,7 +66,7 @@ public class HawkBuilder {
 
   Storage getStorage() {
     if (cryptoStorage == null) {
-      cryptoStorage = new SharedPreferencesStorage(context, TAG);
+      cryptoStorage = new SharedPreferencesStorage(context, STORAGE_TAG_DO_NOT_CHANGE);
     }
     return cryptoStorage;
   }
