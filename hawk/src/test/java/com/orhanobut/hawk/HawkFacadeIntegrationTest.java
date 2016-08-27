@@ -21,7 +21,7 @@ import static com.google.common.truth.Truth.assertThat;
 
 @RunWith(RobolectricGradleTestRunner.class)
 @Config(constants = BuildConfig.class, sdk = 21)
-public class HawkIntegrationTest {
+public class HawkFacadeIntegrationTest {
 
   Context context;
 
@@ -145,7 +145,7 @@ public class HawkIntegrationTest {
     assertThat(Hawk.count()).isEqualTo(5);
   }
 
-  @Test public void testClear() {
+  @Test public void testDeleteAll() {
     String value = "test";
     Hawk.put("tag", value);
     Hawk.put("tag1", value);
@@ -156,7 +156,7 @@ public class HawkIntegrationTest {
     assertThat(Hawk.count()).isEqualTo(0);
   }
 
-  @Test public void testRemove() {
+  @Test public void testDelete() {
     Hawk.deleteAll();
     String value = "test";
     Hawk.put("tag", value);
@@ -172,15 +172,9 @@ public class HawkIntegrationTest {
   }
 
   @Test public void testContains() {
-    String value = "test";
-    String key = "tag";
-    Hawk.put(key, value);
+    Hawk.put("key", "value");
 
-    assertThat(Hawk.contains(key)).isTrue();
-
-    Hawk.delete(key);
-
-    assertThat(Hawk.contains(key)).isFalse();
+    assertThat(Hawk.contains("key")).isTrue();
   }
 
 
