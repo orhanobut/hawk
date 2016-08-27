@@ -47,9 +47,10 @@ final class AesEncryption implements Encryption {
     return result;
   }
 
-  @Override public String encrypt(String key, byte[] value) throws Exception {
+  @Override public String encrypt(String key, String value) throws Exception {
     return null;
   }
+
 
   @Override public byte[] decrypt(String value) {
     if (value == null) {
@@ -67,7 +68,7 @@ final class AesEncryption implements Encryption {
     return result;
   }
 
-  @Override public String decrypt(String key, byte[] value) throws Exception {
+  @Override public String decrypt(String key, String value) throws Exception {
     return null;
   }
 

@@ -19,7 +19,7 @@ interface Encryption {
    */
   String encrypt(byte[] value);
 
-  String encrypt(String key, byte[] value) throws Exception;
+  String encrypt(String key, String value) throws Exception;
 
   /**
    * Decrypt the given cipher text and return plain text
@@ -30,7 +30,7 @@ interface Encryption {
    */
   byte[] decrypt(String value);
 
-  String decrypt(String key, byte[] value) throws Exception;
+  String decrypt(String key, String value) throws Exception;
 
   /**
    * Clear everything from the storage

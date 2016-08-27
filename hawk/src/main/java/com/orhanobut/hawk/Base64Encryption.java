@@ -15,8 +15,17 @@ class Base64Encryption implements Encryption {
     return encodeBase64(value);
   }
 
+  @Override public String encrypt(String key, String value) throws Exception {
+    return null;
+  }
+
+
   @Override public byte[] decrypt(String value) {
     return decodeBase64(value);
+  }
+
+  @Override public String decrypt(String key, String value) throws Exception {
+    return null;
   }
 
   @Override public boolean reset() {
