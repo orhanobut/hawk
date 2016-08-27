@@ -11,21 +11,12 @@ class Base64Encryption implements Encryption {
     return true;
   }
 
-  @Override public String encrypt(byte[] value) {
-    return encodeBase64(value);
-  }
-
   @Override public String encrypt(String key, String value) throws Exception {
-    return null;
-  }
-
-
-  @Override public byte[] decrypt(String value) {
-    return decodeBase64(value);
+    return encodeBase64(value.getBytes());
   }
 
   @Override public String decrypt(String key, String value) throws Exception {
-    return null;
+    return new String(decodeBase64(value));
   }
 
   @Override public boolean reset() {

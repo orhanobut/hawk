@@ -17,7 +17,7 @@ final class AesEncryption implements Encryption {
   private final String password;
   private final Storage storage;
 
-  private AesCbcWithIntegrity.SecretKeys key;
+  private AesCbcWithIntegrity.SecretKeys secretKeys;
   private String saltKey;
 
   AesEncryption(Storage storage, String password) {
@@ -28,17 +28,17 @@ final class AesEncryption implements Encryption {
   @Override public boolean init() {
     this.saltKey = storage.get(KEY_STORAGE_SALT);
 
-    key = generateSecretKey(password);
-    return key != null;
+    secretKeys = generateSecretKey(password);
+    return secretKeys != null;
   }
 
-  @Override public String encrypt(byte[] value) {
+  @Override public String encrypt(String key, String value) throws Exception {
     if (value == null) {
       return null;
     }
     String result = null;
     try {
-      AesCbcWithIntegrity.CipherTextIvMac civ = AesCbcWithIntegrity.encrypt(value, key);
+      AesCbcWithIntegrity.CipherTextIvMac civ = AesCbcWithIntegrity.encrypt(value, secretKeys);
       result = civ.toString();
     } catch (GeneralSecurityException e) {
       Logger.d(e.getMessage());
@@ -47,12 +47,7 @@ final class AesEncryption implements Encryption {
     return result;
   }
 
-  @Override public String encrypt(String key, String value) throws Exception {
-    return null;
-  }
-
-
-  @Override public byte[] decrypt(String value) {
+  @Override public String decrypt(String key, String value) throws Exception {
     if (value == null) {
       return null;
     }
@@ -60,16 +55,12 @@ final class AesEncryption implements Encryption {
 
     try {
       AesCbcWithIntegrity.CipherTextIvMac civ = getCipherTextIvMac(value);
-      result = AesCbcWithIntegrity.decrypt(civ, key);
+      result = AesCbcWithIntegrity.decrypt(civ, secretKeys);
     } catch (GeneralSecurityException e) {
       Logger.d(e.getMessage());
     }
 
-    return result;
-  }
-
-  @Override public String decrypt(String key, String value) throws Exception {
-    return null;
+    return new String(result);
   }
 
   @Override public boolean reset() {

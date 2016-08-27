@@ -31,15 +31,15 @@ public class Base64EncryptionTest {
   }
 
   @Test public void encrypt() throws Exception {
-    encryption.encrypt(new byte[2]);
+    encryption.encrypt("key", "value");
 
     verify(encryption).encodeBase64(any(byte[].class));
   }
 
   @Test public void decrypt() throws Exception {
-    encryption.decrypt("test");
+    encryption.decrypt("key", "test");
 
-    verify(encryption).decrypt("test");
+    verify(encryption).decrypt("key", "test");
   }
 
   @Test public void reset() throws Exception {

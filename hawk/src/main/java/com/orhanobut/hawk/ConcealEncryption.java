@@ -22,18 +22,10 @@ class ConcealEncryption implements Encryption {
     return crypto.isAvailable();
   }
 
-  @Override public String encrypt(byte[] value) {
-    return null;
-  }
-
   @Override public String encrypt(String key, String plainText) throws Exception {
     Entity entity = Entity.create(key);
     byte[] bytes = crypto.encrypt(plainText.getBytes(), entity);
     return Base64.encodeToString(bytes, Base64.NO_WRAP);
-  }
-
-  @Override public byte[] decrypt(String value) {
-    return new byte[0];
   }
 
   @Override public String decrypt(String key, String cipherText) throws Exception {

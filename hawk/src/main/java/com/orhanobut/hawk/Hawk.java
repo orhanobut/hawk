@@ -52,7 +52,7 @@ public final class Hawk {
       return delete(key);
     }
 
-    String encodedText = zip(value);
+    String encodedText = zip(key, value);
     //if any exception occurs during encoding, encodedText will be null and thus operation is unsuccessful
     return encodedText != null && HAWK.storage.put(key, encodedText);
   }
@@ -72,14 +72,19 @@ public final class Hawk {
     }
 
     DataInfo dataInfo = DataHelper.getDataInfo(fullText);
-    byte[] bytes = HAWK.encryption.decrypt(dataInfo.cipherText);
+    String decryptedValue = null;
+    try {
+      decryptedValue = HAWK.encryption.decrypt(key, dataInfo.cipherText);
+    } catch (Exception e) {
+      e.printStackTrace();
+    }
 
-    if (bytes == null) {
+    if (decryptedValue == null) {
       return null;
     }
 
     try {
-      return HAWK.encoder.decode(bytes, dataInfo);
+      return HAWK.encoder.decode(decryptedValue.getBytes(), dataInfo);
     } catch (Exception e) {
       Logger.d(e.getMessage());
     }
@@ -180,7 +185,7 @@ public final class Hawk {
    *
    * @return full text as string
    */
-  private static <T> String zip(T value) {
+  private static <T> String zip(String key, T value) {
     HawkUtils.checkNull("Value", value);
 
     byte[] encodedValue = HAWK.encoder.encode(value);
@@ -189,7 +194,12 @@ public final class Hawk {
       return null;
     }
 
-    String cipherText = HAWK.encryption.encrypt(encodedValue);
+    String cipherText = null;
+    try {
+      cipherText = HAWK.encryption.encrypt(key, new String(encodedValue));
+    } catch (Exception e) {
+      e.printStackTrace();
+    }
 
     if (cipherText == null) {
       return null;
