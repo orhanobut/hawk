@@ -18,6 +18,7 @@ public class HawkBuilder {
   private Parser parser;
   private Encryption encryption;
   private Serializer serializer;
+  private LogInterceptor logInterceptor;
 
   public HawkBuilder(Context context) {
     HawkUtils.checkNull("Context", context);
@@ -48,6 +49,22 @@ public class HawkBuilder {
   HawkBuilder setEncryption(Encryption encryption) {
     this.encryption = encryption;
     return this;
+  }
+
+  HawkBuilder interceptLog(LogInterceptor logInterceptor) {
+    this.logInterceptor = logInterceptor;
+    return this;
+  }
+
+  LogInterceptor getLogInterceptor() {
+    if (logInterceptor == null) {
+      logInterceptor = new LogInterceptor() {
+        @Override public void onLog(String message) {
+          //empty implementation
+        }
+      };
+    }
+    return logInterceptor;
   }
 
   Storage getStorage() {

@@ -6,71 +6,112 @@ public class DefaultHawkFacade implements HawkFacade {
   private final Converter converter;
   private final Encryption encryption;
   private final Serializer serializer;
+  private final LogInterceptor logInterceptor;
 
   public DefaultHawkFacade(HawkBuilder builder) {
     encryption = builder.getEncryption();
     storage = builder.getStorage();
     converter = builder.getConverter();
     serializer = builder.getSerializer();
+    logInterceptor = builder.getLogInterceptor();
   }
 
   @Override public <T> boolean put(String key, T value) {
     // Validate
     HawkUtils.checkNull("Key", key);
+    log("Hawk.put -> key: " + key + ", value: " + value);
 
     // If the value is null, delete it
-    if (value == null) return delete(key);
+    if (value == null) {
+      log("Hawk.put -> Value is null. Any existing value will be deleted with the given key");
+      return delete(key);
+    }
 
     // 1. Convert to text
     String plainText = converter.toString(value);
-    if (plainText == null) return false;
+    log("Hawk.put -> " + value + " is converted to " + plainText);
+    if (plainText == null) {
+      log("Hawk.put -> converter failed to convert " + value);
+      return false;
+    }
 
     // 2. Encrypt the text
     String cipherText = null;
     try {
       cipherText = encryption.encrypt(key, plainText);
+      log("Hawk.put -> Converted value is encrypted to  " + cipherText);
     } catch (Exception e) {
       e.printStackTrace();
     }
-    if (cipherText == null) return false;
+    if (cipherText == null) {
+      log("Hawk.put -> Encryption failed");
+      return false;
+    }
 
     // 3. Serialize the given object along with the cipher text
-    String encodedText = serializer.serialize(cipherText, value);
-    if (encodedText == null) return false;
+    String serializedText = serializer.serialize(cipherText, value);
+    log("Hawk.put -> Cipher text is encoded to " + serializedText);
+    if (serializedText == null) {
+      log("Hawk.put -> Serialization failed");
+      return false;
+    }
 
     // 4. Save to the storage
-    return storage.put(key, encodedText);
+    if (storage.put(key, serializedText)) {
+      log("Hawk.put -> Serialized text is stored successfully");
+      return true;
+    } else {
+      log("Hawk.put -> Store operation failed");
+      return false;
+    }
   }
 
   @Override public <T> T get(String key) {
-    if (key == null) return null;
+    log("Hawk.get -> key: " + key);
+    if (key == null) {
+      log("Hawk.get -> null key, returning null value ");
+      return null;
+    }
 
     // 1. Get serialized text from the storage
     String serializedText = storage.get(key);
-    if (serializedText == null) return null;
+    log("Hawk.get -> Fetched from storage, serialized text : " + serializedText);
+    if (serializedText == null) {
+      log("Hawk.get -> Fetching from storage failed");
+      return null;
+    }
 
     // 2. Deserialize
     DataInfo dataInfo = serializer.deserialize(serializedText);
-    if (dataInfo == null) return null;
+    log("Hawk.get -> Deserializing the fetched data");
+    if (dataInfo == null) {
+      log("Hawk.get -> Deserialization failed");
+      return null;
+    }
 
     // 3. Decrypt
     String plainText = null;
     try {
       plainText = encryption.decrypt(key, dataInfo.cipherText);
+      log("Hawk.get -> Decrypting.... : " + plainText);
     } catch (Exception e) {
-      e.printStackTrace();
+      log("Hawk.get -> Decrypt failed: " + e.getMessage());
     }
-    if (plainText == null) return null;
+    if (plainText == null) {
+      log("Hawk.get -> Decrypt failed");
+      return null;
+    }
 
     // 4. Convert the text to original data along with original type
+    T result = null;
     try {
-      return converter.fromString(plainText, dataInfo);
+      result = converter.fromString(plainText, dataInfo);
+      log("Hawk.get -> Converting...    : " + result);
     } catch (Exception e) {
-      e.printStackTrace();
+      log("Hawk.get -> Converter failed");
     }
 
-    // Return null in any failure
-    return null;
+    return result;
   }
 
   @Override public <T> T get(String key, T defaultValue) {
@@ -100,5 +141,9 @@ public class DefaultHawkFacade implements HawkFacade {
   }
 
   @Override public void destroy() {
+  }
+
+  private void log(String message) {
+    logInterceptor.onLog(message);
   }
 }
