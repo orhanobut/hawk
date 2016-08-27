@@ -1,6 +1,7 @@
 package com.orhanobut.hawk;
 
 import android.content.Context;
+import android.util.Base64;
 
 import com.facebook.android.crypto.keychain.AndroidConceal;
 import com.facebook.android.crypto.keychain.SharedPrefsBackedKeyChain;
@@ -25,19 +26,21 @@ class ConcealEncryption implements Encryption {
     return null;
   }
 
-  @Override public String encrypt(String key, byte[] value) throws Exception {
+  @Override public String encrypt(String key, String plainText) throws Exception {
     Entity entity = Entity.create(key);
-    byte[] encryptedValue = crypto.encrypt(value, entity);
-    return new String(encryptedValue);
+    byte[] bytes = crypto.encrypt(plainText.getBytes(), entity);
+    return Base64.encodeToString(bytes, Base64.NO_WRAP);
   }
 
   @Override public byte[] decrypt(String value) {
     return new byte[0];
   }
 
-  @Override public String decrypt(String key, byte[] value) throws Exception {
+  @Override public String decrypt(String key, String cipherText) throws Exception {
     Entity entity = Entity.create(key);
-    return new String(crypto.decrypt(value, entity));
+    byte[] decodedBytes = Base64.decode(cipherText, Base64.NO_WRAP);
+    byte[] bytes = crypto.decrypt(decodedBytes, entity);
+    return new String(bytes);
   }
 
   @Override public boolean reset() {
