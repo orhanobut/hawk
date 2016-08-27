@@ -1,6 +1,5 @@
 package com.orhanobut.hawk;
 
-import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -12,30 +11,21 @@ public class HawkSerializer implements Serializer {
   private static final String INFO_DELIMITER = "#";
   private static final char NEW_VERSION = 'V';
 
-  private static final Map<Character, DataType> TYPE_MAP = new HashMap<>();
-
-  static {
-    TYPE_MAP.put(DataType.OBJECT.getType(), DataType.OBJECT);
-    TYPE_MAP.put(DataType.LIST.getType(), DataType.LIST);
-    TYPE_MAP.put(DataType.MAP.getType(), DataType.MAP);
-    TYPE_MAP.put(DataType.SET.getType(), DataType.SET);
-  }
-
   @Override public <T> String serialize(String cipherText, T originalGivenValue) {
     HawkUtils.checkNullOrEmpty("Cipher text", cipherText);
     HawkUtils.checkNull("Value", originalGivenValue);
 
     String keyClassName = "";
     String valueClassName = "";
-    DataType dataType;
+    char dataType;
     if (List.class.isAssignableFrom(originalGivenValue.getClass())) {
       List<?> list = (List<?>) originalGivenValue;
       if (!list.isEmpty()) {
         keyClassName = list.get(0).getClass().getName();
       }
-      dataType = DataType.LIST;
+      dataType = DataInfo.TYPE_LIST;
     } else if (Map.class.isAssignableFrom(originalGivenValue.getClass())) {
-      dataType = DataType.MAP;
+      dataType = DataInfo.TYPE_MAP;
       Map<?, ?> map = (Map) originalGivenValue;
       if (!map.isEmpty()) {
         for (Map.Entry<?, ?> entry : map.entrySet()) {
@@ -52,15 +42,15 @@ public class HawkSerializer implements Serializer {
           keyClassName = iterator.next().getClass().getName();
         }
       }
-      dataType = DataType.SET;
+      dataType = DataInfo.TYPE_SET;
     } else {
-      dataType = DataType.OBJECT;
+      dataType = DataInfo.TYPE_OBJECT;
       keyClassName = originalGivenValue.getClass().getName();
     }
 
     return keyClassName + INFO_DELIMITER +
         valueClassName + INFO_DELIMITER +
-        dataType.getType() + NEW_VERSION + DELIMITER +
+        dataType + NEW_VERSION + DELIMITER +
         cipherText;
   }
 
@@ -68,7 +58,6 @@ public class HawkSerializer implements Serializer {
     String[] infos = serializedText.split(INFO_DELIMITER);
 
     char type = infos[2].charAt(0);
-    DataType dataType = TYPE_MAP.get(type);
 
     // if it is collection, no need to create the class object
     Class<?> keyClazz = null;
@@ -92,7 +81,7 @@ public class HawkSerializer implements Serializer {
     }
 
     String cipherText = getCipherText(infos[infos.length - 1]);
-    return new DataInfo(dataType, cipherText, keyClazz, valueClazz);
+    return new DataInfo(type, cipherText, keyClazz, valueClazz);
   }
 
   private String getCipherText(String serializedText) {

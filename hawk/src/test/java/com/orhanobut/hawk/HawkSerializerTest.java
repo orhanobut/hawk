@@ -41,7 +41,7 @@ public class HawkSerializerTest {
 
     assertThat(dataInfo.keyClazz.getName()).isEqualTo(clazz);
     assertThat(dataInfo.valueClazz.getName()).isEqualTo(clazz);
-    assertThat(dataInfo.dataType).isEqualTo(DataType.OBJECT);
+    assertThat(dataInfo.dataType).isEqualTo(DataInfo.TYPE_OBJECT);
     assertThat(dataInfo.cipherText).isEqualTo(cipher);
   }
 
@@ -61,7 +61,7 @@ public class HawkSerializerTest {
 
     assertThat(dataInfo.keyClazz.getName()).isEqualTo(clazz);
     assertThat(dataInfo.valueClazz.getName()).isEqualTo(clazz);
-    assertThat(dataInfo.dataType).isEqualTo(DataType.OBJECT);
+    assertThat(dataInfo.dataType).isEqualTo(DataInfo.TYPE_OBJECT);
     assertThat(dataInfo.cipherText).isEqualTo(cipher);
   }
 
@@ -90,7 +90,7 @@ public class HawkSerializerTest {
 
     assertThat(dataInfo.keyClazz.getName()).isEqualTo(clazz);
     assertThat(dataInfo.valueClazz).isNull();
-    assertThat(dataInfo.dataType).isEqualTo(DataType.LIST);
+    assertThat(dataInfo.dataType).isEqualTo(DataInfo.TYPE_LIST);
     assertThat(dataInfo.cipherText).isEqualTo(cipher);
   }
 
@@ -119,7 +119,7 @@ public class HawkSerializerTest {
 
     assertThat(dataInfo.keyClazz.getName()).isEqualTo(clazz);
     assertThat(dataInfo.valueClazz.getName()).isEqualTo(clazz);
-    assertThat(dataInfo.dataType).isEqualTo(DataType.MAP);
+    assertThat(dataInfo.dataType).isEqualTo(DataInfo.TYPE_MAP);
     assertThat(dataInfo.cipherText).isEqualTo(cipher);
   }
 
@@ -148,7 +148,7 @@ public class HawkSerializerTest {
 
     assertThat(dataInfo.keyClazz.getName()).isEqualTo(clazz);
     assertThat(dataInfo.valueClazz).isNull();
-    assertThat(dataInfo.dataType).isEqualTo(DataType.SET);
+    assertThat(dataInfo.dataType).isEqualTo(DataInfo.TYPE_SET);
     assertThat(dataInfo.cipherText).isEqualTo(cipher);
   }
 

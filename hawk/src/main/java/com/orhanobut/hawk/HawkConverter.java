@@ -44,13 +44,13 @@ final class HawkConverter implements Converter {
     Class<?> valueType = info.valueClazz;
 
     switch (info.dataType) {
-      case OBJECT:
+      case DataInfo.TYPE_OBJECT:
         return toObject(value, keyType);
-      case LIST:
+      case DataInfo.TYPE_LIST:
         return toList(value, keyType);
-      case MAP:
+      case DataInfo.TYPE_MAP:
         return toMap(value, keyType, valueType);
-      case SET:
+      case DataInfo.TYPE_SET:
         return toSet(value, keyType);
       default:
         return null;
