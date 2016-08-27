@@ -25,8 +25,6 @@ import static org.mockito.MockitoAnnotations.initMocks;
 @Config(constants = BuildConfig.class, sdk = 21)
 public class HawkBuilderTest {
 
-  static final long LATCH_TIMEOUT_IN_SECONDS = 3;
-
   @Spy HawkBuilder builder;
   Context context;
 
@@ -64,40 +62,6 @@ public class HawkBuilderTest {
     } catch (Exception e) {
       assertThat(e).hasMessage("Context should not be null");
     }
-  }
-
-  @Test public void testDefaultEncryptionMode() {
-    assertThat(builder.getEncryptionMethod())
-        .isEqualTo(HawkBuilder.EncryptionMethod.MEDIUM);
-  }
-
-  @Test public void testNoEncryptionMode() {
-    builder.setEncryptionMethod(HawkBuilder.EncryptionMethod.NO_ENCRYPTION)
-        .build();
-
-    assertThat(builder.getEncryptionMethod())
-        .isEqualTo(HawkBuilder.EncryptionMethod.NO_ENCRYPTION);
-  }
-
-  @Test public void highestEncryptionModeShouldHavePassword() {
-    try {
-      builder.setEncryptionMethod(HawkBuilder.EncryptionMethod.HIGHEST)
-          .build();
-
-      fail();
-    } catch (Exception e) {
-      assertThat(e).hasMessage("Password cannot be null " +
-          "if encryption mode is highest");
-    }
-  }
-
-  @Test public void testHighestEncryptionMethod() {
-    builder.setEncryptionMethod(HawkBuilder.EncryptionMethod.HIGHEST)
-        .setPassword("password")
-        .build();
-
-    assertThat(builder.getEncryptionMethod())
-        .isEqualTo(HawkBuilder.EncryptionMethod.HIGHEST);
   }
 
   @Test public void testPassword() {

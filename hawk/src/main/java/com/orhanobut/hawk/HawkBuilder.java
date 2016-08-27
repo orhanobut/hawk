@@ -22,7 +22,6 @@ public class HawkBuilder {
   private static final String KEY_NO_CRYPTO = "dfsklj2342nasdfoasdfcrpknasdf";
 
   private Context context;
-  private EncryptionMethod encryptionMethod;
   private String password;
   private Storage cryptoStorage;
   private Converter converter;
@@ -37,11 +36,6 @@ public class HawkBuilder {
     HawkUtils.checkNull("Context", context);
 
     this.context = context.getApplicationContext();
-  }
-
-  public HawkBuilder setEncryptionMethod(EncryptionMethod encryptionMethod) {
-    this.encryptionMethod = encryptionMethod;
-    return this;
   }
 
   public HawkBuilder setPassword(String password) {
@@ -70,13 +64,6 @@ public class HawkBuilder {
   HawkBuilder setEncryption(Encryption encryption) {
     this.encryption = encryption;
     return this;
-  }
-
-  EncryptionMethod getEncryptionMethod() {
-    if (encryptionMethod == null) {
-      encryptionMethod = EncryptionMethod.MEDIUM;
-    }
-    return encryptionMethod;
   }
 
   String getPassword() {
@@ -112,40 +99,20 @@ public class HawkBuilder {
     return encryption;
   }
 
-  private void validate() {
-    if (getEncryptionMethod() == EncryptionMethod.HIGHEST) {
-      if (TextUtils.isEmpty(getPassword())) {
-        throw new IllegalStateException("Password cannot be null " +
-            "if encryption mode is highest");
-      }
-    }
-  }
-
   public void build() {
     startBuild();
   }
 
   void startBuild() {
-    validate();
     setEncryption();
     Hawk.build(this);
   }
 
   private void setEncryption() {
-    switch (getEncryptionMethod()) {
-      case NO_ENCRYPTION:
-        encryption = new Base64Encryption();
-        break;
-      case MEDIUM:
-      case HIGHEST:
-        encryption = new ConcealEncryption(context);
-        if (!getEncryption().init()) {
-          getInfoStorage().put(KEY_NO_CRYPTO, true);
-          encryption = new Base64Encryption();
-        }
-        break;
-      default:
-        throw new IllegalStateException("encryption mode should be valid");
+    encryption = new ConcealEncryption(context);
+    if (!getEncryption().init()) {
+      getInfoStorage().put(KEY_NO_CRYPTO, true);
+      encryption = new Base64Encryption();
     }
   }
 
