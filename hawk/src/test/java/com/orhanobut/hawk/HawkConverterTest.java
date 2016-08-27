@@ -24,6 +24,7 @@ public class HawkConverterTest {
 
   Converter converter;
   Parser parser;
+  Serializer serializer;
 
   static class Foo {
     String name = "hawk";
@@ -32,6 +33,7 @@ public class HawkConverterTest {
   @Before public void setup() {
     parser = new GsonParser(new Gson());
     converter = new HawkConverter(parser);
+    serializer = new HawkSerializer();
   }
 
   @Test public void createInstanceWithInvalidValues() {
@@ -104,7 +106,7 @@ public class HawkConverterTest {
     String clazz = "java.lang.String";
     String info = "00V";
     String cipher = "cipher";
-    DataInfo dataInfo = DataHelper.getDataInfo(clazz + "##" + info + "@" + cipher);
+    DataInfo dataInfo = serializer.deserialize(clazz + "##" + info + "@" + cipher);
     String actual = converter.fromString(cipher, dataInfo);
     assertThat(actual).isEqualTo(cipher);
   }

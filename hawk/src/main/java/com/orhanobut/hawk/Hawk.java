@@ -10,11 +10,13 @@ public final class Hawk {
   private final Storage storage;
   private final Converter converter;
   private final Encryption encryption;
+  private final Serializer serializer;
 
   private Hawk(HawkBuilder builder) {
     storage = builder.getStorage();
     converter = builder.getConverter();
     encryption = builder.getEncryption();
+    serializer = new HawkSerializer();
   }
 
   /**
@@ -69,7 +71,7 @@ public final class Hawk {
       return null;
     }
 
-    DataInfo dataInfo = DataHelper.getDataInfo(persistedText);
+    DataInfo dataInfo = HAWK.serializer.deserialize(persistedText);
     String plainText = null;
     try {
       plainText = HAWK.encryption.decrypt(key, dataInfo.cipherText);
@@ -195,7 +197,7 @@ public final class Hawk {
     if (cipherText == null) {
       return null;
     }
-    return DataHelper.addType(cipherText, value);
+    return HAWK.serializer.serialize(cipherText, value);
   }
 
   public static void destroy() {
