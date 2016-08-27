@@ -167,17 +167,10 @@ public class HawkBuilder {
       case NO_ENCRYPTION:
         encryption = new Base64Encryption();
         break;
-      case HIGHEST:
-        encryption = new AesEncryption(getStorage(), getPassword());
-        if (!getEncryption().init()) {
-          getInfoStorage().put(KEY_NO_CRYPTO, true);
-          encryption = new Base64Encryption();
-        }
-        break;
       case MEDIUM:
-        encryption = new AesEncryption(getStorage(), null);
+      case HIGHEST:
+        encryption = new ConcealEncryption(context);
         if (!getEncryption().init()) {
-          //fallback to no encryption
           getInfoStorage().put(KEY_NO_CRYPTO, true);
           encryption = new Base64Encryption();
         }
