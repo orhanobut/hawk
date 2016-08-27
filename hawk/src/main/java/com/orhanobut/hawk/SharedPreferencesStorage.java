@@ -33,7 +33,7 @@ final class SharedPreferencesStorage implements Storage {
     return preferences.contains(key);
   }
 
-  @Override public boolean clear() {
+  @Override public boolean deleteAll() {
     return getEditor().clear().commit();
   }
 

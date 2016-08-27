@@ -153,8 +153,8 @@ public class SharedPreferencesStorageTest {
     verify(preferences).contains("key");
   }
 
-  @Test public void clear() throws Exception {
-    storage.clear();
+  @Test public void deleteAll() throws Exception {
+    storage.deleteAll();
 
     verify(preferences).edit();
     verify(editor).clear();

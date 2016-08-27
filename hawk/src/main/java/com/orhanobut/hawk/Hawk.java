@@ -119,13 +119,13 @@ public final class Hawk {
 
   /**
    * Clears the storage, note that crypto data won't be deleted such as salt key etc.
-   * Use resetCrypto in order to clear crypto information
+   * Use resetCrypto in order to deleteAll crypto information
    *
-   * @return true if clear is successful
+   * @return true if deleteAll is successful
    */
-  public static boolean clear() {
+  public static boolean deleteAll() {
     HawkUtils.validateBuild();
-    return HAWK.storage.clear();
+    return HAWK.storage.deleteAll();
   }
 
   /**

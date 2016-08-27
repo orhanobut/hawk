@@ -37,7 +37,7 @@ public interface Storage {
    *
    * @return true if clearance if successful, otherwise false
    */
-  boolean clear();
+  boolean deleteAll();
 
   /**
    * Retrieve count of entries in the storage

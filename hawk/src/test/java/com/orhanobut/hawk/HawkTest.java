@@ -304,11 +304,11 @@ public class HawkTest {
 
   //region CLEAR
   @Test public void testClear() {
-    when(storage.clear()).thenReturn(true);
+    when(storage.deleteAll()).thenReturn(true);
 
-    assertThat(Hawk.clear()).isTrue();
+    assertThat(Hawk.deleteAll()).isTrue();
 
-    verify(storage).clear();
+    verify(storage).deleteAll();
     verifyZeroInteractions(converter, encryption);
   }
 
@@ -316,7 +316,7 @@ public class HawkTest {
     try {
       Hawk.destroy();
       Hawk.init(context);
-      Hawk.clear();
+      Hawk.deleteAll();
       fail("");
     } catch (Exception e) {
     }

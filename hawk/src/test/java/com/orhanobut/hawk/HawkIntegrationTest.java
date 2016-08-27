@@ -32,7 +32,7 @@ public class HawkIntegrationTest {
 
   @After public void tearDown() {
     if (Hawk.isBuilt()) {
-      Hawk.clear();
+      Hawk.deleteAll();
     }
     Hawk.destroy();
   }
@@ -134,7 +134,7 @@ public class HawkIntegrationTest {
   }
 
   @Test public void testCount() {
-    Hawk.clear();
+    Hawk.deleteAll();
     String value = "test";
     Hawk.put("tag", value);
     Hawk.put("tag1", value);
@@ -151,13 +151,13 @@ public class HawkIntegrationTest {
     Hawk.put("tag1", value);
     Hawk.put("tag2", value);
 
-    Hawk.clear();
+    Hawk.deleteAll();
 
     assertThat(Hawk.count()).isEqualTo(0);
   }
 
   @Test public void testRemove() {
-    Hawk.clear();
+    Hawk.deleteAll();
     String value = "test";
     Hawk.put("tag", value);
     Hawk.put("tag1", value);
