@@ -15,10 +15,8 @@ import org.robolectric.RuntimeEnvironment;
 import org.robolectric.annotation.Config;
 
 import java.lang.reflect.Type;
-import java.util.concurrent.CountDownLatch;
 
 import static com.google.common.truth.Truth.assertThat;
-import static java.util.concurrent.TimeUnit.SECONDS;
 import static junit.framework.Assert.fail;
 import static org.mockito.Mockito.verify;
 import static org.mockito.MockitoAnnotations.initMocks;
@@ -151,24 +149,6 @@ public class HawkBuilderTest {
     builder.build();
 
     verify(builder).startBuild();
-  }
-
-  @Test public void testBuildWithCallback() throws InterruptedException {
-    final CountDownLatch latch = new CountDownLatch(1);
-    HawkBuilder.Callback callback = new HawkBuilder.Callback() {
-      @Override
-      public void onSuccess() {
-        latch.countDown();
-      }
-
-      @Override
-      public void onFail(Exception e) {
-        latch.countDown();
-      }
-    };
-    builder.build(callback);
-
-    assertThat(latch.await(LATCH_TIMEOUT_IN_SECONDS, SECONDS)).isTrue();
   }
 
 }

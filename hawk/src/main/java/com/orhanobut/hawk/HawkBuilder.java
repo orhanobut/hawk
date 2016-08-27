@@ -5,9 +5,6 @@ import android.text.TextUtils;
 
 import com.google.gson.Gson;
 
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-
 public class HawkBuilder {
 
   /**
@@ -128,21 +125,6 @@ public class HawkBuilder {
     startBuild();
   }
 
-  public void build(final Callback callback) {
-    ExecutorService executor = Executors.newSingleThreadExecutor();
-    executor.execute(new Runnable() {
-      @Override public void run() {
-        try {
-          startBuild();
-          callback.onSuccess();
-        } catch (Exception e) {
-          callback.onFail(e);
-        }
-      }
-    });
-    executor.shutdown();
-  }
-
   void startBuild() {
     validate();
     setEncryption();
@@ -169,13 +151,5 @@ public class HawkBuilder {
 
   public static Storage newSharedPrefStorage(Context context) {
     return new SharedPreferencesStorage(context, TAG);
-  }
-
-  public interface Callback {
-
-    void onSuccess();
-
-    void onFail(Exception e);
-
   }
 }
