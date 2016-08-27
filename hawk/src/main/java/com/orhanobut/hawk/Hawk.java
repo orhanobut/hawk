@@ -73,36 +73,45 @@ public final class Hawk {
   }
 
   /**
-   * @param key is used to get the saved data
+   * Gets the original data along with original type by the given key.
+   * This is not guaranteed operation since Hawk uses serialization. Any change in in the requested
+   * data type might affect the result. It's guaranteed to return primitive types and String type
    *
-   * @return the saved object
+   * @param key is used to get the persisted data
+   *
+   * @return the original object
    */
   public static <T> T get(String key) {
+
+    // validate
     HawkUtils.checkNull("Key", key);
     HawkUtils.validateBuild();
 
-    String persistedText = HAWK.storage.get(key);
-    if (persistedText == null) {
-      return null;
-    }
+    // 1. Get serialized text from the storage
+    String serializedText = HAWK.storage.get(key);
+    if (serializedText == null) return null;
 
-    DataInfo dataInfo = HAWK.serializer.deserialize(persistedText);
+    // 2. Deserialize
+    DataInfo dataInfo = HAWK.serializer.deserialize(serializedText);
+    if (dataInfo == null) return null;
+
+    // 3. Decrypt
     String plainText = null;
     try {
       plainText = HAWK.encryption.decrypt(key, dataInfo.cipherText);
     } catch (Exception e) {
       e.printStackTrace();
     }
+    if (plainText == null) return null;
 
-    if (plainText == null) {
-      return null;
-    }
-
+    // 4. Convert the text to original data along with original type
     try {
       return HAWK.converter.fromString(plainText, dataInfo);
     } catch (Exception e) {
       e.printStackTrace();
     }
+
+    // Return null in any failure
     return null;
   }
 
@@ -116,9 +125,7 @@ public final class Hawk {
    */
   public static <T> T get(String key, T defaultValue) {
     T t = get(key);
-    if (t == null) {
-      return defaultValue;
-    }
+    if (t == null) return defaultValue;
     return t;
   }
 
