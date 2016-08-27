@@ -5,19 +5,7 @@ import android.content.Context;
 
 public final class Hawk {
 
-  static Hawk HAWK;
-
-  private final Storage storage;
-  private final Converter converter;
-  private final Encryption encryption;
-  private final Serializer serializer;
-
-  private Hawk(HawkBuilder builder) {
-    encryption = builder.getEncryption();
-    storage = builder.getStorage();
-    converter = builder.getConverter();
-    serializer = builder.getSerializer();
-  }
+  static HawkFacade HAWK_FACADE = new HawkFacade.EmptyHawkFacade();
 
   /**
    * This will init the hawk without password protection.
@@ -27,12 +15,12 @@ public final class Hawk {
    */
   public static HawkBuilder init(Context context) {
     HawkUtils.checkNull("Context", context);
-    HAWK = null;
+    HAWK_FACADE = null;
     return new HawkBuilder(context);
   }
 
   static void build(HawkBuilder hawkBuilder) {
-    HAWK = new Hawk(hawkBuilder);
+    HAWK_FACADE = new DefaultHawkFacade(hawkBuilder);
   }
 
   /**
@@ -44,32 +32,7 @@ public final class Hawk {
    * @return true if the operation is successful. Any failure in any step will return false
    */
   public static <T> boolean put(String key, T value) {
-    // Validate
-    HawkUtils.validateBuild();
-    HawkUtils.checkNull("Key", key);
-
-    // If the value is null, delete it
-    if (value == null) return delete(key);
-
-    // 1. Convert to text
-    String plainText = HAWK.converter.toString(value);
-    if (plainText == null) return false;
-
-    // 2. Encrypt the text
-    String cipherText = null;
-    try {
-      cipherText = HAWK.encryption.encrypt(key, plainText);
-    } catch (Exception e) {
-      e.printStackTrace();
-    }
-    if (cipherText == null) return false;
-
-    // 3. Serialize the given object along with the cipher text
-    String encodedText = HAWK.serializer.serialize(cipherText, value);
-    if (encodedText == null) return false;
-
-    // 4. Save to the storage
-    return HAWK.storage.put(key, encodedText);
+    return HAWK_FACADE.put(key, value);
   }
 
   /**
@@ -82,37 +45,7 @@ public final class Hawk {
    * @return the original object
    */
   public static <T> T get(String key) {
-
-    // validate
-    HawkUtils.checkNull("Key", key);
-    HawkUtils.validateBuild();
-
-    // 1. Get serialized text from the storage
-    String serializedText = HAWK.storage.get(key);
-    if (serializedText == null) return null;
-
-    // 2. Deserialize
-    DataInfo dataInfo = HAWK.serializer.deserialize(serializedText);
-    if (dataInfo == null) return null;
-
-    // 3. Decrypt
-    String plainText = null;
-    try {
-      plainText = HAWK.encryption.decrypt(key, dataInfo.cipherText);
-    } catch (Exception e) {
-      e.printStackTrace();
-    }
-    if (plainText == null) return null;
-
-    // 4. Convert the text to original data along with original type
-    try {
-      return HAWK.converter.fromString(plainText, dataInfo);
-    } catch (Exception e) {
-      e.printStackTrace();
-    }
-
-    // Return null in any failure
-    return null;
+    return HAWK_FACADE.get(key);
   }
 
   /**
@@ -124,9 +57,7 @@ public final class Hawk {
    * @return the saved object
    */
   public static <T> T get(String key, T defaultValue) {
-    T t = get(key);
-    if (t == null) return defaultValue;
-    return t;
+    return HAWK_FACADE.get(key, defaultValue);
   }
 
   /**
@@ -135,8 +66,7 @@ public final class Hawk {
    * @return the size
    */
   public static long count() {
-    HawkUtils.validateBuild();
-    return HAWK.storage.count();
+    return HAWK_FACADE.count();
   }
 
   /**
@@ -146,8 +76,7 @@ public final class Hawk {
    * @return true if deleteAll is successful
    */
   public static boolean deleteAll() {
-    HawkUtils.validateBuild();
-    return HAWK.storage.deleteAll();
+    return HAWK_FACADE.deleteAll();
   }
 
   /**
@@ -158,8 +87,7 @@ public final class Hawk {
    * @return true if delete is successful
    */
   public static boolean delete(String key) {
-    HawkUtils.validateBuild();
-    return HAWK.storage.delete(key);
+    return HAWK_FACADE.delete(key);
   }
 
   /**
@@ -170,8 +98,7 @@ public final class Hawk {
    * @return true if it exists in the storage
    */
   public static boolean contains(String key) {
-    HawkUtils.validateBuild();
-    return HAWK.storage.contains(key);
+    return HAWK_FACADE.contains(key);
   }
 
   /**
@@ -180,11 +107,11 @@ public final class Hawk {
    * @return true if correctly initialised and built. False otherwise.
    */
   public static boolean isBuilt() {
-    return HAWK != null;
+    return HAWK_FACADE.isBuilt();
   }
 
   public static void destroy() {
-    HAWK = null;
+    HAWK_FACADE.destroy();
   }
 
 }
