@@ -23,16 +23,6 @@ public class HawkUtilsTest {
     context = RuntimeEnvironment.application;
   }
 
-  @Test public void validateBuild() throws Exception {
-    try {
-      Hawk.init(context);
-      HawkUtils.validateBuild();
-      fail("should throw exception");
-    } catch (Exception e) {
-      assertThat(e).hasMessage("Hawk is not built. " +
-          "Please call build() and wait the initialisation finishes.");
-    }
-  }
 
   @Test public void checkNullShouldDoNothing() {
     try {

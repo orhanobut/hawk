@@ -6,13 +6,6 @@ final class HawkUtils {
     //no instance
   }
 
-  static void validateBuild() {
-    if (!Hawk.isBuilt()) {
-      throw new IllegalStateException("Hawk is not built. " +
-          "Please call build() and wait the initialisation finishes.");
-    }
-  }
-
   public static void checkNull(String message, Object value) {
     if (value == null) {
       throw new NullPointerException(message + " should not be null");
