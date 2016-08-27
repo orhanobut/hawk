@@ -191,8 +191,4 @@ public class HawkIntegrationTest {
     assertThat(true).isTrue();
   }
 
-  @Test public void resetCrypto() {
-    assertThat(Hawk.resetCrypto()).isTrue();
-  }
-
 }

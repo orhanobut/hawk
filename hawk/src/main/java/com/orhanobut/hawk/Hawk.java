@@ -175,16 +175,6 @@ public final class Hawk {
   }
 
   /**
-   * Clears all saved data that is used for the crypto
-   *
-   * @return true if reset is successful
-   */
-  public static boolean resetCrypto() {
-    HawkUtils.validateBuild();
-    return HAWK.encryption.reset();
-  }
-
-  /**
    * Use this method to verify if Hawk is ready to be used.
    *
    * @return true if correctly initialised and built. False otherwise.

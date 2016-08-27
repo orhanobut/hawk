@@ -19,10 +19,6 @@ class Base64Encryption implements Encryption {
     return new String(decodeBase64(value));
   }
 
-  @Override public boolean reset() {
-    return true;
-  }
-
   String encodeBase64(byte[] bytes) {
     try {
       return Base64.encodeToString(bytes, Base64.DEFAULT);

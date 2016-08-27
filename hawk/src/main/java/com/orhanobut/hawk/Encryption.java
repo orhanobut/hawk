@@ -30,10 +30,4 @@ interface Encryption {
    */
   String decrypt(String key, String value) throws Exception;
 
-  /**
-   * Clear everything from the storage
-   */
-  boolean reset();
-
-
 }

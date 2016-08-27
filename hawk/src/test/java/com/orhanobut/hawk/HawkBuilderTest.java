@@ -142,10 +142,6 @@ public class HawkBuilderTest {
       @Override public String decrypt(String key, String value) throws Exception {
         return null;
       }
-
-      @Override public boolean reset() {
-        return false;
-      }
     }
     builder.setEncryption(new MyEncryption()).build();
     assertThat(builder.getEncryption()).isInstanceOf(MyEncryption.class);

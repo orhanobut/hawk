@@ -46,20 +46,14 @@ public class HawkTest {
 
     context = RuntimeEnvironment.application;
 
-    Hawk.build(
-        new HawkBuilder(context)
-            .setConverter(converter)
-            .setStorage(storage)
-            .setEncryption(encryption)
-            .setSerializer(serializer)
+    Hawk.build(new HawkBuilder(context)
+        .setConverter(converter)
+        .setStorage(storage)
+        .setEncryption(encryption)
+        .setSerializer(serializer)
     );
 
-    dataInfo = new DataInfo(
-        DataInfo.TYPE_OBJECT,
-        cipherText,
-        String.class,
-        null
-    );
+    dataInfo = new DataInfo(DataInfo.TYPE_OBJECT, cipherText, String.class, null);
 
     when(serializer.deserialize(withType)).thenReturn(dataInfo);
     when(serializer.serialize(cipherText, value)).thenReturn(withType);
@@ -69,8 +63,7 @@ public class HawkTest {
     Hawk.destroy();
   }
 
-  //region INIT
-  @Test public void initRequiresContext() {
+  @Test public void testInit() {
     try {
       Hawk.init(null);
       fail("context should not be null");
@@ -89,24 +82,12 @@ public class HawkTest {
   @Test public void testIsBuilt() {
     assertThat(Hawk.isBuilt()).isTrue();
   }
-  //endregion
 
-  //region OTHERS
-  @Test public void testDestroy() {
+  @Test public void destroyHawkInstance() {
     Hawk.destroy();
 
     assertThat(Hawk.HAWK).isNull();
   }
-
-  @Test public void testResetCrypto() {
-    when(encryption.reset()).thenReturn(true);
-
-    assertThat(Hawk.resetCrypto()).isTrue();
-
-    verify(encryption).reset();
-    verifyZeroInteractions(storage, converter);
-  }
-  //endregion
 
   //region PUT
   @Test public void testPut() throws Exception {

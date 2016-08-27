@@ -42,10 +42,6 @@ public class Base64EncryptionTest {
     verify(encryption).decrypt("key", "test");
   }
 
-  @Test public void reset() throws Exception {
-    assertThat(encryption.reset()).isTrue();
-  }
-
   @Test public void encodeBase64() {
     String text = "hawk";
     String expected = Base64.encodeToString(text.getBytes(), Base64.DEFAULT);

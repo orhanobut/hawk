@@ -35,8 +35,4 @@ class ConcealEncryption implements Encryption {
     return new String(bytes);
   }
 
-  @Override public boolean reset() {
-    return false;
-  }
-
 }
