@@ -36,25 +36,40 @@ public final class Hawk {
   }
 
   /**
-   * Saves every type of Objects. List, List<T>, primitives
+   * Saves any type including any collection, primitive values or custom objects
    *
-   * @param key   is used to save the data
-   * @param value is the data that is gonna be saved. Value can be object, list type, primitives
+   * @param key   is required to differentiate the given data
+   * @param value is the data that is going to be encrypted and persisted
    *
-   * @return true if put is successful
+   * @return true if the operation is successful. Any failure in any step will return false
    */
   public static <T> boolean put(String key, T value) {
-    HawkUtils.checkNull("Key", key);
+    // Validate
     HawkUtils.validateBuild();
+    HawkUtils.checkNull("Key", key);
 
-    //if the value is null, simply delete it
-    if (value == null) {
-      return delete(key);
+    // If the value is null, delete it
+    if (value == null) return delete(key);
+
+    // 1. Convert to text
+    String plainText = HAWK.converter.toString(value);
+    if (plainText == null) return false;
+
+    // 2. Encrypt the text
+    String cipherText = null;
+    try {
+      cipherText = HAWK.encryption.encrypt(key, plainText);
+    } catch (Exception e) {
+      e.printStackTrace();
     }
+    if (cipherText == null) return false;
 
-    String encodedText = zip(key, value);
-    //if any exception occurs during encoding, encodedText will be null and thus operation is unsuccessful
-    return encodedText != null && HAWK.storage.put(key, encodedText);
+    // 3. Serialize the given object along with the cipher text
+    String encodedText = HAWK.serializer.serialize(cipherText, value);
+    if (encodedText == null) return false;
+
+    // 4. Save to the storage
+    return HAWK.storage.put(key, encodedText);
   }
 
   /**
@@ -169,35 +184,6 @@ public final class Hawk {
    */
   public static boolean isBuilt() {
     return HAWK != null;
-  }
-
-  /**
-   * Encodes the given value as full text (cipher + data info)
-   *
-   * @param value is the given value to toString
-   *
-   * @return full text as string
-   */
-  private static <T> String zip(String key, T value) {
-    HawkUtils.checkNull("Value", value);
-
-    String plainText = HAWK.converter.toString(value);
-
-    if (plainText == null) {
-      return null;
-    }
-
-    String cipherText = null;
-    try {
-      cipherText = HAWK.encryption.encrypt(key, plainText);
-    } catch (Exception e) {
-      e.printStackTrace();
-    }
-
-    if (cipherText == null) {
-      return null;
-    }
-    return HAWK.serializer.serialize(cipherText, value);
   }
 
   public static void destroy() {
