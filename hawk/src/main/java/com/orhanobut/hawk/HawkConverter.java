@@ -34,7 +34,7 @@ final class HawkConverter implements Converter {
   }
 
   @SuppressWarnings("unchecked")
-  @Override public <T> T decode(String value, DataInfo info) throws Exception {
+  @Override public <T> T fromString(String value, DataInfo info) throws Exception {
     if (value == null) {
       return null;
     }

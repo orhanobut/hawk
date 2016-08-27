@@ -91,9 +91,9 @@ public class HawkConverterTest {
   }
 
   @Test public void decodeInvalidValues() throws Exception {
-    assertThat(converter.decode(null, null)).isNull();
+    assertThat(converter.fromString(null, null)).isNull();
     try {
-      assertThat(converter.decode("value", null)).isNull();
+      assertThat(converter.fromString("value", null)).isNull();
       fail();
     } catch (Exception e) {
       assertThat(e).hasMessage("data info should not be null");
@@ -105,7 +105,7 @@ public class HawkConverterTest {
     String info = "00V";
     String cipher = "cipher";
     DataInfo dataInfo = DataHelper.getDataInfo(clazz + "##" + info + "@" + cipher);
-    String actual = converter.decode(cipher, dataInfo);
+    String actual = converter.fromString(cipher, dataInfo);
     assertThat(actual).isEqualTo(cipher);
   }
 

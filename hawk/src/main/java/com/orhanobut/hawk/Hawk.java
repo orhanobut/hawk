@@ -84,7 +84,7 @@ public final class Hawk {
     }
 
     try {
-      return HAWK.converter.decode(decryptedValue, dataInfo);
+      return HAWK.converter.fromString(decryptedValue, dataInfo);
     } catch (Exception e) {
       Logger.d(e.getMessage());
     }

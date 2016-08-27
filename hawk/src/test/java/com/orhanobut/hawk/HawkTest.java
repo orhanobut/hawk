@@ -168,7 +168,7 @@ public class HawkTest {
     InOrder inOrder = inOrder(storage, converter, encryption);
     inOrder.verify(storage).get(key);
     inOrder.verify(encryption).decrypt("key", cipherText);
-    inOrder.verify(converter).decode(eq(value), any(DataInfo.class));
+    inOrder.verify(converter).fromString(eq(value), any(DataInfo.class));
   }
 
   @Test public void returnDefaultValueOnGetWithDefault() throws Exception {
@@ -181,12 +181,12 @@ public class HawkTest {
   @Test public void returnValueOnGetWithDefault() throws Exception {
     when(storage.get(key)).thenReturn(withType);
     when(encryption.decrypt("key", cipherText)).thenReturn(value);
-    when(converter.decode(eq(value), any(DataInfo.class))).thenReturn(value);
+    when(converter.fromString(eq(value), any(DataInfo.class))).thenReturn(value);
 
     assertThat(Hawk.get(key, "default")).isEqualTo(value);
 
     verify(storage).get(key);
-    verify(converter).decode(any(String.class), any(DataInfo.class));
+    verify(converter).fromString(any(String.class), any(DataInfo.class));
     verify(encryption).decrypt("key", cipherText);
   }
 
@@ -251,7 +251,7 @@ public class HawkTest {
 
     verify(storage).get(key);
     verify(encryption).decrypt("key", cipherText);
-    verify(converter).decode(eq(value), any(DataInfo.class));
+    verify(converter).fromString(eq(value), any(DataInfo.class));
   }
 
   //endregion

@@ -20,6 +20,6 @@ interface Converter {
    *
    * @throws Exception
    */
-  <T> T decode(String value, DataInfo dataInfo) throws Exception;
+  <T> T fromString(String value, DataInfo dataInfo) throws Exception;
 
 }
