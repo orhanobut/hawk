@@ -6,17 +6,20 @@ interface Encoder {
    * Encodes the value
    *
    * @param value will be encoded
+   *
    * @return the encoded string
    */
-  <T> byte[] encode(T value);
+  <T> String encode(T value);
 
   /**
    * Decodes
    *
    * @param value is the encoded data
+   *
    * @return the plain value
+   *
    * @throws Exception
    */
-  <T> T decode(byte[] value, DataInfo dataInfo) throws Exception;
+  <T> T decode(String value, DataInfo dataInfo) throws Exception;
 
 }

@@ -84,7 +84,7 @@ public final class Hawk {
     }
 
     try {
-      return HAWK.encoder.decode(decryptedValue.getBytes(), dataInfo);
+      return HAWK.encoder.decode(decryptedValue, dataInfo);
     } catch (Exception e) {
       Logger.d(e.getMessage());
     }
@@ -188,15 +188,15 @@ public final class Hawk {
   private static <T> String zip(String key, T value) {
     HawkUtils.checkNull("Value", value);
 
-    byte[] encodedValue = HAWK.encoder.encode(value);
+    String encodedValue = HAWK.encoder.encode(value);
 
-    if (encodedValue == null || encodedValue.length == 0) {
+    if (encodedValue == null) {
       return null;
     }
 
     String cipherText = null;
     try {
-      cipherText = HAWK.encryption.encrypt(key, new String(encodedValue));
+      cipherText = HAWK.encryption.encrypt(key, encodedValue);
     } catch (Exception e) {
       e.printStackTrace();
     }

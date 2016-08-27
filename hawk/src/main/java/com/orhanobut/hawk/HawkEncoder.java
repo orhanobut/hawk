@@ -26,39 +26,32 @@ final class HawkEncoder implements Encoder {
     this.parser = parser;
   }
 
-  @Override public <T> byte[] encode(T value) {
+  @Override public <T> String encode(T value) {
     if (value == null) {
       return null;
     }
-    byte[] bytes;
-    String json = parser.toJson(value);
-    bytes = json.getBytes();
-
-    return bytes;
+    return parser.toJson(value);
   }
 
   @SuppressWarnings("unchecked")
-  @Override public <T> T decode(byte[] bytes, DataInfo info) throws Exception {
-    if (bytes == null) {
+  @Override public <T> T decode(String value, DataInfo info) throws Exception {
+    if (value == null) {
       return null;
     }
     HawkUtils.checkNull("data info", info);
-
-    // convert to the string json
-    String json = new String(bytes);
 
     Class<?> keyType = info.keyClazz;
     Class<?> valueType = info.valueClazz;
 
     switch (info.dataType) {
       case OBJECT:
-        return toObject(json, keyType);
+        return toObject(value, keyType);
       case LIST:
-        return toList(json, keyType);
+        return toList(value, keyType);
       case MAP:
-        return toMap(json, keyType, valueType);
+        return toMap(value, keyType, valueType);
       case SET:
-        return toSet(json, keyType);
+        return toSet(value, keyType);
       default:
         return null;
     }

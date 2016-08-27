@@ -95,7 +95,7 @@ public class HawkTest {
 
   //region PUT
   @Test public void testPut() throws Exception {
-    when(encoder.encode(value)).thenReturn(value.getBytes());
+    when(encoder.encode(value)).thenReturn(value);
     when(encryption.encrypt("key", value)).thenReturn(cipherText);
     when(storage.put(key, withType)).thenReturn(true);
 
@@ -135,7 +135,7 @@ public class HawkTest {
   }
 
   @Test public void returnFalseAndNotAddToStorageWhenEncryptionFailsOnPut() throws Exception {
-    when(encoder.encode(value)).thenReturn(value.getBytes());
+    when(encoder.encode(value)).thenReturn(value);
     when(encryption.encrypt("key", value)).thenReturn(null);
 
     assertThat(Hawk.put(key, value)).isFalse();
@@ -168,7 +168,7 @@ public class HawkTest {
     InOrder inOrder = inOrder(storage, encoder, encryption);
     inOrder.verify(storage).get(key);
     inOrder.verify(encryption).decrypt("key", cipherText);
-    inOrder.verify(encoder).decode(eq(value.getBytes()), any(DataInfo.class));
+    inOrder.verify(encoder).decode(eq(value), any(DataInfo.class));
   }
 
   @Test public void returnDefaultValueOnGetWithDefault() throws Exception {
@@ -181,12 +181,12 @@ public class HawkTest {
   @Test public void returnValueOnGetWithDefault() throws Exception {
     when(storage.get(key)).thenReturn(withType);
     when(encryption.decrypt("key", cipherText)).thenReturn(value);
-    when(encoder.decode(eq(value.getBytes()), any(DataInfo.class))).thenReturn(value);
+    when(encoder.decode(eq(value), any(DataInfo.class))).thenReturn(value);
 
     assertThat(Hawk.get(key, "default")).isEqualTo(value);
 
     verify(storage).get(key);
-    verify(encoder).decode(any(byte[].class), any(DataInfo.class));
+    verify(encoder).decode(any(String.class), any(DataInfo.class));
     verify(encryption).decrypt("key", cipherText);
   }
 
@@ -251,7 +251,7 @@ public class HawkTest {
 
     verify(storage).get(key);
     verify(encryption).decrypt("key", cipherText);
-    verify(encoder).decode(eq(value.getBytes()), any(DataInfo.class));
+    verify(encoder).decode(eq(value), any(DataInfo.class));
   }
 
   //endregion

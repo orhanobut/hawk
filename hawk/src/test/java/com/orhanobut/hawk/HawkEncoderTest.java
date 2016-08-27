@@ -49,16 +49,16 @@ public class HawkEncoderTest {
 
   @Test public void encodeString() {
     String text = "text";
-    byte[] expected = parser.toJson(text).getBytes();
-    byte[] actual = encoder.encode(text);
+    String expected = parser.toJson(text);
+    String actual = encoder.encode(text);
 
     assertThat(actual).isEqualTo(expected);
   }
 
   @Test public void encodeCustomObject() {
     Foo data = new Foo();
-    byte[] expected = parser.toJson(data).getBytes();
-    byte[] actual = encoder.encode(data);
+    String expected = parser.toJson(data);
+    String actual = encoder.encode(data);
 
     assertThat(actual).isEqualTo(expected);
   }
@@ -66,8 +66,8 @@ public class HawkEncoderTest {
   @Test public void encodeList() {
     List<String> data = new ArrayList<>();
     data.add("test");
-    byte[] expected = parser.toJson(data).getBytes();
-    byte[] actual = encoder.encode(data);
+    String expected = parser.toJson(data);
+    String actual = encoder.encode(data);
 
     assertThat(actual).isEqualTo(expected);
   }
@@ -75,8 +75,8 @@ public class HawkEncoderTest {
   @Test public void encodeMap() {
     Map<String, String> data = new HashMap<>();
     data.put("key", "value");
-    byte[] expected = parser.toJson(data).getBytes();
-    byte[] actual = encoder.encode(data);
+    String expected = parser.toJson(data);
+    String actual = encoder.encode(data);
 
     assertThat(actual).isEqualTo(expected);
   }
@@ -84,8 +84,8 @@ public class HawkEncoderTest {
   @Test public void encodeSet() {
     Set<String> data = new HashSet<>();
     data.add("key");
-    byte[] expected = parser.toJson(data).getBytes();
-    byte[] actual = encoder.encode(data);
+    String expected = parser.toJson(data);
+    String actual = encoder.encode(data);
 
     assertThat(actual).isEqualTo(expected);
   }
@@ -93,7 +93,7 @@ public class HawkEncoderTest {
   @Test public void decodeInvalidValues() throws Exception {
     assertThat(encoder.decode(null, null)).isNull();
     try {
-      assertThat(encoder.decode(new byte[34], null)).isNull();
+      assertThat(encoder.decode("value", null)).isNull();
       fail();
     } catch (Exception e) {
       assertThat(e).hasMessage("data info should not be null");
@@ -105,7 +105,7 @@ public class HawkEncoderTest {
     String info = "00V";
     String cipher = "cipher";
     DataInfo dataInfo = DataHelper.getDataInfo(clazz + "##" + info + "@" + cipher);
-    String actual = encoder.decode(cipher.getBytes(), dataInfo);
+    String actual = encoder.decode(cipher, dataInfo);
     assertThat(actual).isEqualTo(cipher);
   }
 
