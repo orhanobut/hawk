@@ -98,6 +98,12 @@ public class HawkBuilder {
   }
 
   Encryption getEncryption() {
+    if (encryption == null) {
+      encryption = new ConcealEncryption(context);
+      if (!encryption.init()) {
+        encryption = new Base64Encryption();
+      }
+    }
     return encryption;
   }
 
@@ -109,19 +115,6 @@ public class HawkBuilder {
   }
 
   public void build() {
-    startBuild();
-  }
-
-  void startBuild() {
-    setEncryption();
     Hawk.build(this);
-  }
-
-  private void setEncryption() {
-    encryption = new ConcealEncryption(context);
-    if (!getEncryption().init()) {
-      getInfoStorage().put(KEY_NO_CRYPTO, true);
-      encryption = new Base64Encryption();
-    }
   }
 }
