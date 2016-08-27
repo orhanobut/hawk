@@ -12,14 +12,6 @@ public class HawkBuilder {
    * It will break backward compatibility in terms of keeping previous data
    */
   private static final String TAG = "HAWK";
-  private static final String TAG_INFO = "324909sdfsd98098";
-
-  /**
-   * Key to store if the device does not support crypto.
-   * This key has nothing to do with encryption key,
-   * This is merely used for the key tag for preferences value.
-   */
-  private static final String KEY_NO_CRYPTO = "dfsklj2342nasdfoasdfcrpknasdf";
 
   private Context context;
   private String password;
@@ -84,10 +76,6 @@ public class HawkBuilder {
       converter = new HawkConverter(getParser());
     }
     return converter;
-  }
-
-  Storage getInfoStorage() {
-    return new SharedPreferencesStorage(context, TAG_INFO);
   }
 
   Parser getParser() {
