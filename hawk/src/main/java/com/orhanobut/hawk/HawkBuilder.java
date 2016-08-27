@@ -29,7 +29,7 @@ public class HawkBuilder {
   private String password;
   private LogLevel logLevel;
   private Storage cryptoStorage;
-  private Encoder encoder;
+  private Converter converter;
   private Parser parser;
   private Encryption encryption;
 
@@ -71,8 +71,8 @@ public class HawkBuilder {
     return this;
   }
 
-  HawkBuilder setEncoder(Encoder encoder) {
-    this.encoder = encoder;
+  HawkBuilder setConverter(Converter converter) {
+    this.converter = converter;
     return this;
   }
 
@@ -106,11 +106,11 @@ public class HawkBuilder {
     return cryptoStorage;
   }
 
-  Encoder getEncoder() {
-    if (encoder == null) {
-      encoder = new HawkEncoder(getParser());
+  Converter getConverter() {
+    if (converter == null) {
+      converter = new HawkConverter(getParser());
     }
-    return encoder;
+    return converter;
   }
 
   Storage getInfoStorage() {

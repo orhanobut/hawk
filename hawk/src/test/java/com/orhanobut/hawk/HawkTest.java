@@ -33,7 +33,7 @@ public class HawkTest {
 
   Context context;
 
-  @Mock Encoder encoder;
+  @Mock Converter converter;
   @Mock Storage storage;
   @Mock Encryption encryption;
 
@@ -44,7 +44,7 @@ public class HawkTest {
 
     Hawk.build(
         new HawkBuilder(context)
-            .setEncoder(encoder)
+            .setConverter(converter)
             .setStorage(storage)
             .setEncryption(encryption)
     );
@@ -89,20 +89,20 @@ public class HawkTest {
     assertThat(Hawk.resetCrypto()).isTrue();
 
     verify(encryption).reset();
-    verifyZeroInteractions(storage, encoder);
+    verifyZeroInteractions(storage, converter);
   }
   //endregion
 
   //region PUT
   @Test public void testPut() throws Exception {
-    when(encoder.encode(value)).thenReturn(value);
+    when(converter.encode(value)).thenReturn(value);
     when(encryption.encrypt("key", value)).thenReturn(cipherText);
     when(storage.put(key, withType)).thenReturn(true);
 
     assertThat(Hawk.put(key, value)).isTrue();
 
-    InOrder inOrder = inOrder(storage, encoder, encryption);
-    inOrder.verify(encoder).encode(value);
+    InOrder inOrder = inOrder(storage, converter, encryption);
+    inOrder.verify(converter).encode(value);
     inOrder.verify(encryption).encrypt("key", value);
     inOrder.verify(storage).put(key, withType);
   }
@@ -135,23 +135,23 @@ public class HawkTest {
   }
 
   @Test public void returnFalseAndNotAddToStorageWhenEncryptionFailsOnPut() throws Exception {
-    when(encoder.encode(value)).thenReturn(value);
+    when(converter.encode(value)).thenReturn(value);
     when(encryption.encrypt("key", value)).thenReturn(null);
 
     assertThat(Hawk.put(key, value)).isFalse();
 
-    InOrder inOrder = inOrder(storage, encoder, encryption);
-    inOrder.verify(encoder).encode(value);
+    InOrder inOrder = inOrder(storage, converter, encryption);
+    inOrder.verify(converter).encode(value);
     inOrder.verify(encryption).encrypt("key", value);
     verifyZeroInteractions(storage);
   }
 
   @Test public void returnFalseAndNotAddToStorageWhenEncodingFailsOnPut() {
-    when(encoder.encode(value)).thenReturn(null);
+    when(converter.encode(value)).thenReturn(null);
 
     assertThat(Hawk.put(key, value)).isFalse();
 
-    verify(encoder).encode(value);
+    verify(converter).encode(value);
     verifyZeroInteractions(storage, encryption);
   }
 
@@ -165,28 +165,28 @@ public class HawkTest {
 
     Hawk.get(key);
 
-    InOrder inOrder = inOrder(storage, encoder, encryption);
+    InOrder inOrder = inOrder(storage, converter, encryption);
     inOrder.verify(storage).get(key);
     inOrder.verify(encryption).decrypt("key", cipherText);
-    inOrder.verify(encoder).decode(eq(value), any(DataInfo.class));
+    inOrder.verify(converter).decode(eq(value), any(DataInfo.class));
   }
 
   @Test public void returnDefaultValueOnGetWithDefault() throws Exception {
     assertThat(Hawk.get(key, "default")).isEqualTo("default");
 
     verify(storage).get(key);
-    verifyZeroInteractions(encoder, encryption);
+    verifyZeroInteractions(converter, encryption);
   }
 
   @Test public void returnValueOnGetWithDefault() throws Exception {
     when(storage.get(key)).thenReturn(withType);
     when(encryption.decrypt("key", cipherText)).thenReturn(value);
-    when(encoder.decode(eq(value), any(DataInfo.class))).thenReturn(value);
+    when(converter.decode(eq(value), any(DataInfo.class))).thenReturn(value);
 
     assertThat(Hawk.get(key, "default")).isEqualTo(value);
 
     verify(storage).get(key);
-    verify(encoder).decode(any(String.class), any(DataInfo.class));
+    verify(converter).decode(any(String.class), any(DataInfo.class));
     verify(encryption).decrypt("key", cipherText);
   }
 
@@ -216,7 +216,7 @@ public class HawkTest {
     assertThat(Hawk.get(key)).isNull();
 
     verify(storage).get(key);
-    verifyZeroInteractions(encoder, encryption);
+    verifyZeroInteractions(converter, encryption);
   }
 
   @Test public void throwExceptionIfDataIsCorruptedOnGet() {
@@ -229,7 +229,7 @@ public class HawkTest {
     }
 
     verify(storage).get(key);
-    verifyZeroInteractions(encoder, encryption);
+    verifyZeroInteractions(converter, encryption);
   }
 
   @Test public void returnNullIfEncryptionFailsOnGet() throws Exception {
@@ -240,7 +240,7 @@ public class HawkTest {
     verify(storage).get(key);
     verify(encryption).decrypt("key", cipherText);
 
-    verifyZeroInteractions(encoder);
+    verifyZeroInteractions(converter);
   }
 
   @Test public void returnNullIfEncodingFailsOnGet() throws Exception {
@@ -251,7 +251,7 @@ public class HawkTest {
 
     verify(storage).get(key);
     verify(encryption).decrypt("key", cipherText);
-    verify(encoder).decode(eq(value), any(DataInfo.class));
+    verify(converter).decode(eq(value), any(DataInfo.class));
   }
 
   //endregion
@@ -263,7 +263,7 @@ public class HawkTest {
     assertThat(Hawk.delete(key)).isTrue();
 
     verify(storage).delete(key);
-    verifyZeroInteractions(encoder, encryption);
+    verifyZeroInteractions(converter, encryption);
   }
 
   @Test public void testRemoveMultiple() {
@@ -288,7 +288,7 @@ public class HawkTest {
     assertThat(Hawk.count()).isEqualTo(10);
 
     verify(storage).count();
-    verifyZeroInteractions(encoder, encryption);
+    verifyZeroInteractions(converter, encryption);
   }
 
   @Test public void validateBuildOnCount() {
@@ -309,7 +309,7 @@ public class HawkTest {
     assertThat(Hawk.clear()).isTrue();
 
     verify(storage).clear();
-    verifyZeroInteractions(encoder, encryption);
+    verifyZeroInteractions(converter, encryption);
   }
 
   @Test public void validateBuildOnClear() {
@@ -330,7 +330,7 @@ public class HawkTest {
     assertThat(Hawk.contains(key)).isTrue();
 
     verify(storage).contains(key);
-    verifyZeroInteractions(encoder, encryption);
+    verifyZeroInteractions(converter, encryption);
   }
 
   @Test public void validateBuildOnContains() {

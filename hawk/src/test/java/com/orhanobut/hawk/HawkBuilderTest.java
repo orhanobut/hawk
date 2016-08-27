@@ -156,7 +156,7 @@ public class HawkBuilderTest {
   @Test public void testDefaultEncoded() {
     builder.build();
 
-    assertThat(builder.getEncoder()).isInstanceOf(HawkEncoder.class);
+    assertThat(builder.getConverter()).isInstanceOf(HawkConverter.class);
   }
 
   @Test public void testBuild() {

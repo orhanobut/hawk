@@ -15,11 +15,11 @@ import java.util.Set;
  * Serializable types will be encoded/decoded object stream
  * Not serializable objects will be encoded/decoded by parser
  */
-final class HawkEncoder implements Encoder {
+final class HawkConverter implements Converter {
 
   private final Parser parser;
 
-  public HawkEncoder(Parser parser) {
+  public HawkConverter(Parser parser) {
     if (parser == null) {
       throw new NullPointerException("Parser should not be null");
     }

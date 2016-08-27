@@ -8,13 +8,13 @@ public final class Hawk {
   static Hawk HAWK;
 
   private final Storage storage;
-  private final Encoder encoder;
+  private final Converter converter;
   private final Encryption encryption;
   private final LogLevel logLevel;
 
   private Hawk(HawkBuilder builder) {
     storage = builder.getStorage();
-    encoder = builder.getEncoder();
+    converter = builder.getConverter();
     encryption = builder.getEncryption();
     logLevel = builder.getLogLevel();
   }
@@ -84,7 +84,7 @@ public final class Hawk {
     }
 
     try {
-      return HAWK.encoder.decode(decryptedValue, dataInfo);
+      return HAWK.converter.decode(decryptedValue, dataInfo);
     } catch (Exception e) {
       Logger.d(e.getMessage());
     }
@@ -188,7 +188,7 @@ public final class Hawk {
   private static <T> String zip(String key, T value) {
     HawkUtils.checkNull("Value", value);
 
-    String encodedValue = HAWK.encoder.encode(value);
+    String encodedValue = HAWK.converter.encode(value);
 
     if (encodedValue == null) {
       return null;

@@ -1,6 +1,6 @@
 package com.orhanobut.hawk;
 
-interface Encoder {
+interface Converter {
 
   /**
    * Encodes the value
