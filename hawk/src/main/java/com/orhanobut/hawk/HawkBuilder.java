@@ -1,7 +1,6 @@
 package com.orhanobut.hawk;
 
 import android.content.Context;
-import android.text.TextUtils;
 
 import com.google.gson.Gson;
 
@@ -14,7 +13,6 @@ public class HawkBuilder {
   private static final String STORAGE_TAG_DO_NOT_CHANGE = "Hawk2";
 
   private Context context;
-  private String password;
   private Storage cryptoStorage;
   private Converter converter;
   private Parser parser;
@@ -25,14 +23,6 @@ public class HawkBuilder {
     HawkUtils.checkNull("Context", context);
 
     this.context = context.getApplicationContext();
-  }
-
-  public HawkBuilder setPassword(String password) {
-    if (TextUtils.isEmpty(password)) {
-      throw new NullPointerException("Password should not be null or empty");
-    }
-    this.password = password;
-    return this;
   }
 
   public HawkBuilder setStorage(Storage storage) {
@@ -58,10 +48,6 @@ public class HawkBuilder {
   HawkBuilder setEncryption(Encryption encryption) {
     this.encryption = encryption;
     return this;
-  }
-
-  String getPassword() {
-    return password;
   }
 
   Storage getStorage() {

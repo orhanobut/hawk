@@ -38,25 +38,6 @@ public class HawkBuilderTest {
     }
   }
 
-  @Test public void testPassword() {
-    try {
-      builder.setPassword(null);
-      fail();
-    } catch (Exception e) {
-      assertThat(e).hasMessage("Password should not be null or empty");
-    }
-    try {
-      builder.setPassword("");
-      fail();
-    } catch (Exception e) {
-      assertThat(e).hasMessage("Password should not be null or empty");
-    }
-
-    builder.setPassword("password");
-
-    assertThat(builder.getPassword()).isEqualTo("password");
-  }
-
   @Test public void testStorage() {
     builder.build();
     assertThat(builder.getStorage()).isInstanceOf(SharedPreferencesStorage.class);
