@@ -28,10 +28,6 @@ public class HawkBuilder {
   private Parser parser;
   private Encryption encryption;
 
-  public enum EncryptionMethod {
-    HIGHEST, MEDIUM, NO_ENCRYPTION
-  }
-
   public HawkBuilder(Context context) {
     HawkUtils.checkNull("Context", context);
 
@@ -114,9 +110,5 @@ public class HawkBuilder {
       getInfoStorage().put(KEY_NO_CRYPTO, true);
       encryption = new Base64Encryption();
     }
-  }
-
-  public static Storage newSharedPrefStorage(Context context) {
-    return new SharedPreferencesStorage(context, TAG);
   }
 }

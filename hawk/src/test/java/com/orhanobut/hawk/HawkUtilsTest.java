@@ -23,14 +23,6 @@ public class HawkUtilsTest {
     context = RuntimeEnvironment.application;
   }
 
-  @Test public void hasRxJavaOnClasspath() throws Exception {
-    //TODO
-  }
-
-  @Test public void checkRx() throws Exception {
-    //TODO
-  }
-
   @Test public void validateBuild() throws Exception {
     try {
       Hawk.init(context);

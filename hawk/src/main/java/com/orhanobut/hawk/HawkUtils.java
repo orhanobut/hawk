@@ -2,26 +2,8 @@ package com.orhanobut.hawk;
 
 final class HawkUtils {
 
-  static boolean hasRxJavaOnClasspath() {
-    try {
-      Class.forName("rx.Observable");
-      return true;
-    } catch (ClassNotFoundException ignored) {
-//      Logger.e("something happened", ignored);
-      // TODO: 27/08/16 log
-    }
-    return false;
-  }
-
   private HawkUtils() {
     //no instance
-  }
-
-  public static void checkRx() {
-    if (!hasRxJavaOnClasspath()) {
-      throw new NoClassDefFoundError("RxJava is not on classpath, " +
-          "make sure that you have it in your dependencies");
-    }
   }
 
   static void validateBuild() {
