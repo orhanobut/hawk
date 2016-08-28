@@ -4,9 +4,21 @@ android:
   components:
     - tools
     - platform-tools
-    - build-tools-24.0.0
-    - android-23
+    - build-tools-24.0.1
     - android-24
+    - extra-android-m2repository
+    - sys-img-armeabi-v7a-android-18
+
+jdk:
+  - oraclejdk8
+
+notifications:
+  email: false
 
 script:
 - ./gradlew check
+
+cache:
+  directories:
+    - $HOME/.m2
+    - $HOME/.gradle
