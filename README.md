@@ -6,7 +6,7 @@
 Secure, simple key-value storage for android
 
 #### Important Note
-This version has no backward compatibility with Hawk 1+ versions. If you still want to use old versions, check here.
+This version has no backward compatibility with Hawk 1+ versions. If you still want to use old versions, [check here](https://github.com/orhanobut/hawk/tree/hawk1)
 
 ### Initialize
 ```java
