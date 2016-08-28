@@ -27,8 +27,8 @@ dependencies {
   androidTestCompile deps.junit
   androidTestCompile deps.truth
 
-  androidTestCompile 'com.android.support.test:runner:0.5'
-  androidTestCompile 'com.android.support.test:rules:0.5'
+  androidTestCompile deps.espressoRunner
+  androidTestCompile deps.espressoRules
 
 }
 
