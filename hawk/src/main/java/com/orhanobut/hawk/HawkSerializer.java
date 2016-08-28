@@ -11,6 +11,12 @@ class HawkSerializer implements Serializer {
   private static final String INFO_DELIMITER = "#";
   private static final char NEW_VERSION = 'V';
 
+  private final LogInterceptor logInterceptor;
+
+  HawkSerializer(LogInterceptor logInterceptor) {
+    this.logInterceptor = logInterceptor;
+  }
+
   @Override public <T> String serialize(String cipherText, T originalGivenValue) {
     HawkUtils.checkNullOrEmpty("Cipher text", cipherText);
     HawkUtils.checkNull("Value", originalGivenValue);
@@ -66,7 +72,7 @@ class HawkSerializer implements Serializer {
       try {
         keyClazz = Class.forName(firstElement);
       } catch (ClassNotFoundException e) {
-        // TODO: 27/08/16 log
+        logInterceptor.onLog("HawkSerializer -> " + e.getMessage());
       }
     }
 
@@ -76,7 +82,7 @@ class HawkSerializer implements Serializer {
       try {
         valueClazz = Class.forName(secondElement);
       } catch (ClassNotFoundException e) {
-        // TODO: 27/08/16 log
+        logInterceptor.onLog("HawkSerializer -> " + e.getMessage());
       }
     }
 

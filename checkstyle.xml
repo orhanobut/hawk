@@ -49,7 +49,7 @@
     </module>
     <module name="PackageName"/>
     <module name="ParameterName"/>
-    <!--<module name="StaticVariableName"/>-->
+    <module name="StaticVariableName"/>
     <module name="TypeName">
       <property name="format" value="^[A-Z][a-zA-Z0-9_]*$"/>
     </module>
@@ -70,25 +70,21 @@
     <module name="LineLength">
       <property name="max" value="120"/>
     </module>
-    <!--<module name="MethodLength"/>-->
-    <module name="ParameterNumber"/>
+    <module name="MethodLength">
+      <property name="max" value="200"/>
+    </module>
+    <!--<module name="ParameterNumber"/>-->
 
 
     <!-- Checks for whitespace                               -->
     <!-- See http://checkstyle.sf.net/config_whitespace.html -->
     <module name="GenericWhitespace"/>
-    <module name="EmptyForIteratorPad"/>
+    <module name="EmptyForIteratorPad">
+      <property name="option" value="space"/>
+    </module>
     <module name="MethodParamPad"/>
-
-    <module name="NoWhitespaceAfter">
-      <property name="tokens" value="DOT"/>
-      <property name="allowLineBreaks" value="false"/>
-    </module>
-
-    <module name="WhitespaceAfter">
-      <property name="tokens" value="COMMA, SEMI"/>
-    </module>
-
+    <module name="NoWhitespaceAfter"/>
+    <module name="NoWhitespaceBefore"/>
     <!--<module name="OperatorWrap"/>-->
     <module name="ParenPad"/>
     <module name="TypecastParenPad"/>
@@ -99,13 +95,13 @@
     <!-- Modifier Checks                                    -->
     <!-- See http://checkstyle.sf.net/config_modifiers.html -->
     <!--module name="ModifierOrder"/-->
-    <module name="RedundantModifier"/>
+    <!--<module name="RedundantModifier"/>-->
 
 
     <!-- Checks for blocks. You know, those {}'s         -->
     <!-- See http://checkstyle.sf.net/config_blocks.html -->
     <module name="AvoidNestedBlocks"/>
-    <!--<module name="EmptyBlock"/>-->
+    <module name="EmptyBlock"/>
     <module name="LeftCurly"/>
     <module name="NeedBraces">
       <property name="tokens" value="LITERAL_DO, LITERAL_ELSE, LITERAL_FOR, LITERAL_WHILE"/>
@@ -135,7 +131,7 @@
     <!--module name="DesignForExtension"/-->
     <!--module name="FinalClass"/-->
     <module name="HideUtilityClassConstructor"/>
-    <module name="InterfaceIsType"/>
+    <!--<module name="InterfaceIsType"/>-->
     <!--<module name="VisibilityModifier"/>-->
 
 
@@ -143,7 +139,7 @@
     <!-- See http://checkstyle.sf.net/config_misc.html -->
     <module name="ArrayTypeStyle"/>
     <!--module name="FinalParameters"/-->
-    <module name="TodoComment"/>
+    <!--<module name="TodoComment"/>-->
     <module name="UpperEll"/>
   </module>
 </module>

@@ -33,7 +33,11 @@ public class HawkConverterTest {
   @Before public void setup() {
     parser = new GsonParser(new Gson());
     converter = new HawkConverter(parser);
-    serializer = new HawkSerializer();
+    serializer = new HawkSerializer(new LogInterceptor() {
+      @Override public void onLog(String message) {
+        // ignore
+      }
+    });
   }
 
   @Test public void createInstanceWithInvalidValues() {

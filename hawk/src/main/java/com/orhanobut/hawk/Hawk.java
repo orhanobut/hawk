@@ -5,7 +5,11 @@ import android.content.Context;
 
 public final class Hawk {
 
-  static HawkFacade HAWK_FACADE = new HawkFacade.EmptyHawkFacade();
+  private Hawk() {
+    // no instance
+  }
+
+  static HawkFacade hawkFacade = new HawkFacade.EmptyHawkFacade();
 
   /**
    * This will init the hawk without password protection.
@@ -15,12 +19,12 @@ public final class Hawk {
    */
   public static HawkBuilder init(Context context) {
     HawkUtils.checkNull("Context", context);
-    HAWK_FACADE = null;
+    hawkFacade = null;
     return new HawkBuilder(context);
   }
 
   static void build(HawkBuilder hawkBuilder) {
-    HAWK_FACADE = new DefaultHawkFacade(hawkBuilder);
+    hawkFacade = new DefaultHawkFacade(hawkBuilder);
   }
 
   /**
@@ -32,7 +36,7 @@ public final class Hawk {
    * @return true if the operation is successful. Any failure in any step will return false
    */
   public static <T> boolean put(String key, T value) {
-    return HAWK_FACADE.put(key, value);
+    return hawkFacade.put(key, value);
   }
 
   /**
@@ -45,7 +49,7 @@ public final class Hawk {
    * @return the original object
    */
   public static <T> T get(String key) {
-    return HAWK_FACADE.get(key);
+    return hawkFacade.get(key);
   }
 
   /**
@@ -57,7 +61,7 @@ public final class Hawk {
    * @return the saved object
    */
   public static <T> T get(String key, T defaultValue) {
-    return HAWK_FACADE.get(key, defaultValue);
+    return hawkFacade.get(key, defaultValue);
   }
 
   /**
@@ -66,7 +70,7 @@ public final class Hawk {
    * @return the size
    */
   public static long count() {
-    return HAWK_FACADE.count();
+    return hawkFacade.count();
   }
 
   /**
@@ -76,7 +80,7 @@ public final class Hawk {
    * @return true if deleteAll is successful
    */
   public static boolean deleteAll() {
-    return HAWK_FACADE.deleteAll();
+    return hawkFacade.deleteAll();
   }
 
   /**
@@ -87,7 +91,7 @@ public final class Hawk {
    * @return true if delete is successful
    */
   public static boolean delete(String key) {
-    return HAWK_FACADE.delete(key);
+    return hawkFacade.delete(key);
   }
 
   /**
@@ -98,7 +102,7 @@ public final class Hawk {
    * @return true if it exists in the storage
    */
   public static boolean contains(String key) {
-    return HAWK_FACADE.contains(key);
+    return hawkFacade.contains(key);
   }
 
   /**
@@ -107,11 +111,11 @@ public final class Hawk {
    * @return true if correctly initialised and built. False otherwise.
    */
   public static boolean isBuilt() {
-    return HAWK_FACADE.isBuilt();
+    return hawkFacade.isBuilt();
   }
 
   public static void destroy() {
-    HAWK_FACADE.destroy();
+    hawkFacade.destroy();
   }
 
 }

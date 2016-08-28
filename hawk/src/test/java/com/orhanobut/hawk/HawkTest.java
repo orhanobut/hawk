@@ -20,7 +20,7 @@ public class HawkTest {
   @Before public void setup() {
     initMocks(this);
 
-    Hawk.HAWK_FACADE = hawkFacade;
+    Hawk.hawkFacade = hawkFacade;
   }
 
   @After public void tearDown() {

@@ -19,7 +19,11 @@ public class HawkSerializerTest {
   Serializer serializer;
 
   @Before public void setup() {
-    serializer = new HawkSerializer();
+    serializer = new HawkSerializer(new LogInterceptor() {
+      @Override public void onLog(String message) {
+        // ignore
+      }
+    });
   }
 
   static class Foo {

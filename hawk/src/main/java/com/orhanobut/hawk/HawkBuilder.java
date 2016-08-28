@@ -100,7 +100,7 @@ public class HawkBuilder {
 
   Serializer getSerializer() {
     if (serializer == null) {
-      serializer = new HawkSerializer();
+      serializer = new HawkSerializer(getLogInterceptor());
     }
     return serializer;
   }
