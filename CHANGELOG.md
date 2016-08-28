@@ -5,7 +5,8 @@
 - Chain option is removed
 - Facebook conceal is added as crypto provider
 - Async operations are removed
-- Encryption methods are removed, as default it's encrypted and fallback to no encryption mode if the crypto is not available
+- EncryptionMethod is removed, as default it's encrypted and fallback to no encryption mode if the crypto is not available
+- NoEncryption option is available through setEncryption out of box
 - LogLevel is removed. All log messages are delegated to LogInterceptor, thus you can intercept and print it. Otherwise any log message will be ignored.
 - All abstraction layers are pluggable.
 - Sqlite option is removed.
