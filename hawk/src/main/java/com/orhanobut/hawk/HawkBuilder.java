@@ -46,12 +46,12 @@ public class HawkBuilder {
     return this;
   }
 
-  HawkBuilder setConverter(Converter converter) {
+  public HawkBuilder setConverter(Converter converter) {
     this.converter = converter;
     return this;
   }
 
-  HawkBuilder setEncryption(Encryption encryption) {
+  public HawkBuilder setEncryption(Encryption encryption) {
     this.encryption = encryption;
     return this;
   }
