@@ -6,7 +6,7 @@ import android.util.Base64;
  * Provides Base64 encoding as non-encryption option.
  * This doesn't provide any encryption
  */
-class NoEncryption implements Encryption {
+public class NoEncryption implements Encryption {
   @Override public boolean init() {
     return true;
   }
