@@ -16,12 +16,12 @@ import static org.mockito.MockitoAnnotations.initMocks;
 
 @RunWith(RobolectricGradleTestRunner.class)
 @Config(sdk = 21, constants = BuildConfig.class)
-public class Base64EncryptionTest {
+public class NoEncryptionTest {
 
-  @Spy Base64Encryption encryption;
+  @Spy NoEncryption encryption;
 
   @Before public void setup() {
-    encryption = new Base64Encryption();
+    encryption = new NoEncryption();
 
     initMocks(this);
   }

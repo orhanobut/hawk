@@ -127,7 +127,7 @@ public class HawkBuilderTest {
 
   @Test public void testEncryption() {
     builder.build();
-    assertThat(builder.getEncryption()).isInstanceOf(Base64Encryption.class);
+    assertThat(builder.getEncryption()).isInstanceOf(NoEncryption.class);
 
     class MyEncryption implements Encryption {
 
