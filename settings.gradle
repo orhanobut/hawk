@@ -1,1 +1,1 @@
-include ':hawk'
+include ':hawk', ':benchmark'
