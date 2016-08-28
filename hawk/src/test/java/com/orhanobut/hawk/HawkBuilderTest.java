@@ -147,4 +147,16 @@ public class HawkBuilderTest {
     assertThat(builder.getEncryption()).isInstanceOf(MyEncryption.class);
   }
 
+  @Test public void testLogInterceptor() {
+    builder.build();
+    assertThat(builder.getLogInterceptor()).isInstanceOf(LogInterceptor.class);
+
+    class MyLogInterceptor implements LogInterceptor {
+      @Override public void onLog(String message) {
+
+      }
+    }
+    builder.setLogInterceptor(new MyLogInterceptor()).build();
+    assertThat(builder.getLogInterceptor()).isInstanceOf(MyLogInterceptor.class);
+  }
 }
