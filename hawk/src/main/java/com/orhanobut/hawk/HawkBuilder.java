@@ -41,6 +41,11 @@ public class HawkBuilder {
     return this;
   }
 
+  public HawkBuilder setLogInterceptor(LogInterceptor logInterceptor) {
+    this.logInterceptor = logInterceptor;
+    return this;
+  }
+
   HawkBuilder setConverter(Converter converter) {
     this.converter = converter;
     return this;
@@ -48,11 +53,6 @@ public class HawkBuilder {
 
   HawkBuilder setEncryption(Encryption encryption) {
     this.encryption = encryption;
-    return this;
-  }
-
-  HawkBuilder interceptLog(LogInterceptor logInterceptor) {
-    this.logInterceptor = logInterceptor;
     return this;
   }
 
