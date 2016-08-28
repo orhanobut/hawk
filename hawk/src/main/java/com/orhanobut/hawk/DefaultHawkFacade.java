@@ -14,6 +14,8 @@ public class DefaultHawkFacade implements HawkFacade {
     converter = builder.getConverter();
     serializer = builder.getSerializer();
     logInterceptor = builder.getLogInterceptor();
+
+    logInterceptor.onLog("Hawk.init -> Encryption : " + encryption.getClass().getSimpleName());
   }
 
   @Override public <T> boolean put(String key, T value) {
@@ -29,9 +31,9 @@ public class DefaultHawkFacade implements HawkFacade {
 
     // 1. Convert to text
     String plainText = converter.toString(value);
-    log("Hawk.put -> " + value + " is converted to " + plainText);
+    log("Hawk.put -> Converted to " + plainText);
     if (plainText == null) {
-      log("Hawk.put -> converter failed to convert " + value);
+      log("Hawk.put -> Converter failed");
       return false;
     }
 
@@ -39,7 +41,7 @@ public class DefaultHawkFacade implements HawkFacade {
     String cipherText = null;
     try {
       cipherText = encryption.encrypt(key, plainText);
-      log("Hawk.put -> Converted value is encrypted to  " + cipherText);
+      log("Hawk.put -> Encrypted to  " + cipherText);
     } catch (Exception e) {
       e.printStackTrace();
     }
@@ -50,7 +52,7 @@ public class DefaultHawkFacade implements HawkFacade {
 
     // 3. Serialize the given object along with the cipher text
     String serializedText = serializer.serialize(cipherText, value);
-    log("Hawk.put -> Cipher text is encoded to " + serializedText);
+    log("Hawk.put -> Serialized to" + serializedText);
     if (serializedText == null) {
       log("Hawk.put -> Serialization failed");
       return false;
@@ -58,7 +60,7 @@ public class DefaultHawkFacade implements HawkFacade {
 
     // 4. Save to the storage
     if (storage.put(key, serializedText)) {
-      log("Hawk.put -> Serialized text is stored successfully");
+      log("Hawk.put -> Stored successfully");
       return true;
     } else {
       log("Hawk.put -> Store operation failed");
@@ -75,7 +77,7 @@ public class DefaultHawkFacade implements HawkFacade {
 
     // 1. Get serialized text from the storage
     String serializedText = storage.get(key);
-    log("Hawk.get -> Fetched from storage, serialized text : " + serializedText);
+    log("Hawk.get -> Fetched from storage : " + serializedText);
     if (serializedText == null) {
       log("Hawk.get -> Fetching from storage failed");
       return null;
@@ -83,7 +85,7 @@ public class DefaultHawkFacade implements HawkFacade {
 
     // 2. Deserialize
     DataInfo dataInfo = serializer.deserialize(serializedText);
-    log("Hawk.get -> Deserializing the fetched data");
+    log("Hawk.get -> Deserialized");
     if (dataInfo == null) {
       log("Hawk.get -> Deserialization failed");
       return null;
@@ -93,7 +95,7 @@ public class DefaultHawkFacade implements HawkFacade {
     String plainText = null;
     try {
       plainText = encryption.decrypt(key, dataInfo.cipherText);
-      log("Hawk.get -> Decrypting.... : " + plainText);
+      log("Hawk.get -> Decrypted to : " + plainText);
     } catch (Exception e) {
       log("Hawk.get -> Decrypt failed: " + e.getMessage());
     }
@@ -106,7 +108,7 @@ public class DefaultHawkFacade implements HawkFacade {
     T result = null;
     try {
       result = converter.fromString(plainText, dataInfo);
-      log("Hawk.get -> Converting...    : " + result);
+      log("Hawk.get -> Converted to : " + result);
     } catch (Exception e) {
       log("Hawk.get -> Converter failed");
     }
