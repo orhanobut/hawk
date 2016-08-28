@@ -37,9 +37,9 @@ subprojects { project ->
 
 ext {
   minSdkVersion = 10
-  targetSdkVersion = 23
-  compileSdkVersion = 23
-  buildToolsVersion = '24.0.0'
+  targetSdkVersion = 24
+  compileSdkVersion = 24
+  buildToolsVersion = '24.0.1'
   sourceCompatibilityVersion = JavaVersion.VERSION_1_7
   targetCompatibilityVersion = JavaVersion.VERSION_1_7
 }
@@ -52,7 +52,7 @@ ext.deps = [
     junit         : 'junit:junit:4.12',
     truth         : 'com.google.truth:truth:0.28',
     robolectric   : 'org.robolectric:robolectric:3.1',
-    mockito       : "org.mockito:mockito-core:1.10.19",
+    mockito       : 'org.mockito:mockito-core:1.10.19',
     espressoRunner: 'com.android.support.test:runner:0.5',
     espressoRules : 'com.android.support.test:rules:0.5'
 ]
