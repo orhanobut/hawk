@@ -26,7 +26,7 @@ subprojects { project ->
       mavenCentral()
     }
     dependencies {
-      classpath 'com.android.tools.build:gradle:2.1.3'
+      classpath 'com.android.tools.build:gradle:2.2.0'
     }
   }
 
@@ -39,14 +39,14 @@ ext {
   minSdkVersion = 10
   targetSdkVersion = 24
   compileSdkVersion = 24
-  buildToolsVersion = '24.0.1'
+  buildToolsVersion = '24.0.2'
   sourceCompatibilityVersion = JavaVersion.VERSION_1_7
   targetCompatibilityVersion = JavaVersion.VERSION_1_7
 }
 
 ext.deps = [
     gson          : 'com.google.code.gson:gson:2.4',
-    conceal       : 'com.facebook.conceal:conceal:1.1.2@aar',
+    conceal       : 'com.facebook.conceal:conceal:1.1.3@aar',
 
     // Test dependencies
     junit         : 'junit:junit:4.12',
