@@ -16,7 +16,7 @@ public class HawkSerializerTest {
 
   private static final String CIPHER_TEXT = "CIPHER";
 
-  Serializer serializer;
+  private Serializer serializer;
 
   @Before public void setup() {
     serializer = new HawkSerializer(new LogInterceptor() {

@@ -40,7 +40,7 @@ Hawk.deleteAll();
 
 ### Download
 ```groovy
-compile 'com.orhanobut:hawk:2.0.0-Alpha'
+compile 'com.orhanobut:hawk:2.0.1'
 ```
 
 ###  How Hawk works
