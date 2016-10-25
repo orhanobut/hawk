@@ -1,5 +1,8 @@
 # CHANGELOG
 
+### 2.0.1
+- Conceal is updated, with the new version the size is way smaller
+
 ### 2.0.0-Alpha
 - Rx support is removed
 - Chain option is removed
