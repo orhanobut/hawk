@@ -1,12 +1,10 @@
 package com.orhanobut.hawk;
 
-import android.content.Context;
-
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.robolectric.RobolectricGradleTestRunner;
+import org.robolectric.RobolectricTestRunner;
 import org.robolectric.RuntimeEnvironment;
 import org.robolectric.annotation.Config;
 
@@ -19,15 +17,12 @@ import java.util.Set;
 
 import static com.google.common.truth.Truth.assertThat;
 
-@RunWith(RobolectricGradleTestRunner.class)
+@RunWith(RobolectricTestRunner.class)
 @Config(constants = BuildConfig.class, sdk = 21)
 public class HawkFacadeIntegrationTest {
 
-  Context context;
-
   @Before public void setUp() {
-    context = RuntimeEnvironment.application;
-    Hawk.init(context).build();
+    Hawk.init(RuntimeEnvironment.application).build();
   }
 
   @After public void tearDown() {

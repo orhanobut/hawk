@@ -5,7 +5,7 @@ import android.content.Context;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.robolectric.RobolectricGradleTestRunner;
+import org.robolectric.RobolectricTestRunner;
 import org.robolectric.RuntimeEnvironment;
 import org.robolectric.annotation.Config;
 
@@ -15,12 +15,12 @@ import static com.google.common.truth.Truth.assertThat;
 import static junit.framework.Assert.fail;
 import static org.mockito.MockitoAnnotations.initMocks;
 
-@RunWith(RobolectricGradleTestRunner.class)
+@RunWith(RobolectricTestRunner.class)
 @Config(constants = BuildConfig.class, sdk = 21)
 public class HawkBuilderTest {
 
-  HawkBuilder builder;
-  Context context;
+  private HawkBuilder builder;
+  private Context context;
 
   @Before public void setup() {
     initMocks(this);

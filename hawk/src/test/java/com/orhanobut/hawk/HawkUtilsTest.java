@@ -1,28 +1,17 @@
 package com.orhanobut.hawk;
 
-import android.content.Context;
-
-import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.robolectric.RobolectricGradleTestRunner;
-import org.robolectric.RuntimeEnvironment;
+import org.robolectric.RobolectricTestRunner;
 import org.robolectric.annotation.Config;
 
 import static com.google.common.truth.Truth.assertThat;
 import static junit.framework.Assert.fail;
 
 
-@RunWith(RobolectricGradleTestRunner.class)
+@RunWith(RobolectricTestRunner.class)
 @Config(sdk = 21, constants = BuildConfig.class)
 public class HawkUtilsTest {
-
-  Context context;
-
-  @Before public void setup() {
-    context = RuntimeEnvironment.application;
-  }
-
 
   @Test public void checkNullShouldDoNothing() {
     try {

@@ -21,9 +21,9 @@ import static org.mockito.Mockito.verify;
 @Config(manifest = Config.NONE)
 public class SharedPreferencesStorageTest {
 
-  SharedPreferencesStorage storage;
-  SharedPreferences.Editor editor;
-  SharedPreferences preferences;
+  private SharedPreferencesStorage storage;
+  private SharedPreferences.Editor editor;
+  private SharedPreferences preferences;
 
   @Before public void setup() {
     editor = spy(new SharedPreferences.Editor() {
