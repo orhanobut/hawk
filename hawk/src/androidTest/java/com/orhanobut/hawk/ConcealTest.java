@@ -20,7 +20,7 @@ import static com.google.common.truth.Truth.assertThat;
 @RunWith(AndroidJUnit4.class)
 public class ConcealTest {
 
-  Crypto crypto;
+  private Crypto crypto;
 
   @Before public void setup() {
     Context context = InstrumentationRegistry.getContext();

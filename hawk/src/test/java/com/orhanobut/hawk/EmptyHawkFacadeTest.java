@@ -7,7 +7,7 @@ import static junit.framework.Assert.fail;
 
 public class EmptyHawkFacadeTest {
 
-  private HawkFacade hawkFacade = new HawkFacade.EmptyHawkFacade();
+  private final HawkFacade hawkFacade = new HawkFacade.EmptyHawkFacade();
 
   private void assertFail(Exception e) {
     assertThat(e).hasMessage("Hawk is not built. " +

@@ -1,7 +1,5 @@
 package com.orhanobut.hawk;
 
-import android.content.Context;
-
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -20,13 +18,11 @@ import static org.mockito.MockitoAnnotations.initMocks;
 public class HawkBuilderTest {
 
   private HawkBuilder builder;
-  private Context context;
 
   @Before public void setup() {
     initMocks(this);
 
-    context = RuntimeEnvironment.application;
-    builder = new HawkBuilder(context);
+    builder = new HawkBuilder(RuntimeEnvironment.application);
   }
 
   @Test public void testInit() {

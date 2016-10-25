@@ -12,7 +12,7 @@ import static com.google.common.truth.Truth.assertThat;
 @RunWith(AndroidJUnit4.class)
 public class ConcealEncryptionTest {
 
-  Encryption encryption;
+  private Encryption encryption;
 
   @Before public void setup() {
     encryption = new ConcealEncryption(InstrumentationRegistry.getContext());
