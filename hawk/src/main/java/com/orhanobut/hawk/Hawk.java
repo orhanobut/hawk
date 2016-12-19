@@ -127,4 +127,13 @@ public final class Hawk {
   public static List<String> getAllKeys() {
     return hawkFacade.getAllKeys();
   }
+
+  /**
+   * Use this method to clear all, except a list of keys
+   *
+   * @return the number of objects deleted
+   */
+  public static long selectiveDelete(List<String> keys) {
+    return hawkFacade.selectiveDelete(keys);
+  }
 }

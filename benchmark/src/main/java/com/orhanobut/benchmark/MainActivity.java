@@ -7,6 +7,8 @@ import android.util.Log;
 import com.orhanobut.hawk.Hawk;
 import com.orhanobut.hawk.LogInterceptor;
 
+import java.util.Arrays;
+
 public class MainActivity extends Activity {
 
   @Override
@@ -21,6 +23,7 @@ public class MainActivity extends Activity {
     timeHawkCount();
     timeHawkGetKeys();
     timeHawkDelete();
+    timeHawkSelectiveDelete();
   }
 
   private void timeHawkInit() {
@@ -89,4 +92,14 @@ public class MainActivity extends Activity {
     long endTime = System.currentTimeMillis();
     System.out.println("Hawk.getAllKeys: " + (endTime - startTime) + "ms");
   }
+
+  private void timeHawkSelectiveDelete() {
+    long startTime = System.currentTimeMillis();
+
+    Hawk.selectiveDelete(Arrays.asList("key", "key2", "key3"));
+
+    long endTime = System.currentTimeMillis();
+    System.out.println("Hawk.getAllKeys: " + (endTime - startTime) + "ms");
+  }
+
 }

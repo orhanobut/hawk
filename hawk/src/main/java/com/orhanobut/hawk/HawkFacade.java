@@ -24,6 +24,8 @@ public interface HawkFacade {
 
   List<String> getAllKeys();
 
+  long selectiveDelete(List<String> keys);
+
   class EmptyHawkFacade implements HawkFacade {
 
     @Override public <T> boolean put(String key, T value) {
@@ -69,10 +71,14 @@ public interface HawkFacade {
       throwValidation();
     }
 
-    @Override
-    public List<String> getAllKeys() {
+    @Override public List<String> getAllKeys() {
       throwValidation();
       return null;
+    }
+
+    @Override public long selectiveDelete(List<String> keys) {
+      throwValidation();
+      return 0;
     }
 
     private void throwValidation() {

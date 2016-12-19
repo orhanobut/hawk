@@ -59,4 +59,16 @@ final class SharedPreferencesStorage implements Storage {
     return result;
   }
 
+  @Override
+  public long selectiveDelete(List<String> keys) {
+    long result = 0;
+    Map<String, ?> allEntries = preferences.getAll();
+    for (Map.Entry<String, ?> entry : allEntries.entrySet()) {
+      if(!keys.contains(entry.getKey())){
+        delete(entry.getKey());
+        result++;
+      }
+    }
+    return result;
+  }
 }

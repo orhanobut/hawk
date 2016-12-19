@@ -151,6 +151,11 @@ public class DefaultHawkFacade implements HawkFacade {
     return storage.getAllKeys();
   }
 
+  @Override
+  public long selectiveDelete(List<String> keys) {
+    return  storage.selectiveDelete(keys);
+  }
+
   private void log(String message) {
     logInterceptor.onLog(message);
   }
