@@ -64,7 +64,7 @@ final class SharedPreferencesStorage implements Storage {
     long result = 0;
     Map<String, ?> allEntries = preferences.getAll();
     for (Map.Entry<String, ?> entry : allEntries.entrySet()) {
-      if(!keys.contains(entry.getKey())){
+      if (!keys.contains(entry.getKey())) {
         delete(entry.getKey());
         result++;
       }
