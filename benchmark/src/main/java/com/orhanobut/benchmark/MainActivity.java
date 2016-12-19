@@ -84,7 +84,7 @@ public class MainActivity extends Activity {
     System.out.println("Hawk.count: " + (endTime - startTime) + "ms");
   }
 
-  private void timeHawkGetKeys(){
+  private void timeHawkGetKeys() {
     long startTime = System.currentTimeMillis();
 
     Hawk.getAllKeys();
@@ -101,5 +101,4 @@ public class MainActivity extends Activity {
     long endTime = System.currentTimeMillis();
     System.out.println("Hawk.getAllKeys: " + (endTime - startTime) + "ms");
   }
-
 }
