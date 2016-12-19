@@ -1,5 +1,7 @@
 package com.orhanobut.hawk;
 
+import java.util.List;
+
 public interface HawkFacade {
 
   <T> boolean put(String key, T value);
@@ -19,6 +21,8 @@ public interface HawkFacade {
   boolean isBuilt();
 
   void destroy();
+
+  List<String> getAllKeys();
 
   class EmptyHawkFacade implements HawkFacade {
 
@@ -63,6 +67,12 @@ public interface HawkFacade {
 
     @Override public void destroy() {
       throwValidation();
+    }
+
+    @Override
+    public List<String> getAllKeys() {
+      throwValidation();
+      return null;
     }
 
     private void throwValidation() {

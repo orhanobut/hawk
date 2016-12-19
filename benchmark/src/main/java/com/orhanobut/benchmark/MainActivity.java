@@ -19,6 +19,7 @@ public class MainActivity extends Activity {
     timeHawkGet();
     timeHawkContains();
     timeHawkCount();
+    timeHawkGetKeys();
     timeHawkDelete();
   }
 
@@ -78,5 +79,14 @@ public class MainActivity extends Activity {
 
     long endTime = System.currentTimeMillis();
     System.out.println("Hawk.count: " + (endTime - startTime) + "ms");
+  }
+
+  private void timeHawkGetKeys(){
+    long startTime = System.currentTimeMillis();
+
+    Hawk.getAllKeys();
+
+    long endTime = System.currentTimeMillis();
+    System.out.println("Hawk.getAllKeys: " + (endTime - startTime) + "ms");
   }
 }

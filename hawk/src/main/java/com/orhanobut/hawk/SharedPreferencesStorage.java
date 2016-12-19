@@ -3,6 +3,10 @@ package com.orhanobut.hawk;
 import android.content.Context;
 import android.content.SharedPreferences;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+
 final class SharedPreferencesStorage implements Storage {
 
   private final SharedPreferences preferences;
@@ -43,6 +47,16 @@ final class SharedPreferencesStorage implements Storage {
 
   private SharedPreferences.Editor getEditor() {
     return preferences.edit();
+  }
+
+  @Override
+  public List<String> getAllKeys() {
+    List<String> result = new ArrayList<>();
+    Map<String, ?> allEntries = preferences.getAll();
+    for (Map.Entry<String, ?> entry : allEntries.entrySet()) {
+      result.add(entry.getKey());
+    }
+    return result;
   }
 
 }
