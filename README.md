@@ -63,7 +63,7 @@ Hawk.init(context)
 ### Proguard
 Would love to have proguard pull request for consumer proguard implementation
 
-###License
+### License
 <pre>
 Copyright 2016 Orhan Obut
 
