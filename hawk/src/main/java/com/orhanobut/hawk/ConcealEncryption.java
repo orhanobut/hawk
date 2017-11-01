@@ -10,7 +10,7 @@ import com.facebook.crypto.CryptoConfig;
 import com.facebook.crypto.Entity;
 import com.facebook.crypto.keychain.KeyChain;
 
-class ConcealEncryption implements Encryption {
+public class ConcealEncryption implements Encryption {
 
   private final Crypto crypto;
 
