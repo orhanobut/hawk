@@ -1,5 +1,6 @@
 package com.orhanobut.hawk;
 
+@SuppressWarnings("WeakerAccess")
 public interface Storage {
 
   /**

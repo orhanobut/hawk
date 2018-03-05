@@ -26,7 +26,7 @@ public class DefaultHawkFacadeTest {
   private static final String SERIALIZED_TEXT = "SERIALIZED_TEXT";
   private static final DataInfo DATA_INFO = new DataInfo(DataInfo.TYPE_OBJECT, CIPHER_TEXT, String.class, null);
 
-  HawkFacade hawkFacade;
+  private HawkFacade hawkFacade;
 
   @Mock Converter converter;
   @Mock Encryption encryption;

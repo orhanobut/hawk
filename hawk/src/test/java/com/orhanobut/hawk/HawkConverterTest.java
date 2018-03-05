@@ -5,7 +5,7 @@ import com.google.gson.Gson;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.robolectric.RobolectricGradleTestRunner;
+import org.robolectric.RobolectricTestRunner;
 import org.robolectric.annotation.Config;
 
 import java.util.ArrayList;
@@ -18,16 +18,15 @@ import java.util.Set;
 import static com.google.common.truth.Truth.assertThat;
 import static junit.framework.Assert.fail;
 
-@RunWith(RobolectricGradleTestRunner.class)
+@RunWith(RobolectricTestRunner.class)
 @Config(constants = BuildConfig.class, sdk = 18)
 public class HawkConverterTest {
 
-  Converter converter;
-  Parser parser;
-  Serializer serializer;
+  private Converter converter;
+  private Parser parser;
+  private Serializer serializer;
 
   static class Foo {
-    String name = "hawk";
   }
 
   @Before public void setup() {

@@ -1,9 +1,9 @@
 package com.orhanobut.hawk;
 
-public class FooBar {
-  String name = "hawk";
+class FooBar {
+  final String name = "hawk";
 
-  public static class InnerFoo {
-    public String name = "hawk";
+  static class InnerFoo {
+    final String name = "hawk";
   }
 }
