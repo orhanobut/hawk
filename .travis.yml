@@ -1,24 +1,15 @@
 language: android
+jdk: oraclejdk8
 
 android:
   components:
     - tools
     - platform-tools
-    - build-tools-24.0.2
-    - android-24
-    - extra-android-m2repository
-    - sys-img-armeabi-v7a-android-18
+    - build-tools-27.0.3
+    - android-27
 
-jdk:
-  - oraclejdk8
-
-notifications:
-  email: false
+before_install:
+  - yes | sdkmanager "platforms;android-27"
 
 script:
 - ./gradlew check
-
-cache:
-  directories:
-    - $HOME/.m2
-    - $HOME/.gradle
