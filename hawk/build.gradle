@@ -17,8 +17,8 @@ android {
 }
 
 dependencies {
-  compile deps.gson
-  compile deps.conceal
+  compile fileTree(dir: 'libs', include: ['*.jar'])
+  api deps.gson
 
   testCompile deps.junit
   testCompile deps.truth

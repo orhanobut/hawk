@@ -24,35 +24,37 @@ subprojects { project ->
   buildscript {
     repositories {
       jcenter()
+      google()
     }
     dependencies {
-      classpath 'com.android.tools.build:gradle:2.2.1'
+      classpath 'com.android.tools.build:gradle:3.0.1'
     }
   }
 
   repositories {
     jcenter()
+    google()
   }
 }
 
 ext {
-  minSdkVersion = 10
-  targetSdkVersion = 24
-  compileSdkVersion = 24
-  buildToolsVersion = '24.0.2'
+  minSdkVersion = 14
+  targetSdkVersion = 27
+  compileSdkVersion = 27
+  buildToolsVersion = '27.0.3'
+
   sourceCompatibilityVersion = JavaVersion.VERSION_1_7
   targetCompatibilityVersion = JavaVersion.VERSION_1_7
 }
 
 ext.deps = [
-    gson          : 'com.google.code.gson:gson:2.4',
-    conceal       : 'com.facebook.conceal:conceal:1.1.3@aar',
+        gson          : 'com.google.code.gson:gson:2.8.2',
 
-    // Test dependencies
-    junit         : 'junit:junit:4.12',
-    truth         : 'com.google.truth:truth:0.28',
-    robolectric   : 'org.robolectric:robolectric:3.1.2',
-    mockito       : 'org.mockito:mockito-core:1.10.19',
-    espressoRunner: 'com.android.support.test:runner:0.5',
-    espressoRules : 'com.android.support.test:rules:0.5'
+        // Test dependencies
+        junit         : 'junit:junit:4.12',
+        truth         : 'com.google.truth:truth:0.39',
+        robolectric   : 'org.robolectric:robolectric:3.7.1',
+        mockito       : 'org.mockito:mockito-core:1.10.19',
+        espressoRunner: 'com.android.support.test:runner:0.5',
+        espressoRules : 'com.android.support.test:rules:0.5'
 ]
