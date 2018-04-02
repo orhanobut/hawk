@@ -41,7 +41,7 @@ public class DefaultHawkFacade implements HawkFacade {
     String cipherText = null;
     try {
       cipherText = encryption.encrypt(key, plainText);
-      log("Hawk.put -> Encrypted to  " + cipherText);
+      log("Hawk.put -> Encrypted to " + cipherText);
     } catch (Exception e) {
       e.printStackTrace();
     }
@@ -52,7 +52,7 @@ public class DefaultHawkFacade implements HawkFacade {
 
     // 3. Serialize the given object along with the cipher text
     String serializedText = serializer.serialize(cipherText, value);
-    log("Hawk.put -> Serialized to" + serializedText);
+    log("Hawk.put -> Serialized to " + serializedText);
     if (serializedText == null) {
       log("Hawk.put -> Serialization failed");
       return false;
