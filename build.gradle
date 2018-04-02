@@ -36,7 +36,7 @@ subprojects { project ->
 }
 
 ext {
-  minSdkVersion = 10
+  minSdkVersion = 15
   targetSdkVersion = 27
   compileSdkVersion = 27
   buildToolsVersion = '27.0.3'
@@ -51,7 +51,7 @@ ext.deps = [
     // Test dependencies
     junit         : 'junit:junit:4.12',
     truth         : 'com.google.truth:truth:0.28',
-    robolectric   : 'org.robolectric:robolectric:3.1.2',
+    robolectric   : 'org.robolectric:robolectric:3.3',
     mockito       : 'org.mockito:mockito-core:1.10.19',
     espressoRunner: 'com.android.support.test:runner:0.5',
     espressoRules : 'com.android.support.test:rules:0.5'

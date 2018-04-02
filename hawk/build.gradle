@@ -17,20 +17,16 @@ android {
 }
 
 dependencies {
-  compile deps.gson
-  compile deps.conceal
+  api deps.conceal
+  implementation deps.gson
 
-  testCompile deps.junit
-  testCompile deps.truth
-  testCompile deps.robolectric
-  testCompile deps.mockito
+  testImplementation deps.junit
+  testImplementation deps.truth
+  testImplementation deps.robolectric
+  testImplementation deps.mockito
 
-  androidTestCompile deps.junit
-  androidTestCompile deps.truth
-
-  androidTestCompile deps.espressoRunner
-  androidTestCompile deps.espressoRules
-
+  androidTestImplementation deps.junit
+  androidTestImplementation deps.truth
 }
 
 apply from: rootProject.file('gradle/maven_push.gradle')
