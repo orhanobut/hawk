@@ -1,4 +1,5 @@
 apply plugin: 'com.android.library'
+apply plugin: 'kotlin-android'
 
 android {
   compileSdkVersion rootProject.ext.compileSdkVersion
@@ -24,6 +25,7 @@ dependencies {
   testImplementation deps.truth
   testImplementation deps.robolectric
   testImplementation deps.mockito
+  testImplementation deps.kotlin
 
   androidTestImplementation deps.junit
   androidTestImplementation deps.truth
