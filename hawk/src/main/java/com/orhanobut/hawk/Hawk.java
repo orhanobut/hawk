@@ -2,6 +2,7 @@ package com.orhanobut.hawk;
 
 import android.content.Context;
 
+import java.util.List;
 
 public final class Hawk {
 
@@ -118,4 +119,21 @@ public final class Hawk {
     hawkFacade.destroy();
   }
 
+  /**
+   * Use this method to get all the keys saved
+   *
+   * @return the list of all keys saved in the DB
+   */
+  public static List<String> getAllKeys() {
+    return hawkFacade.getAllKeys();
+  }
+
+  /**
+   * Use this method to clear all, except a list of keys
+   *
+   * @return the number of objects deleted
+   */
+  public static long selectiveDelete(List<String> keys) {
+    return hawkFacade.selectiveDelete(keys);
+  }
 }

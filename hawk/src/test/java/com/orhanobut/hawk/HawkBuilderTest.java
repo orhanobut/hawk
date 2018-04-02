@@ -8,6 +8,7 @@ import org.robolectric.RuntimeEnvironment;
 import org.robolectric.annotation.Config;
 
 import java.lang.reflect.Type;
+import java.util.List;
 
 import static com.google.common.truth.Truth.assertThat;
 import static junit.framework.Assert.fail;
@@ -61,6 +62,16 @@ public class HawkBuilderTest {
 
       @Override public boolean contains(String key) {
         return false;
+      }
+
+      @Override
+      public List<String> getAllKeys() {
+        return null;
+      }
+
+      @Override
+      public long selectiveDelete(List<String> keys) {
+        return 0;
       }
     }
     builder.setStorage(new MyStorage()).build();

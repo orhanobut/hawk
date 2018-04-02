@@ -1,5 +1,7 @@
 package com.orhanobut.hawk;
 
+import java.util.List;
+
 @SuppressWarnings("WeakerAccess")
 public interface Storage {
 
@@ -56,4 +58,17 @@ public interface Storage {
    */
   boolean contains(String key);
 
+  /**
+   * Retrieve a list with all the keys in the storage
+   *
+   * @return list of keys
+   */
+  List<String> getAllKeys();
+
+  /**
+   * Clear all the data stored except the keys specified.
+   * @param keys to don't delete
+   * @return the number of items deleted
+   */
+  long selectiveDelete(List<String> keys);
 }
