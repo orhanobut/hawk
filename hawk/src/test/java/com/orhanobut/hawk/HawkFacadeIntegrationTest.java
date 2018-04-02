@@ -51,12 +51,12 @@ public class HawkFacadeIntegrationTest {
     FooBar fooBar = Hawk.get("object");
 
     assertThat(fooBar).isNotNull();
-    assertThat(fooBar.name).isEqualTo("hawk");
+    assertThat(fooBar.getName()).isEqualTo("hawk");
 
     assertThat(Hawk.put("innerClass", new FooBar.InnerFoo())).isTrue();
     FooBar.InnerFoo innerFoo = Hawk.get("innerClass");
     assertThat(innerFoo).isNotNull();
-    assertThat(innerFoo.name).isEqualTo("hawk");
+    assertThat(innerFoo.getName()).isEqualTo("hawk");
   }
 
   @Test public void testSingleItemDefault() {
