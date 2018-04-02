@@ -1,5 +1,12 @@
 package com.orhanobut.hawk;
 
+/**
+ * Intermediate layer which is used by Hawk to encrypt and decrypt the given values.
+ *
+ * <p>Use custom implementation if built-in implementation is not enough.</p>
+ *
+ * @see ConcealEncryption
+ */
 public interface Encryption {
 
   /**
@@ -15,7 +22,6 @@ public interface Encryption {
    *
    * @param key   is the given key
    * @param value is the plain text
-   *
    * @return cipher text as string
    */
   String encrypt(String key, String value) throws Exception;
@@ -25,7 +31,6 @@ public interface Encryption {
    *
    * @param key   is the given key
    * @param value is the cipher text
-   *
    * @return plain text
    */
   String decrypt(String key, String value) throws Exception;

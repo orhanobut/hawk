@@ -8,11 +8,16 @@ Secure, simple key-value storage for android
 #### Important Note
 This version has no backward compatibility with Hawk 1+ versions. If you still want to use old versions, [check here](https://github.com/orhanobut/hawk/tree/hawk1)
 
+### Download
+```groovy
+compile "com.orhanobut:hawk:2.0.1"
+```
+
 ### Initialize
 ```java
 Hawk.init(context).build();
 ```
-### Use
+### Usage
 Save any type (Any object, primitives, lists, sets, maps ...)
 ```java
 Hawk.put(key, T);
@@ -21,7 +26,7 @@ Get the original value with the original type
 ```java
 T value = Hawk.get(key);
 ```
-Delete unwanted data
+Delete any entry
 ```java
 Hawk.delete(key);
 ```
@@ -29,7 +34,7 @@ Check if any key exists
 ```java
 Hawk.contains(key);
 ```
-Check total count
+Check total entry count
 ```java
 Hawk.count();
 ```
@@ -38,12 +43,7 @@ Get crazy and delete everything
 Hawk.deleteAll();
 ```
 
-### Download
-```groovy
-compile 'com.orhanobut:hawk:2.0.1'
-```
-
-###  How Hawk works
+### How does Hawk work?
 
 <img src='https://github.com/orhanobut/hawk/blob/master/art/how-hawk-works.png'/>
 
@@ -59,9 +59,6 @@ Hawk.init(context)
   .setStorage(new MyStorage())
   .build();
 ```
-
-### Proguard
-Would love to have proguard pull request for consumer proguard implementation
 
 ### License
 <pre>

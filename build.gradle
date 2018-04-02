@@ -1,4 +1,22 @@
-// Top-level build file where you can add configuration options common to all sub-projects/modules.
+buildscript {
+  ext.kotlinVersion = '1.2.31'
+  repositories {
+    google()
+    jcenter()
+  }
+  dependencies {
+    classpath 'com.android.tools.build:gradle:3.1.0'
+    classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlinVersion"
+  }
+}
+
+allprojects {
+  repositories {
+    google()
+    jcenter()
+  }
+}
+
 subprojects { project ->
   group = GROUP
   version = VERSION_NAME
@@ -20,39 +38,32 @@ subprojects { project ->
       check.dependsOn('checkstyle')
     }
   }
+}
 
-  buildscript {
-    repositories {
-      jcenter()
-    }
-    dependencies {
-      classpath 'com.android.tools.build:gradle:2.2.1'
-    }
-  }
-
-  repositories {
-    jcenter()
-  }
+task clean(type: Delete) {
+  delete rootProject.buildDir
 }
 
 ext {
-  minSdkVersion = 10
-  targetSdkVersion = 24
-  compileSdkVersion = 24
-  buildToolsVersion = '24.0.2'
+  minSdkVersion = 15
+  targetSdkVersion = 27
+  compileSdkVersion = 27
+  buildToolsVersion = '27.0.3'
   sourceCompatibilityVersion = JavaVersion.VERSION_1_7
   targetCompatibilityVersion = JavaVersion.VERSION_1_7
 }
 
 ext.deps = [
-    gson          : 'com.google.code.gson:gson:2.4',
+    gson          : 'com.google.code.gson:gson:2.8.2',
     conceal       : 'com.facebook.conceal:conceal:1.1.3@aar',
 
     // Test dependencies
     junit         : 'junit:junit:4.12',
     truth         : 'com.google.truth:truth:0.28',
-    robolectric   : 'org.robolectric:robolectric:3.1.2',
-    mockito       : 'org.mockito:mockito-core:1.10.19',
+    robolectric   : 'org.robolectric:robolectric:3.3',
+    mockito       : 'org.mockito:mockito-core:2.8.9',
     espressoRunner: 'com.android.support.test:runner:0.5',
-    espressoRules : 'com.android.support.test:rules:0.5'
+    espressoRules : 'com.android.support.test:rules:0.5',
+    kotlin        : "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlinVersion"
+
 ]

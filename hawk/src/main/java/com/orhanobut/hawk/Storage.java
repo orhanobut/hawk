@@ -1,6 +1,12 @@
 package com.orhanobut.hawk;
 
-@SuppressWarnings("WeakerAccess")
+/**
+ * Intermediate layer which stores the given data. Used by Hawk.
+ *
+ * <p>Use custom implementation if the built-in implementations are not enough.</p>
+ *
+ * @see SharedPreferencesStorage
+ */
 public interface Storage {
 
   /**

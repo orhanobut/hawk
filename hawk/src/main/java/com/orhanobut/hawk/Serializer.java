@@ -1,6 +1,12 @@
 package com.orhanobut.hawk;
 
-@SuppressWarnings("WeakerAccess")
+/**
+ * Intermediate layer that is used to serialize/deserialize the cipher text
+ *
+ * <p>Use custom implementation if built-in implementation is not enough.</p>
+ *
+ * @see HawkSerializer
+ */
 public interface Serializer {
 
   /**

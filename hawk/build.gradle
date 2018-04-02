@@ -1,4 +1,5 @@
 apply plugin: 'com.android.library'
+apply plugin: 'kotlin-android'
 
 android {
   compileSdkVersion rootProject.ext.compileSdkVersion
@@ -17,19 +18,20 @@ android {
 }
 
 dependencies {
-  compile deps.gson
-  compile deps.conceal
+  api deps.conceal
+  implementation deps.gson
 
-  testCompile deps.junit
-  testCompile deps.truth
-  testCompile deps.robolectric
-  testCompile deps.mockito
+  testImplementation deps.junit
+  testImplementation deps.truth
+  testImplementation deps.robolectric
+  testImplementation deps.mockito
+  testImplementation deps.kotlin
 
-  androidTestCompile deps.junit
-  androidTestCompile deps.truth
-
-  androidTestCompile deps.espressoRunner
-  androidTestCompile deps.espressoRules
+  androidTestImplementation deps.junit
+  androidTestImplementation deps.truth
+  androidTestImplementation deps.espressoRunner
+  androidTestImplementation deps.espressoRules
+  androidTestImplementation deps.kotlin
 
 }
 

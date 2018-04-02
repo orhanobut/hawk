@@ -7,7 +7,7 @@ android {
   defaultConfig {
     applicationId "com.orhanobut.benchmark"
     minSdkVersion rootProject.ext.minSdkVersion
-    targetSdkVersion rootProject.ext.targetSdkVersion
+    targetSdkVersion 26
     versionCode 1
     versionName "1.0"
   }
@@ -20,9 +20,6 @@ android {
 }
 
 dependencies {
-  compile fileTree(dir: 'libs', include: ['*.jar'])
-  testCompile 'junit:junit:4.12'
-  compile 'com.android.support:appcompat-v7:24.2.1'
-
-  compile project(':hawk')
+  implementation 'com.android.support:appcompat-v7:27.1.0'
+  implementation project(':hawk')
 }
