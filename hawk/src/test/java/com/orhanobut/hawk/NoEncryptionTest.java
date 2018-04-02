@@ -15,7 +15,6 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.MockitoAnnotations.initMocks;
 
 @RunWith(RobolectricTestRunner.class)
-@Config(sdk = 21, constants = BuildConfig.class)
 public class NoEncryptionTest {
 
   @Spy NoEncryption encryption;

@@ -19,7 +19,6 @@ import static com.google.common.truth.Truth.assertThat;
 import static junit.framework.Assert.fail;
 
 @RunWith(RobolectricTestRunner.class)
-@Config(constants = BuildConfig.class, sdk = 18)
 public class HawkConverterTest {
 
   private Converter converter;

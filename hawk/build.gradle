@@ -27,6 +27,8 @@ dependencies {
 
   androidTestImplementation deps.junit
   androidTestImplementation deps.truth
+  androidTestImplementation deps.espressoRunner
+  androidTestImplementation deps.espressoRules
 }
 
 apply from: rootProject.file('gradle/maven_push.gradle')

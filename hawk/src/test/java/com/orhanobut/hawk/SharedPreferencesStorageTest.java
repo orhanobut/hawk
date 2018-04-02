@@ -18,7 +18,6 @@ import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.verify;
 
 @RunWith(RobolectricTestRunner.class)
-@Config(manifest = Config.NONE)
 public class SharedPreferencesStorageTest {
 
   private SharedPreferencesStorage storage;

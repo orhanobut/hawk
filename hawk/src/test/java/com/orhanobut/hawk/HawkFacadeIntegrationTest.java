@@ -18,7 +18,6 @@ import java.util.Set;
 import static com.google.common.truth.Truth.assertThat;
 
 @RunWith(RobolectricTestRunner.class)
-@Config(constants = BuildConfig.class, sdk = 21)
 public class HawkFacadeIntegrationTest {
 
   @Before public void setUp() {

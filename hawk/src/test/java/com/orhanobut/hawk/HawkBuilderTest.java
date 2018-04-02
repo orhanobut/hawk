@@ -14,7 +14,6 @@ import static junit.framework.Assert.fail;
 import static org.mockito.MockitoAnnotations.initMocks;
 
 @RunWith(RobolectricTestRunner.class)
-@Config(constants = BuildConfig.class, sdk = 21)
 public class HawkBuilderTest {
 
   private HawkBuilder builder;

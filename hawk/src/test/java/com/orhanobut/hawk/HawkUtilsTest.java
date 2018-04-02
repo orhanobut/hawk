@@ -10,7 +10,6 @@ import static junit.framework.Assert.fail;
 
 
 @RunWith(RobolectricTestRunner.class)
-@Config(sdk = 21, constants = BuildConfig.class)
 public class HawkUtilsTest {
 
   @Test public void checkNullShouldDoNothing() {
