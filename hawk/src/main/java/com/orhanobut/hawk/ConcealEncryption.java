@@ -8,14 +8,22 @@ import com.facebook.android.crypto.keychain.SharedPrefsBackedKeyChain;
 import com.facebook.crypto.Crypto;
 import com.facebook.crypto.CryptoConfig;
 import com.facebook.crypto.Entity;
+import com.facebook.crypto.keychain.KeyChain;
 
-class ConcealEncryption implements Encryption {
+public class ConcealEncryption implements Encryption {
 
   private final Crypto crypto;
 
   public ConcealEncryption(Context context) {
-    SharedPrefsBackedKeyChain keyChain = new SharedPrefsBackedKeyChain(context, CryptoConfig.KEY_256);
-    crypto = AndroidConceal.get().createDefaultCrypto(keyChain);
+    this(new SharedPrefsBackedKeyChain(context, CryptoConfig.KEY_256));
+  }
+
+  protected ConcealEncryption(KeyChain keyChain) {
+    this(AndroidConceal.get().createDefaultCrypto(keyChain));
+  }
+
+  protected ConcealEncryption(Crypto crypto) {
+    this.crypto = crypto;
   }
 
   @Override public boolean init() {
