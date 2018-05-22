@@ -87,6 +87,17 @@ public class HawkFacadeIntegrationTest {
     assertThat(list1).isNotNull();
   }
 
+  @Test public void testBeanList() {
+    List<FooBar> list = new ArrayList<>();
+    list.add(new FooBar());
+    Hawk.put("tag", list);
+
+    List<FooBar> list1 = Hawk.get("tag");
+
+    assertThat(list1).isNotNull();
+    assertThat(list1.get(0).getName()).isEqualTo("hawk");
+  }
+
   @Test public void testMap() {
     Map<String, String> map = new HashMap<>();
     map.put("key", "value");
@@ -178,5 +189,4 @@ public class HawkFacadeIntegrationTest {
     }
     assertThat(true).isTrue();
   }
-
 }

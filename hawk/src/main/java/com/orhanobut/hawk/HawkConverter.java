@@ -68,14 +68,8 @@ final class HawkConverter implements Converter {
     }
     List<T> list = parser.fromJson(
         json,
-        new TypeToken<List<T>>() {
-        }.getType()
+        TypeToken.getParameterized(List.class, type).getType()
     );
-
-    int size = list.size();
-    for (int i = 0; i < size; i++) {
-      list.set(i, (T) parser.fromJson(parser.toJson(list.get(i)), type));
-    }
     return (T) list;
   }
 
@@ -85,15 +79,8 @@ final class HawkConverter implements Converter {
     if (type == null) {
       return (T) resultSet;
     }
-    Set<T> set = parser.fromJson(json, new TypeToken<Set<T>>() {
-    }.getType());
-
-    for (T t : set) {
-      String valueJson = parser.toJson(t);
-      T value = parser.fromJson(valueJson, type);
-      resultSet.add(value);
-    }
-    return (T) resultSet;
+    Set<T> set = parser.fromJson(json, TypeToken.getParameterized(Set.class, type).getType());
+    return (T) set;
   }
 
   @SuppressWarnings("unchecked")
@@ -102,18 +89,8 @@ final class HawkConverter implements Converter {
     if (keyType == null || valueType == null) {
       return (T) resultMap;
     }
-    Map<K, V> map = parser.fromJson(json, new TypeToken<Map<K, V>>() {
-    }.getType());
-
-    for (Map.Entry<K, V> entry : map.entrySet()) {
-      String keyJson = parser.toJson(entry.getKey());
-      K k = parser.fromJson(keyJson, keyType);
-
-      String valueJson = parser.toJson(entry.getValue());
-      V v = parser.fromJson(valueJson, valueType);
-      resultMap.put(k, v);
-    }
-    return (T) resultMap;
+    Map<K, V> map = parser.fromJson(json, TypeToken.getParameterized(Map.class, keyType, valueType).getType());
+    return (T) map;
   }
 
 }
