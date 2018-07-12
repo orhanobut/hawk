@@ -33,3 +33,4 @@ build/
 
 # layout inspector view captures
 captures
+.idea/
