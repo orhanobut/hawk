@@ -1,0 +1,41 @@
+apply plugin: 'com.android.application'
+apply plugin: 'kotlin-android'
+apply plugin: 'kotlin-kapt'
+
+android {
+    compileSdkVersion 27
+
+    defaultConfig {
+        applicationId "com.orhanobut.hawk.dagger.sample"
+        minSdkVersion 17
+        targetSdkVersion 27
+        versionCode 1
+        versionName "1.0"
+    }
+
+    buildTypes {
+        release {
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+        }
+    }
+
+}
+
+dependencies {
+    implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlinVersion"
+    implementation 'com.android.support:appcompat-v7:27.1.1'
+    implementation 'com.google.dagger:dagger:2.16'
+    implementation('com.google.dagger:dagger-android:2.16') {
+        exclude group: "com.android.support"
+    }
+    implementation('com.google.dagger:dagger-android-support:2.16') {
+        exclude group: "com.android.support"
+    }
+    kapt "com.google.dagger:dagger-compiler:2.16"
+    kapt("com.google.dagger:dagger-android-processor:2.16") {
+        exclude group: "com.android.support"
+    }
+    implementation project(':hawk')
+    implementation project(':hawk-dagger')
+}

@@ -1,1 +1,1 @@
-include ':hawk', ':benchmark'
+include ':hawk', ':benchmark', ':hawk-dagger', ':dagger-sample'
