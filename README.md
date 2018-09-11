@@ -10,9 +10,13 @@ This version has no backward compatibility with Hawk 1+ versions. If you still w
 
 ### Download
 ```groovy
-compile "com.orhanobut:hawk:2.0.1"
+repositories {
+  maven { url "https://jitpack.io" }
+}
 ```
-
+```groovy
+implementation "com.github.orhanobut:hawk:2.0.1"
+```
 ### Initialize
 ```java
 Hawk.init(context).build();
