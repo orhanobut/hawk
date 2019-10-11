@@ -7,6 +7,7 @@ import com.facebook.android.crypto.keychain.SharedPrefsBackedKeyChain
 import com.facebook.crypto.Crypto
 import com.facebook.crypto.CryptoConfig
 import com.facebook.crypto.Entity
+import com.facebook.soloader.SoLoader
 import com.google.common.truth.Truth.assertThat
 import org.junit.Before
 import org.junit.Test
@@ -18,9 +19,15 @@ class ConcealTest {
   private lateinit var crypto: Crypto
 
   @Before fun setup() {
+    SoLoader.init(InstrumentationRegistry.getContext(), false)
+
     val context = InstrumentationRegistry.getContext()
     val keyChain = SharedPrefsBackedKeyChain(context, CryptoConfig.KEY_256)
     crypto = AndroidConceal.get().createDefaultCrypto(keyChain)
+  }
+
+  @Before fun prepareSo() {
+    SoLoader.init(InstrumentationRegistry.getContext(), false)
   }
 
   @Test fun cryptoIsAvailable() {
