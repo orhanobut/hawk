@@ -2,6 +2,7 @@ package com.orhanobut.hawk
 
 import android.support.test.InstrumentationRegistry
 import android.support.test.runner.AndroidJUnit4
+import com.facebook.soloader.SoLoader
 
 import org.junit.Before
 import org.junit.Test
@@ -16,6 +17,10 @@ class ConcealEncryptionTest {
 
   @Before fun setup() {
     encryption = ConcealEncryption(InstrumentationRegistry.getContext())
+  }
+
+  @Before fun prepareSo() {
+    SoLoader.init(InstrumentationRegistry.getContext(), false)
   }
 
   @Test fun init() {
