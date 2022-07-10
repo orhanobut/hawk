@@ -10,7 +10,7 @@ This version has no backward compatibility with Hawk 1+ versions. If you still w
 
 ### Download
 ```groovy
-compile "com.orhanobut:hawk:2.0.1"
+implementation "com.orhanobut:hawk:2.0.1"
 ```
 
 ### Initialize
