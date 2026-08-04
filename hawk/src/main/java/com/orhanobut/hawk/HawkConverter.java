@@ -1,7 +1,5 @@
 package com.orhanobut.hawk;
 
-import com.google.gson.reflect.TypeToken;
-
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -68,8 +66,7 @@ final class HawkConverter implements Converter {
     }
     List<T> list = parser.fromJson(
         json,
-        new TypeToken<List<T>>() {
-        }.getType()
+        List.class
     );
 
     int size = list.size();
@@ -85,8 +82,7 @@ final class HawkConverter implements Converter {
     if (type == null) {
       return (T) resultSet;
     }
-    Set<T> set = parser.fromJson(json, new TypeToken<Set<T>>() {
-    }.getType());
+    Set<T> set = parser.fromJson(json, Set.class);
 
     for (T t : set) {
       String valueJson = parser.toJson(t);
@@ -102,8 +98,7 @@ final class HawkConverter implements Converter {
     if (keyType == null || valueType == null) {
       return (T) resultMap;
     }
-    Map<K, V> map = parser.fromJson(json, new TypeToken<Map<K, V>>() {
-    }.getType());
+    Map<K, V> map = parser.fromJson(json, Map.class);
 
     for (Map.Entry<K, V> entry : map.entrySet()) {
       String keyJson = parser.toJson(entry.getKey());

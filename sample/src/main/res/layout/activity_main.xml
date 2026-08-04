@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:padding="12dp"
+    >
+
+  <TextView
+      android:id="@+id/log"
+      android:layout_width="match_parent"
+      android:layout_height="0dp"
+      android:layout_weight="1"
+      android:fontFamily="monospace"
+      android:textIsSelectable="true"
+      android:textSize="12sp"
+      />
+
+  <Button
+      android:id="@+id/put"
+      android:layout_width="match_parent"
+      android:layout_height="wrap_content"
+      android:text="put/get a String, int, boolean, custom object and list"/>
+
+  <Button
+      android:id="@+id/contains_count_keys"
+      android:layout_width="match_parent"
+      android:layout_height="wrap_content"
+      android:text="contains / count / keys"/>
+
+  <Button
+      android:id="@+id/delete"
+      android:layout_width="match_parent"
+      android:layout_height="wrap_content"
+      android:text="delete one key"/>
+
+  <Button
+      android:id="@+id/delete_all"
+      android:layout_width="match_parent"
+      android:layout_height="wrap_content"
+      android:text="deleteAll"/>
+
+  <Button
+      android:id="@+id/migrate"
+      android:layout_width="match_parent"
+      android:layout_height="wrap_content"
+      android:text="seed Hawk 2.x data + re-init (migration demo)"/>
+
+</LinearLayout>

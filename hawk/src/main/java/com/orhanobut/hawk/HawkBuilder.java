@@ -19,6 +19,7 @@ public class HawkBuilder {
   private Encryption encryption;
   private Serializer serializer;
   private LogInterceptor logInterceptor;
+  private boolean legacyMigrationEnabled = true;
 
   public HawkBuilder(Context context) {
     HawkUtils.checkNull("Context", context);
@@ -56,6 +57,18 @@ public class HawkBuilder {
     return this;
   }
 
+  /**
+   * Enables or disables the one-time migration of Hawk 2.x SharedPreferences data into
+   * Preferences DataStore. Migration is enabled by default and is only relevant when the default
+   * {@link DataStoreStorage} is used.
+   *
+   * @param enabled true to migrate legacy data on build (default)
+   */
+  public HawkBuilder setLegacyMigrationEnabled(boolean enabled) {
+    this.legacyMigrationEnabled = enabled;
+    return this;
+  }
+
   LogInterceptor getLogInterceptor() {
     if (logInterceptor == null) {
       logInterceptor = new LogInterceptor() {
@@ -69,7 +82,7 @@ public class HawkBuilder {
 
   Storage getStorage() {
     if (cryptoStorage == null) {
-      cryptoStorage = new SharedPreferencesStorage(context, STORAGE_TAG_DO_NOT_CHANGE);
+      cryptoStorage = new DataStoreStorage(context);
     }
     return cryptoStorage;
   }
@@ -90,7 +103,7 @@ public class HawkBuilder {
 
   Encryption getEncryption() {
     if (encryption == null) {
-      encryption = new ConcealEncryption(context);
+      encryption = new KeystoreAesGcmEncryption();
       if (!encryption.init()) {
         encryption = new NoEncryption();
       }
@@ -106,6 +119,10 @@ public class HawkBuilder {
   }
 
   public void build() {
+    if (legacyMigrationEnabled && getStorage() instanceof DataStoreStorage) {
+      new LegacyMigrator(context, getLogInterceptor(), getEncryption())
+          .migrate(((DataStoreStorage) getStorage()).dataStore());
+    }
     Hawk.build(this);
   }
 }

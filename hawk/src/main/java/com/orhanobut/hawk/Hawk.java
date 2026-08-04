@@ -2,6 +2,8 @@ package com.orhanobut.hawk;
 
 import android.content.Context;
 
+import java.util.List;
+
 /**
  * Secure, simple key-value storage for Android.
  */
@@ -100,6 +102,15 @@ public final class Hawk {
    */
   public static boolean contains(String key) {
     return hawkFacade.contains(key);
+  }
+
+  /**
+   * Returns a list of all keys currently stored.
+   *
+   * @return the stored keys
+   */
+  public static List<String> keys() {
+    return hawkFacade.keys();
   }
 
   /**

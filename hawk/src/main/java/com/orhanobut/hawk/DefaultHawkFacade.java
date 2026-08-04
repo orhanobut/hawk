@@ -1,5 +1,7 @@
 package com.orhanobut.hawk;
 
+import java.util.List;
+
 public class DefaultHawkFacade implements HawkFacade {
 
   private final Storage storage;
@@ -136,6 +138,10 @@ public class DefaultHawkFacade implements HawkFacade {
 
   @Override public boolean contains(String key) {
     return storage.contains(key);
+  }
+
+  @Override public List<String> keys() {
+    return storage.keys();
   }
 
   @Override public boolean isBuilt() {

@@ -7,14 +7,14 @@ import org.junit.Before
 import org.junit.Test
 import org.mockito.Mock
 import org.mockito.Mockito.verify
-import org.mockito.MockitoAnnotations.initMocks
+import org.mockito.MockitoAnnotations.openMocks
 
 class HawkTest {
 
   @Mock private lateinit var hawkFacade: HawkFacade
 
   @Before fun setup() {
-    initMocks(this)
+    openMocks(this)
 
     Hawk.hawkFacade = hawkFacade
   }
@@ -28,7 +28,7 @@ class HawkTest {
       Hawk.init(null)
       fail("context should not be null")
     } catch (e: Exception) {
-      assertThat(e).hasMessage("Context should not be null")
+      assertThat(e).hasMessageThat().isEqualTo("Context should not be null")
     }
 
   }
@@ -73,6 +73,12 @@ class HawkTest {
     Hawk.contains("key")
 
     verify(hawkFacade).contains("key")
+  }
+
+  @Test fun keys() {
+    Hawk.keys()
+
+    verify(hawkFacade).keys()
   }
 
   @Test fun isBuilt() {

@@ -125,7 +125,7 @@ class SharedPreferencesStorageTest {
       storage.put(null, "value")
       fail("key should not be null")
     } catch (e: Exception) {
-      assertThat(e).hasMessage("key should not be null")
+      assertThat(e).hasMessageThat().isEqualTo("key should not be null")
     }
 
   }
@@ -163,5 +163,12 @@ class SharedPreferencesStorageTest {
 
     verify(preferences).all
     assertThat(count).isEqualTo(1)
+  }
+
+  @Test fun keys() {
+    val keys = storage.keys()
+
+    verify(preferences).all
+    assertThat(keys).containsExactly("key")
   }
 }

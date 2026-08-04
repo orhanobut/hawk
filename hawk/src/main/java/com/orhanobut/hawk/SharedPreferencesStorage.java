@@ -3,6 +3,9 @@ package com.orhanobut.hawk;
 import android.content.Context;
 import android.content.SharedPreferences;
 
+import java.util.ArrayList;
+import java.util.List;
+
 final class SharedPreferencesStorage implements Storage {
 
   private final SharedPreferences preferences;
@@ -39,6 +42,10 @@ final class SharedPreferencesStorage implements Storage {
 
   @Override public long count() {
     return preferences.getAll().size();
+  }
+
+  @Override public List<String> keys() {
+    return new ArrayList<>(preferences.getAll().keySet());
   }
 
   private SharedPreferences.Editor getEditor() {

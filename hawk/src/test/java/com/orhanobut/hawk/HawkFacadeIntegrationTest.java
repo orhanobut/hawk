@@ -33,19 +33,19 @@ public class HawkFacadeIntegrationTest {
 
   @Test public void testSingleItem() {
     Hawk.put("boolean", true);
-    assertThat(Hawk.get("boolean")).isEqualTo(true);
+    assertThat(Hawk.<Boolean>get("boolean")).isEqualTo(true);
 
     Hawk.put("string", "string");
-    assertThat(Hawk.get("string")).isEqualTo("string");
+    assertThat(Hawk.<String>get("string")).isEqualTo("string");
 
     Hawk.put("float", 1.5f);
-    assertThat(Hawk.get("float")).isEqualTo(1.5f);
+    assertThat(Hawk.<Float>get("float")).isEqualTo(1.5f);
 
     Hawk.put("integer", 10);
-    assertThat(Hawk.get("integer")).isEqualTo(10);
+    assertThat(Hawk.<Integer>get("integer")).isEqualTo(10);
 
     Hawk.put("char", 'A');
-    assertThat(Hawk.get("char")).isEqualTo('A');
+    assertThat(Hawk.<Character>get("char")).isEqualTo('A');
 
     Hawk.put("object", new FooBar());
     FooBar fooBar = Hawk.get("object");
@@ -171,12 +171,34 @@ public class HawkFacadeIntegrationTest {
     assertThat(Hawk.contains("key")).isTrue();
   }
 
+  @Test public void testKeys() {
+    Hawk.deleteAll();
+    Hawk.put("key1", "value1");
+    Hawk.put("key2", "value2");
+
+    assertThat(Hawk.keys()).containsExactly("key1", "key2");
+  }
+
 
   @Test public void testHugeData() {
     for (int i = 0; i < 100; i++) {
       Hawk.put("" + i, "" + i);
     }
     assertThat(true).isTrue();
+  }
+
+  @Test public void testLargeObject() {
+    List<String> large = new ArrayList<>();
+    for (int i = 0; i < 5000; i++) {
+      large.add("value-" + i);
+    }
+
+    Hawk.put("largeObject", large);
+
+    List<String> result = Hawk.get("largeObject");
+    assertThat(result).isNotNull();
+    assertThat(result).hasSize(5000);
+    assertThat(result.get(4999)).isEqualTo("value-4999");
   }
 
 }

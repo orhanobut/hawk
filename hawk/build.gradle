@@ -1,25 +1,38 @@
 apply plugin: 'com.android.library'
-apply plugin: 'kotlin-android'
 
 android {
+  namespace 'com.orhanobut.hawk'
   compileSdkVersion rootProject.ext.compileSdkVersion
-  buildToolsVersion rootProject.ext.buildToolsVersion
 
   defaultConfig {
     minSdkVersion rootProject.ext.minSdkVersion
     consumerProguardFiles 'proguard-rules.pro'
-    testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
+    testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
   }
 
-  lintOptions {
-    textReport true
-    textOutput 'stdout'
+  compileOptions {
+    sourceCompatibility rootProject.ext.sourceCompatibilityVersion
+    targetCompatibility rootProject.ext.targetCompatibilityVersion
+  }
+
+  publishing {
+    singleVariant('release') {
+      withSourcesJar()
+    }
+  }
+
+  testOptions {
+    unitTests {
+      includeAndroidResources true
+    }
   }
 }
 
 dependencies {
-  api deps.conceal
   implementation deps.gson
+  implementation deps.datastorePrefs
+  implementation deps.coroutines
+  implementation deps.kotlin
 
   testImplementation deps.junit
   testImplementation deps.truth
@@ -32,7 +45,6 @@ dependencies {
   androidTestImplementation deps.espressoRunner
   androidTestImplementation deps.espressoRules
   androidTestImplementation deps.kotlin
-
 }
 
 apply from: rootProject.file('gradle/maven_push.gradle')

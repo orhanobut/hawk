@@ -10,7 +10,7 @@ class EmptyHawkFacadeTest {
   private val hawkFacade = HawkFacade.EmptyHawkFacade()
 
   private fun assertFail(e: Exception) {
-    assertThat(e).hasMessage("Hawk is not built. " + "Please call build() and wait the initialisation finishes.")
+    assertThat(e).hasMessageThat().isEqualTo("Hawk is not built. " + "Please call build() and wait the initialisation finishes.")
   }
 
   @Test fun put() {
@@ -81,6 +81,15 @@ class EmptyHawkFacadeTest {
       assertFail(e)
     }
 
+  }
+
+  @Test fun keys() {
+    try {
+      hawkFacade.keys()
+      fail("")
+    } catch (e: Exception) {
+      assertFail(e)
+    }
   }
 
   @Test fun isBuilt() {

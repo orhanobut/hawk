@@ -11,7 +11,7 @@ import java.lang.reflect.Type
 
 import com.google.common.truth.Truth.assertThat
 import junit.framework.Assert.fail
-import org.mockito.MockitoAnnotations.initMocks
+import org.mockito.MockitoAnnotations.openMocks
 
 @RunWith(RobolectricTestRunner::class)
 class HawkBuilderTest {
@@ -19,7 +19,7 @@ class HawkBuilderTest {
   private lateinit var builder: HawkBuilder
 
   @Before fun setup() {
-    initMocks(this)
+    openMocks(this)
 
     builder = HawkBuilder(RuntimeEnvironment.application)
   }
@@ -29,14 +29,14 @@ class HawkBuilderTest {
       HawkBuilder(null)
       fail("Context should not be null")
     } catch (e: Exception) {
-      assertThat(e).hasMessage("Context should not be null")
+      assertThat(e).hasMessageThat().isEqualTo("Context should not be null")
     }
 
   }
 
   @Test fun testStorage() {
     builder.build()
-    assertThat(builder.storage).isInstanceOf(SharedPreferencesStorage::class.java)
+    assertThat(builder.storage).isInstanceOf(DataStoreStorage::class.java)
 
     class MyStorage : Storage {
       override fun <T> put(key: String, value: T): Boolean {
@@ -61,6 +61,10 @@ class HawkBuilderTest {
 
       override fun contains(key: String): Boolean {
         return false
+      }
+
+      override fun keys(): List<String> {
+        return emptyList()
       }
     }
     builder.setStorage(MyStorage()).build()

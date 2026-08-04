@@ -37,7 +37,7 @@ class HawkConverterTest {
       HawkConverter(null)
       fail()
     } catch (e: Exception) {
-      assertThat(e).hasMessage("Parser should not be null")
+      assertThat(e).hasMessageThat().isEqualTo("Parser should not be null")
     }
 
   }
@@ -96,7 +96,7 @@ class HawkConverterTest {
       assertThat(converter.fromString<Any>("value", null)).isNull()
       fail()
     } catch (e: Exception) {
-      assertThat(e).hasMessage("data info should not be null")
+      assertThat(e).hasMessageThat().isEqualTo("data info should not be null")
     }
 
   }

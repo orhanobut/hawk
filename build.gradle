@@ -1,19 +1,20 @@
 buildscript {
-  ext.kotlinVersion = '1.2.31'
   repositories {
-    google()
-    jcenter()
+    // Google Maven mirror (dl.google.com can be unreachable from some networks).
+    maven { url 'https://maven.aliyun.com/repository/google' }
+    maven { url 'https://maven.aliyun.com/repository/central' }
+    mavenCentral()
   }
   dependencies {
-    classpath 'com.android.tools.build:gradle:3.1.0'
-    classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlinVersion"
+    classpath 'com.android.tools.build:gradle:9.3.0'
   }
 }
 
 allprojects {
   repositories {
-    google()
-    jcenter()
+    maven { url 'https://maven.aliyun.com/repository/google' }
+    maven { url 'https://maven.aliyun.com/repository/central' }
+    mavenCentral()
   }
 }
 
@@ -45,25 +46,25 @@ task clean(type: Delete) {
 }
 
 ext {
-  minSdkVersion = 15
-  targetSdkVersion = 27
-  compileSdkVersion = 27
-  buildToolsVersion = '27.0.3'
-  sourceCompatibilityVersion = JavaVersion.VERSION_1_7
-  targetCompatibilityVersion = JavaVersion.VERSION_1_7
+  minSdkVersion = 21
+  targetSdkVersion = 36
+  compileSdkVersion = 36
+  sourceCompatibilityVersion = JavaVersion.VERSION_1_8
+  targetCompatibilityVersion = JavaVersion.VERSION_1_8
 }
 
 ext.deps = [
-    gson          : 'com.google.code.gson:gson:2.8.2',
-    conceal       : 'com.facebook.conceal:conceal:1.1.3@aar',
+    gson          : 'com.google.code.gson:gson:2.13.2',
+    datastorePrefs: 'androidx.datastore:datastore-preferences:1.1.7',
+    coroutines    : 'org.jetbrains.kotlinx:kotlinx-coroutines-android:1.11.0',
 
     // Test dependencies
-    junit         : 'junit:junit:4.12',
-    truth         : 'com.google.truth:truth:0.28',
-    robolectric   : 'org.robolectric:robolectric:3.3',
-    mockito       : 'org.mockito:mockito-core:2.8.9',
-    espressoRunner: 'com.android.support.test:runner:0.5',
-    espressoRules : 'com.android.support.test:rules:0.5',
-    kotlin        : "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlinVersion"
+    junit         : 'junit:junit:4.13.2',
+    truth         : 'com.google.truth:truth:1.4.5',
+    robolectric   : 'org.robolectric:robolectric:4.16.1',
+    mockito       : 'org.mockito:mockito-core:5.23.0',
+    espressoRunner: 'androidx.test:runner:1.6.2',
+    espressoRules : 'androidx.test:rules:1.6.1',
+    kotlin        : 'org.jetbrains.kotlin:kotlin-stdlib:2.2.10'
 
 ]

@@ -1,5 +1,7 @@
 package com.orhanobut.hawk;
 
+import java.util.List;
+
 /**
  * Intermediate layer which stores the given data. Used by Hawk.
  *
@@ -61,5 +63,12 @@ public interface Storage {
    * @return true if the entry exists in the storage, otherwise false
    */
   boolean contains(String key);
+
+  /**
+   * Retrieve all keys currently stored.
+   *
+   * @return the stored keys
+   */
+  List<String> keys();
 
 }

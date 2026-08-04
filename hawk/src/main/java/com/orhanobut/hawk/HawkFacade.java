@@ -1,5 +1,8 @@
 package com.orhanobut.hawk;
 
+import java.util.Collections;
+import java.util.List;
+
 public interface HawkFacade {
 
   <T> boolean put(String key, T value);
@@ -15,6 +18,8 @@ public interface HawkFacade {
   boolean delete(String key);
 
   boolean contains(String key);
+
+  List<String> keys();
 
   boolean isBuilt();
 
@@ -55,6 +60,11 @@ public interface HawkFacade {
     @Override public boolean contains(String key) {
       throwValidation();
       return false;
+    }
+
+    @Override public List<String> keys() {
+      throwValidation();
+      return Collections.emptyList();
     }
 
     @Override public boolean isBuilt() {

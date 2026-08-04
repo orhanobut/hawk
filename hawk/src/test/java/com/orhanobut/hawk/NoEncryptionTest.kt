@@ -10,9 +10,9 @@ import org.robolectric.RobolectricTestRunner
 import org.robolectric.annotation.Config
 
 import com.google.common.truth.Truth.assertThat
-import org.mockito.Matchers.any
+import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito.verify
-import org.mockito.MockitoAnnotations.initMocks
+import org.mockito.MockitoAnnotations.openMocks
 
 @RunWith(RobolectricTestRunner::class)
 class NoEncryptionTest {
@@ -22,7 +22,7 @@ class NoEncryptionTest {
   @Before fun setup() {
     encryption = NoEncryption()
 
-    initMocks(this)
+    openMocks(this)
   }
 
   @Test fun init() {
