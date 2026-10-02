@@ -1,0 +1,6 @@
+<?xml version='1.0' encoding='utf-8'?>
+<issues format="6" by="lint 9.4.1" type="baseline" client="gradle" dependencies="false" name="AGP (9.4.1)" variant="all" version="9.4.1">
+    <issue id="Aligned16KB" message="The native library `x86_64/libconcealjni.so` (from `com.facebook.conceal:conceal:2.0.2`) is not 16 KB aligned" errorLine1="conceal = { module = &quot;com.facebook.conceal:conceal&quot;, version.ref = &quot;conceal&quot; }" errorLine2="           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
+        <location file="../gradle/libs.versions.toml" line="17" column="12" />
+    </issue>
+</issues>

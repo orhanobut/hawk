@@ -1,5 +1,13 @@
 # CHANGELOG
 
+### Unreleased (2.1.0)
+- Convert library and benchmark code to Kotlin while retaining public JVM entry points.
+- Update the Android build, dependency versions, local publication and CI.
+- Require API 21+, matching the supported minimum of current Gson.
+- Expose DataInfo for custom Kotlin converters and serializers.
+- Report an unbuilt facade consistently between init and build.
+- Retain legacy Conceal encryption and document its unresolved 16 KB native alignment.
+
 ### 2.0.1
 - Conceal is updated, with the new version the size is way smaller
 
