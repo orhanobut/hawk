@@ -2,6 +2,8 @@
 
 # Hawk
 
+> **Hawk 3 is coming soon!** Android Keystore-backed AES-GCM encryption, fewer dependencies, and a modern Kotlin codebase are on the way. Hawk 3 is not released yet; the current published version is 2.0.1.
+
 Simple, pluggable key-value storage for Android. Save a value with a key and read it back without writing a database schema.
 
 - Store primitives, strings, custom objects, lists, sets, and maps.
