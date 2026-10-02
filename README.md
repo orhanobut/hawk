@@ -23,7 +23,7 @@ dependencies {
 }
 ```
 
-The examples below use APIs available in 2.0.1. The next version is unreleased and requires Android 5.0 (API 21) or newer; the published 2.0.1 artifact declares API 10 as its minimum.
+The examples below use APIs available in 2.0.1. The next version (3.0) is unreleased and requires Android 6.0 (API 23) or newer; the published 2.0.1 artifact declares API 10 as its minimum.
 
 ## Quick start
 
@@ -63,9 +63,13 @@ Hawk.init(applicationContext)
 
 ## Compatibility and limitations
 
-Hawk's default encryption uses Facebook Conceal, an archived native library. If Conceal cannot initialize, Hawk falls back to `NoEncryption`. Applications requiring encryption must supply and validate an encryption implementation rather than rely on this fallback. Keys are kept in app-private preferences, not the Android Keystore. Avoid logging sensitive data through a `LogInterceptor`.
+The unreleased Hawk 3.0 uses AES-256-GCM with an application-owned Android Keystore key. Each write uses a fresh nonce and binds the ciphertext to its storage key. Initialization fails if Keystore is unavailable; it never falls back to `NoEncryption`. `deleteAll()` retains the Keystore key so other stored values are not invalidated. Keep a custom `KeystoreEncryption("your-stable-alias")` alias unchanged while its data is retained.
 
-Conceal's native binaries do not meet current 16 KB page-alignment requirements. Treat support for 16 KB Android devices and current Play submission requirements as unresolved, including in the unreleased version. See [Android's page-size guidance](https://developer.android.com/guide/practices/page-sizes).
+Published Hawk 2.0.1 still uses legacy Conceal and may fall back to Base64-only storage. Its encryption is not changed by the installation snippet above.
+
+Hawk 3.0 cannot read Hawk 2's default ciphertext. Before upgrading, read and migrate the values using the old application/library, then save them with the new encryption. `ConcealEncryption` has been removed. Unmigrated values remain stored, but `get` returns null (or your default) when decryption fails; they are not automatically cleared or converted. Applications storing non-sensitive data with `NoEncryption` can explicitly keep that implementation.
+
+Keystore keys are not restored with preferences or transferred to another installation. Exclude `Hawk2.xml` from both cloud backup and device transfer using your app's backup rules; otherwise restored values cannot be decrypted. Handle key loss by recovering data from an application-specific trusted source. Hawk never regenerates a key while decrypting an existing value. Avoid logging sensitive data through a `LogInterceptor`.
 
 Use the same type when reading a key as when saving it. Collections record the first element's class, so use homogeneous, non-nested collections whose first element (and first map key/value) is non-null. Model changes can prevent older data from being read. Gson does not enforce Kotlin constructor defaults or non-null properties.
 

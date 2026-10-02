@@ -31,8 +31,10 @@ open class HawkBuilder(context: Context?) {
     @JvmName("getConverter") internal fun getConverter(): Converter = converter ?: HawkConverter(getParser()).also { converter = it }
     @JvmName("getSerializer") internal fun getSerializer(): Serializer = serializer ?: HawkSerializer(getLogInterceptor()).also { serializer = it }
     @JvmName("getEncryption") internal fun getEncryption(): Encryption = encryption ?: run {
-        val conceal = ConcealEncryption(context)
-        (if (conceal.init()) conceal else NoEncryption()).also { encryption = it }
+        KeystoreEncryption().also {
+            check(it.init()) { "Unable to initialize Android Keystore encryption" }
+            encryption = it
+        }
     }
     open fun build() { Hawk.build(this) }
 }

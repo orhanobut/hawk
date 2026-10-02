@@ -2,14 +2,11 @@ package com.orhanobut.hawk
 
 import android.content.Context
 import androidx.test.platform.app.InstrumentationRegistry
-import androidx.test.ext.junit.runners.AndroidJUnit4
 import org.junit.After
 import org.junit.Assert.*
 import org.junit.Before
 import org.junit.Test
-import org.junit.runner.RunWith
 
-@RunWith(AndroidJUnit4::class)
 class AndroidStorageTest {
     private val context get() = InstrumentationRegistry.getInstrumentation().targetContext
     @Before fun clear() { context.getSharedPreferences("Hawk2", Context.MODE_PRIVATE).edit().clear().commit() }
@@ -36,11 +33,11 @@ class AndroidStorageTest {
         }
         assertEquals("hawk", encryption.decrypt("key", "aGF3aw=="))
     }
-    @Test fun defaultConcealEncryptsAndReadsAcrossRebuilds() {
-        val encryption = ConcealEncryption(context)
-        assertTrue("Conceal native library must load on this device", encryption.init())
+    @Test fun defaultKeystoreEncryptsAndReadsAcrossRebuilds() {
+        val encryption = KeystoreEncryption()
+        assertTrue("Android Keystore must be available", encryption.init())
         val ciphertext = encryption.encrypt("key", "héllo 🦅")
-        assertEquals("héllo 🦅", ConcealEncryption(context).decrypt("key", ciphertext))
+        assertEquals("héllo 🦅", KeystoreEncryption().decrypt("key", ciphertext))
         assertThrows(Exception::class.java) { encryption.decrypt("different-key", ciphertext) }
         Hawk.init(context).build()
         assertTrue(Hawk.put("secret", "saved"))

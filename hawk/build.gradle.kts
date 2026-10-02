@@ -18,19 +18,18 @@ android {
         sourceCompatibility = JavaVersion.VERSION_1_8
         targetCompatibility = JavaVersion.VERSION_1_8
     }
-    lint {
-        warningsAsErrors = true
-        // Tracks only the retained Conceal native binary; see MAINTAINING.md.
-        baseline = file("lint-baseline.xml")
-    }
+    lint { warningsAsErrors = true }
 }
 dependencies {
-    // Both types appear in public constructors and must be available to consumers.
-    api(libs.conceal)
+    // Gson appears in a public constructor; stdlib is required by compiled Kotlin.
+    // Keep Gson's Error Prone annotations: R8 resolves them in consumer builds.
     api(libs.gson)
+    api(libs.kotlin.stdlib) {
+        exclude(group = "org.jetbrains", module = "annotations")
+    }
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.test.runner)
-    androidTestImplementation(libs.androidx.test.junit)
+    androidTestImplementation(libs.junit)
 }
 mavenPublishing {
     configure(AndroidSingleVariantLibrary(javadocJar = JavadocJar.Dokka("dokkaGeneratePublicationHtml"), variant = "release"))

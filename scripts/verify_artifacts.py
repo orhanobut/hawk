@@ -1,5 +1,6 @@
 """Inspect the local release publication and consumer documentation without network access."""
 import json
+import io
 import re
 import xml.etree.ElementTree as ET
 from pathlib import Path
@@ -29,7 +30,6 @@ catalog = (ROOT / "gradle/libs.versions.toml").read_text()
 def catalog_version(name):
     return re.search(rf'^{re.escape(name)} = "([^"]+)"', catalog, re.M)[1]
 expected = {
-    ("com.facebook.conceal", "conceal"): catalog_version("conceal"),
     ("com.google.code.gson", "gson"): catalog_version("gson"),
     ("org.jetbrains.kotlin", "kotlin-stdlib"): catalog_version("kotlin"),
 }
@@ -38,19 +38,36 @@ for dependency in pom.findall("m:dependencies/m:dependency", ns):
     key = (dependency.findtext("m:groupId", namespaces=ns), dependency.findtext("m:artifactId", namespaces=ns))
     actual[key] = dependency.findtext("m:version", namespaces=ns)
     assert dependency.findtext("m:scope", namespaces=ns) in ("compile", "runtime")
+    exclusions = {(item.findtext("m:groupId", namespaces=ns), item.findtext("m:artifactId", namespaces=ns))
+                  for item in dependency.findall("m:exclusions/m:exclusion", ns)}
+    assert exclusions == ({("org.jetbrains", "annotations")} if key[1] == "kotlin-stdlib" else set())
 assert actual == expected, actual
 metadata = json.loads((base / f"{stem}.module").read_text())
+checked_usages = set()
 for variant in metadata["variants"]:
-    if "ApiElements" in variant["name"] or "RuntimeElements" in variant["name"]:
+    attributes = variant.get("attributes", {})
+    if attributes.get("org.gradle.category") == "library" and attributes.get("org.gradle.usage") in ("java-api", "java-runtime"):
+        checked_usages.add(attributes["org.gradle.usage"])
         deps = {(d["group"], d["module"]): d["version"]["requires"] for d in variant.get("dependencies", [])}
         assert deps == expected, (variant["name"], deps)
+        for dependency in variant.get("dependencies", []):
+            exclusions = {(item["group"], item["module"]) for item in dependency.get("excludes", [])}
+            assert exclusions == ({("org.jetbrains", "annotations")} if dependency["module"] == "kotlin-stdlib" else set())
+assert checked_usages == {"java-api", "java-runtime"}, checked_usages
 with ZipFile(base / f"{stem}.aar") as aar:
     assert "classes.jar" in aar.namelist()
     assert "proguard.txt" in aar.namelist()
-    assert not any(name.endswith(".so") for name in aar.namelist())  # Conceal stays an external dependency.
+    assert not any(name.endswith(".so") for name in aar.namelist())
+    with ZipFile(io.BytesIO(aar.read("classes.jar"))) as classes:
+        assert any(name.endswith("KeystoreEncryption.class") for name in classes.namelist())
+        assert not any("Conceal" in name or name.startswith("com/facebook/") for name in classes.namelist())
     manifest = ET.fromstring(aar.read("AndroidManifest.xml"))
     minimum = manifest.find("uses-sdk").get("{http://schemas.android.com/apk/res/android}minSdkVersion")
     assert minimum == catalog_version("min-sdk"), minimum
+for variant in ("debug", "release"):
+    apk = ROOT / f"benchmark/build/outputs/apk/{variant}/benchmark-{variant}{'-unsigned' if variant == 'release' else ''}.apk"
+    with ZipFile(apk) as sample:
+        assert not any(name.endswith(".so") for name in sample.namelist()), apk
 with ZipFile(base / f"{stem}-sources.jar") as sources:
     assert any(name.endswith("Hawk.kt") for name in sources.namelist())
     assert not any(name.endswith(".java") for name in sources.namelist())

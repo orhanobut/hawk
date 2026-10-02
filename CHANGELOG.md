@@ -1,12 +1,15 @@
 # CHANGELOG
 
-### Unreleased (2.1.0)
-- Convert library and benchmark code to Kotlin while retaining public JVM entry points.
-- Update the Android build, dependency versions, local publication and CI.
-- Require API 21+, matching the supported minimum of current Gson.
+### Unreleased (3.0.0)
+- Replace the default encryption with Android Keystore-backed AES-256-GCM; remove Conceal, its native binaries, and its public implementation class.
+- Require API 23+ and fail initialization if default encryption is unavailable, without plaintext fallback.
+- Introduce a versioned ciphertext format; existing Hawk 2 default ciphertext must be migrated before upgrading.
+- Remove the native alignment lint baselines, JSR-305, JetBrains runtime annotations and unused AndroidX JUnit extensions.
+- Keep Gson's Error Prone annotations because consumer R8 builds require them.
+- Convert library and benchmark code to Kotlin while retaining the remaining public JVM entry points.
+- Update the Android build, dependency versions, local publication and GitHub Actions.
 - Expose DataInfo for custom Kotlin converters and serializers.
 - Report an unbuilt facade consistently between init and build.
-- Retain legacy Conceal encryption and document its unresolved 16 KB native alignment.
 
 ### 2.0.1
 - Conceal is updated, with the new version the size is way smaller

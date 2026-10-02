@@ -13,10 +13,13 @@ android {
         sourceCompatibility = JavaVersion.VERSION_1_8
         targetCompatibility = JavaVersion.VERSION_1_8
     }
-    lint {
-        warningsAsErrors = true
-        // Tracks only the retained Conceal native binary; see MAINTAINING.md.
-        baseline = file("lint-baseline.xml")
+    lint { warningsAsErrors = true }
+    buildTypes {
+        release {
+            isMinifyEnabled = true
+            isShrinkResources = true
+            proguardFiles(getDefaultProguardFile("proguard-android-optimize.txt"))
+        }
     }
 }
 dependencies { implementation(project(":hawk")) }

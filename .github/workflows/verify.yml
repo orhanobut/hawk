@@ -29,13 +29,17 @@ jobs:
       - name: Test, lint, assemble and publish locally
         run: >-
           ./gradlew :hawk:testDebugUnitTest :hawk:lintRelease :hawk:assembleRelease
-          :hawk:assembleDebugAndroidTest :benchmark:lintDebug :benchmark:assembleDebug
+          :hawk:assembleDebugAndroidTest :benchmark:lintDebug :benchmark:assembleDebug :benchmark:assembleRelease
           :hawk:publishAllPublicationsToVerificationRepository
       - name: Inspect publication and README
         run: python3 scripts/verify_artifacts.py
 
   device:
-    name: Android device tests
+    name: Android device tests (API ${{ matrix.api }})
+    strategy:
+      fail-fast: false
+      matrix:
+        api: [23, 35]
     runs-on: ubuntu-latest
     timeout-minutes: 30
     steps:
@@ -53,7 +57,7 @@ jobs:
           sudo udevadm trigger --name-match=kvm
       - uses: ReactiveCircus/android-emulator-runner@v2.38.0
         with:
-          api-level: 23
+          api-level: ${{ matrix.api }}
           arch: x86_64
           disable-animations: true
           script: ./gradlew :hawk:connectedDebugAndroidTest
