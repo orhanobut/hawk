@@ -1,5 +1,20 @@
 local.properties
 
+# Local credentials and private signing material
+.env
+.env.*
+!.env.example
+secrets.properties
+credentials.json
+service-account*.json
+signing.properties
+*.jks
+*.keystore
+*.p12
+*.pfx
+*.pem
+*.key
+
 # Generated files
 build/
 
