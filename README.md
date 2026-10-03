@@ -1,80 +1,92 @@
-[![Android Arsenal](https://img.shields.io/badge/Android%20Arsenal-Hawk-brightgreen.svg?style=flat)](https://android-arsenal.com/details/1/1568)      [![API](https://img.shields.io/badge/API-10%2B-brightgreen.svg?style=flat)](https://android-arsenal.com/api?level=10)   [![Join the chat at https://gitter.im/orhanobut/hawk](https://badges.gitter.im/Join%20Chat.svg)](https://gitter.im/orhanobut/hawk?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)  [![](https://img.shields.io/badge/AndroidWeekly-%23141-blue.svg)](http://androidweekly.net/issues/issue-141) <a href="http://www.methodscount.com/?lib=com.orhanobut%3Ahawk%3A2.0.0%2B"><img src="https://img.shields.io/badge/Methods and size-core: 188 | deps: 1242 | 21 KB-e91e63.svg"/></a> [![Build Status](https://travis-ci.org/orhanobut/hawk.svg?branch=master)](https://travis-ci.org/orhanobut/hawk)
+<img align="right" src="art/hawk-logo.png" width="128" height="128" alt="Hawk logo" />
 
-<img align='right' src='https://github.com/orhanobut/hawk/blob/master/art/hawk-logo.png' width='128' height='128'/>
+# Hawk
 
-### Hawk 2.0
-Secure, simple key-value storage for android
+> **Hawk 3 is coming soon!** Android Keystore-backed AES-GCM encryption, fewer dependencies, and a modern Kotlin codebase are on the way. Hawk 3 is not released yet; the current published version is 2.0.1.
 
-#### Important Note
-This version has no backward compatibility with Hawk 1+ versions. If you still want to use old versions, [check here](https://github.com/orhanobut/hawk/tree/hawk1)
+Simple, pluggable key-value storage for Android. Save a value with a key and read it back without writing a database schema.
 
-### Download
-```groovy
-compile "com.orhanobut:hawk:2.0.1"
+- Store primitives, strings, custom objects, lists, sets, and maps.
+- Persist values in app-private SharedPreferences.
+- Customize parsing, conversion, encryption, serialization, and storage.
+- Check, count, and delete entries through a small API.
+
+## Install
+
+Use Maven Central and the available release:
+
+```kotlin
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    implementation("com.orhanobut:hawk:2.0.1")
+}
 ```
 
-### Initialize
-```java
-Hawk.init(context).build();
-```
-### Usage
-Save any type (Any object, primitives, lists, sets, maps ...)
-```java
-Hawk.put(key, T);
-```
-Get the original value with the original type
-```java
-T value = Hawk.get(key);
-```
-Delete any entry
-```java
-Hawk.delete(key);
-```
-Check if any key exists
-```java
-Hawk.contains(key);
-```
-Check total entry count
-```java
-Hawk.count();
-```
-Get crazy and delete everything
-```java
-Hawk.deleteAll();
+The examples below use APIs available in 2.0.1. The next version (3.0) is unreleased and requires Android 6.0 (API 23) or newer; the published 2.0.1 artifact declares API 10 as its minimum.
+
+## Quick start
+
+Initialize once using an application context, before reading or writing:
+
+```kotlin
+Hawk.init(applicationContext).build()
+
+val saved = Hawk.put("name", "Ada")
+val name: String? = Hawk.get("name")
+val visits: Int = Hawk.get("visits", 0)
+
+Hawk.put("tags", listOf("android", "kotlin"))
+val tags: List<String>? = Hawk.get("tags")
+
+Hawk.contains("name")
+Hawk.count()
+Hawk.delete("name")
+Hawk.deleteAll()
 ```
 
-### How does Hawk work?
+`put` returns whether the value was saved. Passing a null value deletes the key. A missing key returns null, or the supplied default. `deleteAll` clears stored values but retains encryption keys. Reads and writes are synchronous; perform substantial work away from the main thread.
 
-<img src='https://github.com/orhanobut/hawk/blob/master/art/how-hawk-works.png'/>
+## Configuration
 
-### More options
-- Everything is pluggable, therefore you can change any layer with your custom implementation.
-- NoEncryption implementation is provided out of box If you want to disable crypto.
-```java
-Hawk.init(context)
-  .setEncryption(new NoEncryption())
-  .setLogInterceptor(new MyLogInterceptor())
-  .setConverter(new MyConverter())
-  .setParser(new MyParser())
-  .setStorage(new MyStorage())
-  .build();
+Gson is the default parser. Supply a configured parser for custom type adapters, or replace any pipeline interface with your own implementation:
+
+```kotlin
+Hawk.init(applicationContext)
+    .setParser(GsonParser(GsonBuilder().create()))
+    .setStorage(myStorage)
+    .setEncryption(myEncryption)
+    .build()
 ```
 
-### License
-<pre>
-Copyright 2016 Orhan Obut
+`NoEncryption()` is available for data that needs no confidentiality. It only Base64-encodes values.
 
-Licensed under the Apache License, Version 2.0 (the "License");
-you may not use this file except in compliance with the License.
-You may obtain a copy of the License at
+## Compatibility and limitations
 
-   http://www.apache.org/licenses/LICENSE-2.0
+The unreleased Hawk 3.0 uses AES-256-GCM with an application-owned Android Keystore key. Each write uses a fresh nonce and binds the ciphertext to its storage key. Initialization fails if Keystore is unavailable; it never falls back to `NoEncryption`. `deleteAll()` retains the Keystore key so other stored values are not invalidated. Keep a custom `KeystoreEncryption("your-stable-alias")` alias unchanged while its data is retained.
 
-Unless required by applicable law or agreed to in writing, software
-distributed under the License is distributed on an "AS IS" BASIS,
-WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-See the License for the specific language governing permissions and
-limitations under the License.
-</pre>
+Published Hawk 2.0.1 still uses legacy Conceal and may fall back to Base64-only storage. Its encryption is not changed by the installation snippet above.
 
+Hawk 3.0 cannot read Hawk 2's default ciphertext. Before upgrading, read and migrate the values using the old application/library, then save them with the new encryption. `ConcealEncryption` has been removed. Unmigrated values remain stored, but `get` returns null (or your default) when decryption fails; they are not automatically cleared or converted. Applications storing non-sensitive data with `NoEncryption` can explicitly keep that implementation.
 
+Keystore keys are not restored with preferences or transferred to another installation. Exclude `Hawk2.xml` from both cloud backup and device transfer using your app's backup rules; otherwise restored values cannot be decrypted. Handle key loss by recovering data from an application-specific trusted source. Hawk never regenerates a key while decrypting an existing value. Avoid logging sensitive data through a `LogInterceptor`.
+
+Use the same type when reading a key as when saving it. Collections record the first element's class, so use homogeneous, non-nested collections whose first element (and first map key/value) is non-null. Model changes can prevent older data from being read. Gson does not enforce Kotlin constructor defaults or non-null properties.
+
+For apps using R8, keep the names and fields of models persisted with Hawk: the format stores class names and Gson uses reflection. For example, with your own package:
+
+```proguard
+-keep class com.example.app.storage.model.** { *; }
+```
+
+Changing encryption, parsing, or storage implementations does not migrate existing data. Hawk 2 data is incompatible with Hawk 1.
+
+## How values are stored
+
+![Hawk storage pipeline: conversion, encryption, serialization and persistence](art/how-hawk-works.png)
+
+## License
+
+[Apache License 2.0](LICENSE). Copyright Orhan Obut.

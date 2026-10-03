@@ -1,0 +1,23 @@
+[versions]
+agp = "9.4.1"
+kotlin = "2.4.20"
+gson = "2.14.0"
+junit = "4.13.2"
+runner = "1.7.0"
+maven-publish = "0.37.0"
+dokka = "2.2.0"
+compile-sdk = "37"
+min-sdk = "23"
+
+[libraries]
+kotlin-gradle-plugin = { module = "org.jetbrains.kotlin:kotlin-gradle-plugin", version.ref = "kotlin" }
+gson = { module = "com.google.code.gson:gson", version.ref = "gson" }
+kotlin-stdlib = { module = "org.jetbrains.kotlin:kotlin-stdlib", version.ref = "kotlin" }
+junit = { module = "junit:junit", version.ref = "junit" }
+androidx-test-runner = { module = "androidx.test:runner", version.ref = "runner" }
+
+[plugins]
+android-library = { id = "com.android.library", version.ref = "agp" }
+android-application = { id = "com.android.application", version.ref = "agp" }
+maven-publish = { id = "com.vanniktech.maven.publish", version.ref = "maven-publish" }
+dokka = { id = "org.jetbrains.dokka", version.ref = "dokka" }
